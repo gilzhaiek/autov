@@ -1,19 +1,20 @@
-package com.eightman.autov.Simulation;
+package com.eightman.autov.Simulation.Drawings;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
-import com.eightman.autov.Objects.Car;
+import com.eightman.autov.Objects.MyCar;
+import com.eightman.autov.Simulation.SimulationView;
 
 /**
  * Created by gilzhaiek on 2016-10-25.
  */
 
 public class CarDrawing extends AbstractDrawing {
-    Car car;
+    MyCar car;
 
-    public CarDrawing(SimulationView simulationView, Car car) {
+    public CarDrawing(SimulationView simulationView, MyCar car) {
         super(simulationView);
         this.car = car;
     }

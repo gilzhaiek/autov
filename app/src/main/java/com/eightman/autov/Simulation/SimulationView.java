@@ -19,6 +19,9 @@ public class SimulationView extends SurfaceView {
     private SurfaceHolder surfaceHolder;
     private DrawingThread drawingThread;
 
+    public static double Width = 100; // Will change
+    public static double Height = 100; // Will change
+
     public SimulationView(Context context) {
         super(context);
         init();
@@ -49,6 +52,8 @@ public class SimulationView extends SurfaceView {
                 drawingThread.start();
 
                 Canvas canvas = holder.lockCanvas();
+                Width = (double)canvas.getWidth();
+                Height = (double)canvas.getHeight();
                 canvas.drawColor(Color.BLACK);
                 holder.unlockCanvasAndPost(canvas);
             }

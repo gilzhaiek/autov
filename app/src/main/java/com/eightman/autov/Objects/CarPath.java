@@ -1,7 +1,5 @@
 package com.eightman.autov.Objects;
 
-import android.graphics.PointF;
-
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -10,7 +8,7 @@ import java.util.Queue;
  */
 
 public class CarPath {
-    Queue<PointF> path = new LinkedList<PointF>();
+    Queue<CarLocation.Final> path = new LinkedList<>();
 
     public CarPath(CarLocation carLocation) {
     }

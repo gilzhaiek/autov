@@ -4,7 +4,7 @@ package com.eightman.autov.Objects;
  * Created by gilzhaiek on 2016-10-25.
  */
 
-public class Car {
+public class MyCar {
     CarCharacteristics carCharacteristics;
     CarLocation carLocation;
     CarPath carPath;
@@ -12,7 +12,7 @@ public class Car {
     double targetSpeed;
     double acceleration;
 
-    public Car(CarPath carPath, CarLocation carLocation, CarCharacteristics carChar) {
+    public MyCar(CarPath carPath, CarLocation carLocation, CarCharacteristics carChar) {
         this.carPath = carPath;
         this.carLocation = carLocation;
         this.carCharacteristics = carChar;

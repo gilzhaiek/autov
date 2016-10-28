@@ -1,6 +1,8 @@
-package com.eightman.autov.Simulation;
+package com.eightman.autov.Simulation.Drawings;
 
 import android.graphics.Canvas;
+
+import com.eightman.autov.Simulation.SimulationView;
 
 /**
  * Created by gilzhaiek on 2016-10-25.
