@@ -31,7 +31,7 @@ public class DrawingThread extends Thread {
             }
 
             try {
-                sleep(30);
+                sleep(400);
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();

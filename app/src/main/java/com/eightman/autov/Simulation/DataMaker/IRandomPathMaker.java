@@ -1,6 +1,6 @@
 package com.eightman.autov.Simulation.DataMaker;
 
-import com.eightman.autov.Objects.CarLocation;
+import com.eightman.autov.Objects.CarPosition;
 
 import java.util.List;
 
@@ -9,5 +9,5 @@ import java.util.List;
  */
 
 public interface IRandomPathMaker {
-    public List<CarLocation> generatePath(CarLocation carLocation);
+    public List<CarPosition> generatePath(CarPosition carPosition);
 }

@@ -8,8 +8,8 @@ import java.util.Queue;
  */
 
 public class CarPath {
-    Queue<CarLocation.Final> path = new LinkedList<>();
+    Queue<CarPosition.Final> path = new LinkedList<>();
 
-    public CarPath(CarLocation carLocation) {
+    public CarPath(CarPosition carPosition) {
     }
 }

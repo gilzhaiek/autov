@@ -9,18 +9,30 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import com.eightman.autov.Configurations.SimConfig;
+import com.eightman.autov.Hardware.Boundaries;
+import com.eightman.autov.Objects.CarPosition;
+import com.eightman.autov.Simulation.DataMaker.RandomSquarePathMaker;
+import com.eightman.autov.Utils.MathUtils;
+import com.eightman.autov.Utils.XY;
+
+import java.util.List;
+import java.util.Random;
+
 /**
  * Created by gilzhaiek on 2016-10-25.
  */
 
 public class SimulationView extends SurfaceView {
-    private static String TAG = SimulationView.class.getSimpleName();
+    static String TAG = SimulationView.class.getSimpleName();
 
-    private SurfaceHolder surfaceHolder;
-    private DrawingThread drawingThread;
+    RandomSquarePathMaker randomSquarePathMaker = new RandomSquarePathMaker();
+    SurfaceHolder surfaceHolder;
+    DrawingThread drawingThread;
+    Random random = new Random();
 
-    public static double Width = 100; // Will change
-    public static double Height = 100; // Will change
+    static double canvasWidth = 100; // 100 pixels
+    static double canvasHeight = 100; // 300 pixels
 
     public SimulationView(Context context) {
         super(context);
@@ -52,8 +64,8 @@ public class SimulationView extends SurfaceView {
                 drawingThread.start();
 
                 Canvas canvas = holder.lockCanvas();
-                Width = (double)canvas.getWidth();
-                Height = (double)canvas.getHeight();
+                canvasWidth = (double)canvas.getWidth();
+                canvasHeight = (double)canvas.getHeight();
                 canvas.drawColor(Color.BLACK);
                 holder.unlockCanvasAndPost(canvas);
             }
@@ -78,13 +90,79 @@ public class SimulationView extends SurfaceView {
         });
     }
 
+    protected Paint getNewPaint(int color) {
+        Paint paint = new Paint();
+        paint.setColor(color);
+        paint.setStrokeWidth(SimConfig.STROKE_WIDTH);
+        paint.setStyle(Paint.Style.STROKE);
+        return paint;
+    }
+
+    private void drawLine(Canvas canvas,
+                          float startX, float startY, float stopX, float stopY,
+                          Paint paint){
+        float moveUnitPerPixel = (float)SimConfig.MOVE_UNIT_PER_PIXEL;
+        canvas.drawLine(
+                moveUnitPerPixel*(startX+(float)canvasWidth/2.0f/moveUnitPerPixel),
+                moveUnitPerPixel*(-1*startY +(float)canvasHeight/2.0f/moveUnitPerPixel),
+                moveUnitPerPixel*(stopX+(float)canvasWidth/2.0f/moveUnitPerPixel),
+                moveUnitPerPixel*(-1*stopY +(float)canvasHeight/2.0f/moveUnitPerPixel), paint);
+    }
+
     protected void drawSomething(Canvas canvas) {
         canvas.drawColor(Color.BLACK);
 
-        Paint paint = new Paint();
-        paint.setColor(Color.rgb(0xff, 0xff, 0));
-        paint.setStrokeWidth(10);
-        paint.setStyle(Paint.Style.STROKE);
-        canvas.drawRect(100, 100, 200, 200, paint);
+        Double carWidth = SimConfig.MIN_CAR_WIDTH+random.nextDouble()*(SimConfig.MAX_CAR_WIDTH-SimConfig.MIN_CAR_WIDTH);
+        Double carLength = SimConfig.MIN_CAR_LENGTH+random.nextDouble()*(SimConfig.MAX_CAR_LENGTH-SimConfig.MIN_CAR_LENGTH);
+        Boundaries initialBoundaries = MathUtils.getBoundariesLookingNorth(new XY(0.0, 0.0), carWidth, carLength, 0);
+        List<CarPosition> carPositions = randomSquarePathMaker.generatePath(new CarPosition(initialBoundaries, 30, 0));
+
+        Paint rfWheelPaint = getNewPaint(Color.rgb(0xff, 0, 0));
+        Paint rbWheelPaint = getNewPaint(Color.rgb(0, 0xff, 0));
+        Paint lbWheelPaint = getNewPaint(Color.rgb(0, 0, 0xff));
+        Paint lfWheelPaint = getNewPaint(Color.rgb(0xff, 0xff, 0));
+
+        if(carPositions.size() > 1) {
+            CarPosition.Final startPosition = carPositions.get(0).getPosition();
+
+
+            for (CarPosition carPosition : carPositions) {
+                CarPosition.Final stopPosition = carPosition.getPosition();
+                if(startPosition.equals(stopPosition)) {
+                    continue;
+                }
+
+                drawLine(canvas,
+                        (float)startPosition.getBoundaries().getRightFront().getX(),
+                        (float)startPosition.getBoundaries().getRightFront().getY(),
+                        (float)stopPosition.getBoundaries().getRightFront().getX(),
+                        (float)stopPosition.getBoundaries().getRightFront().getY(),
+                        rfWheelPaint);
+
+                drawLine(canvas,
+                        (float)startPosition.getBoundaries().getRightBack().getX(),
+                        (float)startPosition.getBoundaries().getRightBack().getY(),
+                        (float)stopPosition.getBoundaries().getRightBack().getX(),
+                        (float)stopPosition.getBoundaries().getRightBack().getY(),
+                        rbWheelPaint);
+
+                drawLine(canvas,
+                        (float)startPosition.getBoundaries().getLeftBack().getX(),
+                        (float)startPosition.getBoundaries().getLeftBack().getY(),
+                        (float)stopPosition.getBoundaries().getLeftBack().getX(),
+                        (float)stopPosition.getBoundaries().getLeftBack().getY(),
+                        lbWheelPaint);
+
+                drawLine(canvas,
+                        (float)startPosition.getBoundaries().getLeftFront().getX(),
+                        (float)startPosition.getBoundaries().getLeftFront().getY(),
+                        (float)stopPosition.getBoundaries().getLeftFront().getX(),
+                        (float)stopPosition.getBoundaries().getLeftFront().getY(),
+                        lfWheelPaint);
+
+                startPosition = stopPosition;
+            }
+        }
+
     }
 }

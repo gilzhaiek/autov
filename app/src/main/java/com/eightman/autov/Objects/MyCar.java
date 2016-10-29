@@ -6,15 +6,15 @@ package com.eightman.autov.Objects;
 
 public class MyCar {
     CarCharacteristics carCharacteristics;
-    CarLocation carLocation;
+    CarPosition carPosition;
     CarPath carPath;
     double currentSpeed;
     double targetSpeed;
     double acceleration;
 
-    public MyCar(CarPath carPath, CarLocation carLocation, CarCharacteristics carChar) {
+    public MyCar(CarPath carPath, CarPosition carPosition, CarCharacteristics carChar) {
         this.carPath = carPath;
-        this.carLocation = carLocation;
+        this.carPosition = carPosition;
         this.carCharacteristics = carChar;
     }
 

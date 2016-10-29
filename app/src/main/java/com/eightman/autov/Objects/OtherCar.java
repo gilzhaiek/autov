@@ -6,11 +6,10 @@ package com.eightman.autov.Objects;
 
 public class OtherCar {
     CarInfo carInfo;
-    CarLocation carLocation;
+    CarPosition carPosition;
 
-    public OtherCar(CarInfo carInfo, CarLocation carLocation) {
+    public OtherCar(CarInfo carInfo, CarPosition carPosition) {
         this.carInfo = carInfo;
-        this.carLocation = carLocation;
+        this.carPosition = carPosition;
     }
-
 }
