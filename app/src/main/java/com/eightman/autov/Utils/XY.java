@@ -13,6 +13,10 @@ public final class XY {
         this.y = y;
     }
 
+    public XY add(XY xy) {
+        return new XY(x + xy.getX(), y + xy.getY());
+    }
+
     public double getX() {
         return x;
     }
@@ -27,7 +31,7 @@ public final class XY {
             return false;
         }
 
-        return x == ((XY)obj).getX() && y == ((XY)obj).getY();
+        return x == ((XY) obj).getX() && y == ((XY) obj).getY();
     }
 
     @Override

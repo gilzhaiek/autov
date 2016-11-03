@@ -64,8 +64,8 @@ public class SimulationView extends SurfaceView {
                 drawingThread.start();
 
                 Canvas canvas = holder.lockCanvas();
-                canvasWidth = (double)canvas.getWidth();
-                canvasHeight = (double)canvas.getHeight();
+                canvasWidth = (double) canvas.getWidth();
+                canvasHeight = (double) canvas.getHeight();
                 canvas.drawColor(Color.BLACK);
                 holder.unlockCanvasAndPost(canvas);
             }
@@ -78,7 +78,7 @@ public class SimulationView extends SurfaceView {
             public void surfaceDestroyed(SurfaceHolder holder) {
                 boolean retry = true;
                 drawingThread.setRunning(false);
-                while(retry) {
+                while (retry) {
                     try {
                         drawingThread.join();
                         retry = false;
@@ -100,13 +100,36 @@ public class SimulationView extends SurfaceView {
 
     private void drawLine(Canvas canvas,
                           float startX, float startY, float stopX, float stopY,
-                          Paint paint){
-        float moveUnitPerPixel = (float)SimConfig.MOVE_UNIT_PER_PIXEL;
+                          Paint paint) {
+        // TODO: Fix this math
+        float moveUnitPerPixel = (float) SimConfig.PIXEL_PER_MOVE_UNIT;
         canvas.drawLine(
-                moveUnitPerPixel*(startX+(float)canvasWidth/2.0f/moveUnitPerPixel),
-                moveUnitPerPixel*(-1*startY +(float)canvasHeight/2.0f/moveUnitPerPixel),
-                moveUnitPerPixel*(stopX+(float)canvasWidth/2.0f/moveUnitPerPixel),
-                moveUnitPerPixel*(-1*stopY +(float)canvasHeight/2.0f/moveUnitPerPixel), paint);
+                moveUnitPerPixel * (startX + (float) canvasWidth / 2.0f / moveUnitPerPixel),
+                moveUnitPerPixel * (-1 * startY + (float) canvasHeight / 2.0f / moveUnitPerPixel),
+                moveUnitPerPixel * (stopX + (float) canvasWidth / 2.0f / moveUnitPerPixel),
+                moveUnitPerPixel * (-1 * stopY + (float) canvasHeight / 2.0f / moveUnitPerPixel), paint);
+    }
+
+    private void drawCar(Canvas canvas, Boundaries boundaries, Paint paint) {
+        drawLine(canvas,
+                (float)boundaries.getRightFront().getX(), (float)boundaries.getRightFront().getY(),
+                (float)boundaries.getRightBack().getX(), (float)boundaries.getRightBack().getY(),
+                paint);
+
+        drawLine(canvas,
+                (float)boundaries.getRightBack().getX(), (float)boundaries.getRightBack().getY(),
+                (float)boundaries.getLeftBack().getX(), (float)boundaries.getLeftBack().getY(),
+                paint);
+
+        drawLine(canvas,
+                (float)boundaries.getLeftBack().getX(), (float)boundaries.getLeftBack().getY(),
+                (float)boundaries.getLeftFront().getX(), (float)boundaries.getLeftFront().getY(),
+                paint);
+
+        drawLine(canvas,
+                (float)boundaries.getLeftFront().getX(), (float)boundaries.getLeftFront().getY(),
+                (float)boundaries.getRightFront().getX(), (float)boundaries.getRightFront().getY(),
+                paint);
     }
 
     protected void drawSomething(Canvas canvas) {
@@ -117,14 +140,15 @@ public class SimulationView extends SurfaceView {
         Boundaries initialBoundaries = MathUtils.getBoundariesLookingNorth(new XY(0.0, 0.0), carWidth, carLength, 0);
         List<CarPosition> carPositions = randomSquarePathMaker.generatePath(new CarPosition(initialBoundaries, 30, 0));
 
-        Paint rfWheelPaint = getNewPaint(Color.rgb(0xff, 0, 0));
-        Paint rbWheelPaint = getNewPaint(Color.rgb(0, 0xff, 0));
-        Paint lbWheelPaint = getNewPaint(Color.rgb(0, 0, 0xff));
-        Paint lfWheelPaint = getNewPaint(Color.rgb(0xff, 0xff, 0));
+        Paint rfWheelPaint = getNewPaint(Color.rgb(0xFF, 0, 0));
+        Paint rbWheelPaint = getNewPaint(Color.rgb(0, 0, 0xFF));
+        Paint lbWheelPaint = getNewPaint(Color.rgb(0, 0, 0xFF));
+        Paint lfWheelPaint = getNewPaint(Color.rgb(0xff, 0, 0));
+        Paint carPaint = getNewPaint(Color.rgb(0xFF, 0xFF, 0x00)); // Yellow
 
         if(carPositions.size() > 1) {
             CarPosition.Final startPosition = carPositions.get(0).getPosition();
-
+            drawCar(canvas, startPosition.getBoundaries(), carPaint);
 
             for (CarPosition carPosition : carPositions) {
                 CarPosition.Final stopPosition = carPosition.getPosition();
@@ -159,6 +183,8 @@ public class SimulationView extends SurfaceView {
                         (float)stopPosition.getBoundaries().getLeftFront().getX(),
                         (float)stopPosition.getBoundaries().getLeftFront().getY(),
                         lfWheelPaint);
+
+                drawCar(canvas, stopPosition.getBoundaries(), carPaint);
 
                 startPosition = stopPosition;
             }

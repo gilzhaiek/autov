@@ -26,18 +26,36 @@ public class Boundaries {
         this.timestamp = timestamp;
     }
 
-    private double getCenter(double val1, double val2) {
-        return val1 + (val1 - val2) / 2.0;
+    public Boundaries(XY rFront, XY rBack, XY lBack, XY lFront, long timestamp) {
+        this.rightFront = rFront;
+        this.rightBack = rBack;
+        this.leftBack = lBack;
+        this.leftFront = lFront;
+        this.timestamp = timestamp;
+    }
+
+    public Boundaries addOffset(XY offset) {
+        return new Boundaries(
+                this.rightFront.add(offset),
+                this.rightBack.add(offset),
+                this.leftBack.add(offset),
+                this.leftFront.add(offset),
+                this.timestamp);
+    }
+
+    private double getCenter(double left, double right) {
+        return left+(right - left) / 2.0;
     }
 
     public XY getCenterFront() {
-        return new XY(getCenter(rightFront.getX(), leftFront.getX()),
-                getCenter(rightFront.getY(), leftFront.getY()));
+        double centerX = getCenter(leftFront.getX(), rightFront.getX());
+        double centerY = getCenter(leftFront.getY(), rightFront.getY());
+        return new XY(centerX, centerY);
     }
 
     public XY getCenterBack() {
-        return new XY(getCenter(rightBack.getX(), leftBack.getX()),
-                getCenter(rightBack.getY(), leftBack.getY()));
+        return new XY(getCenter(leftBack.getX(), rightBack.getX()),
+                getCenter(leftBack.getY(), rightBack.getY()));
     }
 
     /*
