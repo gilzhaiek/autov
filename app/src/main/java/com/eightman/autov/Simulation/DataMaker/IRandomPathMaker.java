@@ -9,5 +9,5 @@ import java.util.List;
  */
 
 public interface IRandomPathMaker {
-    public List<CarPosition> generatePath(CarPosition carPosition);
+    public List<CarPosition.Final> generatePath(CarPosition.Final carPosition);
 }

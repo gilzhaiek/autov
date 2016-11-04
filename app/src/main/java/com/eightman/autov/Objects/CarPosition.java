@@ -9,7 +9,6 @@ import com.eightman.autov.Hardware.Boundaries;
 public class CarPosition {
     Boundaries boundaries;
     Double speed;
-    Double direction; // 0 is north.  Clock wise 360.0
 
     Object lock = new Object();
 
@@ -17,37 +16,34 @@ public class CarPosition {
         setPosition(position);
     }
 
-    public CarPosition(Boundaries boundaries, double speed, double direction) {
-        setPosition(boundaries, speed, direction);
+    public CarPosition(Boundaries boundaries, double speed) {
+        setPosition(boundaries, speed);
     }
 
     public CarPosition.Final getPosition() {
         synchronized (lock) {
-            return new CarPosition.Final(boundaries, speed, direction);
+            return new CarPosition.Final(boundaries, speed);
         }
     }
 
     public void setPosition(CarPosition.Final position) {
-        setPosition(position.boundaries, position.speed, position.direction);
+        setPosition(position.boundaries, position.speed);
     }
 
-    public void setPosition(Boundaries boundaries, double speed, double direction) {
+    public void setPosition(Boundaries boundaries, double speed) {
         synchronized (lock) {
             this.boundaries = boundaries;
             this.speed = speed;
-            this.direction = direction;
         }
     }
 
     public class Final {
         final Boundaries boundaries;
         final double speed;
-        final double direction; // 0 is north.  Clock wise 360.0
 
-        public Final(Boundaries boundaries, double speed, double direction) {
+        public Final(Boundaries boundaries, double speed) {
             this.boundaries = boundaries;
             this.speed = speed;
-            this.direction = direction;
         }
 
         public Boundaries getBoundaries() {
@@ -58,10 +54,6 @@ public class CarPosition {
             return speed;
         }
 
-        public double getDirection() {
-            return direction;
-        }
-
         @Override
         public boolean equals(Object obj) {
             if (!(obj instanceof CarPosition.Final)) {
@@ -70,9 +62,7 @@ public class CarPosition {
 
             CarPosition.Final other = (CarPosition.Final)obj;
 
-            return other.getBoundaries().equals(boundaries) &&
-                    other.getSpeed() == speed &&
-                    other.getDirection() == direction;
+            return other.getBoundaries().equals(boundaries) && other.getSpeed() == speed;
         }
     }
 }

@@ -25,6 +25,10 @@ public final class XY {
         return y;
     }
 
+    public double getVector() {
+        return Math.sqrt(x*x + y*y);
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof XY)) {

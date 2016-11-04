@@ -13,9 +13,12 @@ import com.eightman.autov.Configurations.SimConfig;
 import com.eightman.autov.Hardware.Boundaries;
 import com.eightman.autov.Objects.CarPosition;
 import com.eightman.autov.Simulation.DataMaker.RandomSquarePathMaker;
+import com.eightman.autov.Simulation.Drawings.DrawingUtils;
+import com.eightman.autov.Simulation.Objects.CarSimulation;
 import com.eightman.autov.Utils.MathUtils;
 import com.eightman.autov.Utils.XY;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
@@ -26,10 +29,9 @@ import java.util.Random;
 public class SimulationView extends SurfaceView {
     static String TAG = SimulationView.class.getSimpleName();
 
-    RandomSquarePathMaker randomSquarePathMaker = new RandomSquarePathMaker();
     SurfaceHolder surfaceHolder;
     DrawingThread drawingThread;
-    Random random = new Random();
+    List<CarSimulation> simulatedCars = new LinkedList<>();
 
     static double canvasWidth = 100; // 100 pixels
     static double canvasHeight = 100; // 300 pixels
@@ -90,46 +92,12 @@ public class SimulationView extends SurfaceView {
         });
     }
 
-    protected Paint getNewPaint(int color) {
-        Paint paint = new Paint();
-        paint.setColor(color);
-        paint.setStrokeWidth(SimConfig.STROKE_WIDTH);
-        paint.setStyle(Paint.Style.STROKE);
-        return paint;
+    public void clearCars() {
+        simulatedCars.clear();
     }
 
-    private void drawLine(Canvas canvas,
-                          float startX, float startY, float stopX, float stopY,
-                          Paint paint) {
-        // TODO: Fix this math
-        float moveUnitPerPixel = (float) SimConfig.PIXEL_PER_MOVE_UNIT;
-        canvas.drawLine(
-                moveUnitPerPixel * (startX + (float) canvasWidth / 2.0f / moveUnitPerPixel),
-                moveUnitPerPixel * (-1 * startY + (float) canvasHeight / 2.0f / moveUnitPerPixel),
-                moveUnitPerPixel * (stopX + (float) canvasWidth / 2.0f / moveUnitPerPixel),
-                moveUnitPerPixel * (-1 * stopY + (float) canvasHeight / 2.0f / moveUnitPerPixel), paint);
-    }
-
-    private void drawCar(Canvas canvas, Boundaries boundaries, Paint paint) {
-        drawLine(canvas,
-                (float)boundaries.getRightFront().getX(), (float)boundaries.getRightFront().getY(),
-                (float)boundaries.getRightBack().getX(), (float)boundaries.getRightBack().getY(),
-                paint);
-
-        drawLine(canvas,
-                (float)boundaries.getRightBack().getX(), (float)boundaries.getRightBack().getY(),
-                (float)boundaries.getLeftBack().getX(), (float)boundaries.getLeftBack().getY(),
-                paint);
-
-        drawLine(canvas,
-                (float)boundaries.getLeftBack().getX(), (float)boundaries.getLeftBack().getY(),
-                (float)boundaries.getLeftFront().getX(), (float)boundaries.getLeftFront().getY(),
-                paint);
-
-        drawLine(canvas,
-                (float)boundaries.getLeftFront().getX(), (float)boundaries.getLeftFront().getY(),
-                (float)boundaries.getRightFront().getX(), (float)boundaries.getRightFront().getY(),
-                paint);
+    public void addRandomCar() {
+        simulatedCars.add(new CarSimulation());
     }
 
     protected void drawSomething(Canvas canvas) {
@@ -137,8 +105,8 @@ public class SimulationView extends SurfaceView {
 
         Double carWidth = SimConfig.MIN_CAR_WIDTH+random.nextDouble()*(SimConfig.MAX_CAR_WIDTH-SimConfig.MIN_CAR_WIDTH);
         Double carLength = SimConfig.MIN_CAR_LENGTH+random.nextDouble()*(SimConfig.MAX_CAR_LENGTH-SimConfig.MIN_CAR_LENGTH);
-        Boundaries initialBoundaries = MathUtils.getBoundariesLookingNorth(new XY(0.0, 0.0), carWidth, carLength, 0);
-        List<CarPosition> carPositions = randomSquarePathMaker.generatePath(new CarPosition(initialBoundaries, 30, 0));
+        Boundaries initialBoundaries = MathUtils.getBoundariesLookingNorth(0.0, 0.0, carWidth, carLength, );
+        List<CarPosition> carPositions = randomSquarePathMaker.generatePath(new CarPosition(initialBoundaries, 30));
 
         Paint rfWheelPaint = getNewPaint(Color.rgb(0xFF, 0, 0));
         Paint rbWheelPaint = getNewPaint(Color.rgb(0, 0, 0xFF));
