@@ -23,16 +23,9 @@ public abstract class AbstractDrawing {
         simulationView.getHolder().unlockCanvasAndPost(canvas);
     }
 
-    public void draw() {
-        Canvas canvas = lockCanvas();
-        try {
-            if (canvas != null) {
-                synchronized (simulationView.getHolder()) {
-                    onDraw(canvas);
-                }
-            }
-        } finally {
-            unlockCanvasAndPost(canvas);
+    public void draw(Canvas canvas) {
+        if (canvas != null) {
+            onDraw(canvas);
         }
     }
 

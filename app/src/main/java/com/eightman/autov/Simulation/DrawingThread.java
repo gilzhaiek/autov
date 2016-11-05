@@ -25,13 +25,15 @@ public class DrawingThread extends Thread {
 
             if (canvas != null) {
                 synchronized (simulationView.getHolder()) {
-                    simulationView.drawSomething(canvas);
+                    simulationView.drawWorld(canvas);
                 }
                 simulationView.getHolder().unlockCanvasAndPost(canvas);
             }
 
+            simulationView.advanceTime();
+
             try {
-                sleep(1000);
+                sleep(100);
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();

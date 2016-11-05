@@ -19,7 +19,7 @@ public class CarPath {
     public boolean add(List<CarPosition.Final> path, boolean firstPositionIsLast) {
         synchronized (lock) {
             if(firstPositionIsLast && this.path.size() > 0) {
-                if(getLastPosition() != path.get(0)) {
+                if(peekLastPosition() != path.get(0)) {
                     return false;
                 }
             }
@@ -35,7 +35,11 @@ public class CarPath {
         }
     }
 
-    public CarPosition.Final pop() {
+    public int size() {
+        return path.size();
+    }
+
+    public CarPosition.Final popFirstPosition() {
         synchronized (lock) {
             if (path.size() > 0) {
                 return path.remove(0);
@@ -45,7 +49,7 @@ public class CarPath {
         }
     }
 
-    public CarPosition.Final peek() {
+    public CarPosition.Final peekFirstPosition() {
         synchronized (lock) {
             if (path.size() > 0) {
                 return path.get(0);
@@ -55,7 +59,7 @@ public class CarPath {
         }
     }
 
-    public CarPosition.Final getLastPosition() {
+    public CarPosition.Final peekLastPosition() {
         synchronized (lock) {
             if (path.size() > 0) {
                 return path.get(path.size() - 1);

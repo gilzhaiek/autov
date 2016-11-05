@@ -14,7 +14,7 @@ import java.util.List;
  * Created by gilzhaiek on 2016-11-03.
  */
 
-public class CarSimulation {
+public class CarSimulation extends AbstractSimulation {
     MyCar myCar;
     static RandomSquarePathMaker randomSquarePathMaker = new RandomSquarePathMaker();
 
@@ -28,7 +28,15 @@ public class CarSimulation {
                 0);
 
         myCar = new MyCar(carChars, carPosition);
-        new GeneratePathTask().execute(myCar.getCarPath().getLastPosition());
+        new GeneratePathTask().execute(myCar.getCarPath().peekLastPosition());
+    }
+
+    @Override
+    public void advanceTime() {
+        CarPosition.Final position = myCar.getCarPath().popFirstPosition();
+        if(myCar.getCarPath().size() == 0) {
+            new GeneratePathTask().execute(position);
+        }
     }
 
     private class GeneratePathTask extends AsyncTask<CarPosition.Final, Void, List<CarPosition.Final>> {
@@ -38,8 +46,12 @@ public class CarSimulation {
 
         protected void onPostExecute(List<CarPosition.Final> carPositions) {
             if(!myCar.addPath(carPositions, true)) {
-                new GeneratePathTask().execute(myCar.getCarPath().getLastPosition());
+                new GeneratePathTask().execute(myCar.getCarPath().peekLastPosition());
             }
         }
+    }
+
+    public MyCar getMyCar() {
+        return myCar;
     }
 }
