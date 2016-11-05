@@ -2,4 +2,5 @@
     <string name="app_name">AutoV</string>
     <string name="start_simulation">Start!</string>
     <string name="add_car">Add Car</string>
+    <string name="add_10_cars">Add 10 Cars</string>
 </resources>

@@ -9,6 +9,7 @@ import com.eightman.autov.Simulation.SimulationView;
 
 public class SimulationActivity extends AppCompatActivity implements View.OnClickListener {
     SimulationView simulationView;
+    Button btnAddCar, btnAdd10Cars;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -16,8 +17,10 @@ public class SimulationActivity extends AppCompatActivity implements View.OnClic
         setContentView(R.layout.activity_simulation);
         simulationView = (SimulationView)findViewById(R.id.surfaceSimulation);
 
-        Button btnAddCar = (Button)findViewById(R.id.btnAddCar);
+        btnAddCar = (Button)findViewById(R.id.btnAddCar);
+        btnAdd10Cars = (Button)findViewById(R.id.btnAdd10Cars);
         btnAddCar.setOnClickListener(this);
+        btnAdd10Cars.setOnClickListener(this);
     }
 
     @Override
@@ -37,6 +40,12 @@ public class SimulationActivity extends AppCompatActivity implements View.OnClic
 
     @Override
     public void onClick(View view) {
-        simulationView.addRandomCar();
+        if(view.getId() == btnAddCar.getId()) {
+            simulationView.addRandomCar();
+        } else if(view.getId() == btnAdd10Cars.getId()) {
+            for(int i = 0; i < 10; i++) {
+                simulationView.addRandomCar();
+            }
+        }
     }
 }

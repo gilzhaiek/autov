@@ -24,6 +24,12 @@
             android:layout_height="wrap_content"
             android:text="@string/add_car"
             />
+        <Button
+            android:id="@+id/btnAdd10Cars"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/add_10_cars"
+            />
     </LinearLayout>
     <com.eightman.autov.Simulation.SimulationView
         android:id="@+id/surfaceSimulation"

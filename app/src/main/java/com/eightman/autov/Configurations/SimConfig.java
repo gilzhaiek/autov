@@ -6,6 +6,7 @@ package com.eightman.autov.Configurations;
 
 public class SimConfig {
     final public static boolean IS_SIMULATION = true;
+    final public static int DELAY_MS = 30;
 
     // Our unit is 1 meter
     final public static double PIXEL_PER_MOVE_UNIT = 0.2; // 1 Meter for every pixel

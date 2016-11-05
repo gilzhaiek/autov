@@ -91,15 +91,19 @@ public class SimulationView extends SurfaceView {
 
     public void addRandomCar() {
         CarSimulation carSimulation = new CarSimulation();
-        simulations.add(carSimulation);
+        synchronized (simulations) {
+            simulations.add(carSimulation);
+        }
         synchronized (drawings) {
             drawings.add(new CarDrawing(this, carSimulation.getMyCar()));
         }
     }
 
     public void advanceTime() {
-        for(AbstractSimulation simulation : simulations) {
-            simulation.advanceTime();
+        synchronized (simulations) {
+            for (AbstractSimulation simulation : simulations) {
+                simulation.advanceTime();
+            }
         }
     }
 

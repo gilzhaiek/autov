@@ -17,6 +17,7 @@ import java.util.List;
 public class CarSimulation extends AbstractSimulation {
     MyCar myCar;
     static RandomSquarePathMaker randomSquarePathMaker = new RandomSquarePathMaker();
+    GeneratePathTask generatePathTask = null;
 
     public CarSimulation() {
         final CarCharacteristics carChars = CarCharacteristics.generateRandom();
@@ -34,8 +35,9 @@ public class CarSimulation extends AbstractSimulation {
     @Override
     public void advanceTime() {
         CarPosition.Final position = myCar.getCarPath().popFirstPosition();
-        if(myCar.getCarPath().size() == 0) {
-            new GeneratePathTask().execute(position);
+        if(myCar.getCarPath().size() == 0 && generatePathTask == null) {
+            generatePathTask = new GeneratePathTask();
+            generatePathTask.execute(position);
         }
     }
 
@@ -46,7 +48,10 @@ public class CarSimulation extends AbstractSimulation {
 
         protected void onPostExecute(List<CarPosition.Final> carPositions) {
             if(!myCar.addPath(carPositions, true)) {
-                new GeneratePathTask().execute(myCar.getCarPath().peekLastPosition());
+                generatePathTask = new GeneratePathTask();
+                generatePathTask.execute(myCar.getCarPath().peekLastPosition());
+            } else {
+                generatePathTask = null;
             }
         }
     }

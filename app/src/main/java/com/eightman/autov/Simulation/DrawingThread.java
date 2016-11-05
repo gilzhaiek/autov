@@ -2,6 +2,8 @@ package com.eightman.autov.Simulation;
 
 import android.graphics.Canvas;
 
+import com.eightman.autov.Configurations.SimConfig;
+
 /**
  * Created by gilzhaiek on 2016-10-25.
  */
@@ -33,7 +35,7 @@ public class DrawingThread extends Thread {
             simulationView.advanceTime();
 
             try {
-                sleep(100);
+                sleep(SimConfig.DELAY_MS);
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
