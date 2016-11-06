@@ -7,6 +7,7 @@ import com.eightman.autov.Objects.CarPosition;
 import com.eightman.autov.Objects.MyCar;
 import com.eightman.autov.Simulation.DataMaker.RandomSquarePathMaker;
 import com.eightman.autov.Utils.TrigUtils;
+import com.eightman.autov.Utils.XY;
 
 import java.util.List;
 
@@ -19,13 +20,12 @@ public class CarSimulation extends AbstractSimulation {
     static RandomSquarePathMaker randomSquarePathMaker = new RandomSquarePathMaker();
     GeneratePathTask generatePathTask = null;
 
-    public CarSimulation() {
-        final CarCharacteristics carChars = CarCharacteristics.generateRandom();
+    public CarSimulation(final CarCharacteristics carChars, final XY position) {
         final CarPosition carPosition = new CarPosition(
                 TrigUtils.getBoundariesLookingNorth(
-                        0, 0,
-                        carChars.getWidth(), carChars.getLength(),
-                        System.currentTimeMillis()),
+                        position.getX(), position.getY(),
+                        carChars.getWidth(), carChars.getLength()),
+                0,
                 0);
 
         myCar = new MyCar(carChars, carPosition);

@@ -5,10 +5,10 @@ package com.eightman.autov.Objects;
  */
 
 public class World {
-    int width;
-    int length;
+    double width;
+    double length;
 
-    public World(int width, int length) {
+    public World(double width, double length) {
         this.width = width;
         this.length = length;
     }

@@ -7,13 +7,13 @@ import com.eightman.autov.Hardware.Boundaries;
  */
 
 public class TrigUtils {
-    public static Boundaries getBoundariesLookingNorth(double x, double y, double width, double length, long timeStamp) {
-        double dx = x+width/2;
-        double dy = y+length/2;
-        return new Boundaries(x+dx, y+dy, x+dx, y-dy, x-dx, y-dy, x-dx, y+dy, timeStamp);
+    public static Boundaries getBoundariesLookingNorth(double x, double y, double width, double length) {
+        double dx = width/2;
+        double dy = length/2;
+        return new Boundaries(x+dx, y+dy, x+dx, y-dy, x-dx, y-dy, x-dx, y+dy);
     }
 
-    public static Boundaries getBoundaries(XY yourXY, XY lookingAtXY, double width, double length, long timeStamp) {
+    public static Boundaries getBoundaries(XY yourXY, XY lookingAtXY, double width, double length) {
         // https://goo.gl/photos/kT3nq51TM7fqiLjQ6
         double dx = lookingAtXY.getX()-yourXY.getX();
         double dy = lookingAtXY.getY()-yourXY.getY();
@@ -49,6 +49,6 @@ public class TrigUtils {
             lBackY = lFrontY + adjBeta;
         }
 
-        return new Boundaries(rFrontX, rFrontY, rBackX, rBackY, lBackX, lBackY, lFrontX, lFrontY, timeStamp);
+        return new Boundaries(rFrontX, rFrontY, rBackX, rBackY, lBackX, lBackY, lFrontX, lFrontY);
     }
 }

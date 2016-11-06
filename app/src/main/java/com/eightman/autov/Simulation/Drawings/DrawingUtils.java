@@ -13,6 +13,49 @@ import com.eightman.autov.Utils.XY;
  */
 
 public class DrawingUtils {
+    public enum Axis {
+        yAxis, xAxis
+    }
+
+    public static float getScreenPoint(float carPosition, Axis axis) {
+        float moveUnitPerPixel = (float) SimConfig.PIXEL_PER_MOVE_UNIT;
+
+        if(axis == Axis.xAxis) {
+            return moveUnitPerPixel * (carPosition + (float) Global.canvasWidth / 2.0f / moveUnitPerPixel);
+        } else {
+            return moveUnitPerPixel * (-1 * carPosition + (float) Global.canvasHeight / 2.0f / moveUnitPerPixel);
+        }
+    }
+
+    public static boolean isInLaunchArea(XY point) {
+        return (point.getX() < (SimConfig.EDGE_METERS * 2)) &&
+                (point.getX() > (-1 * SimConfig.EDGE_METERS * 2)) &&
+                (point.getY() < (SimConfig.EDGE_METERS * 2)) &&
+                (point.getY() > (-1 * SimConfig.EDGE_METERS * 2));
+    }
+
+    public static boolean enteredLaunchArea(XY from, XY to) {
+        if(isInLaunchArea(from)) {
+            return false;  // Already in Launch Area
+        }
+
+        return isInLaunchArea(to);
+    }
+
+    public static boolean inOnScreen(XY point) {
+        float x = getScreenPoint((float)point.getX(), Axis.xAxis);
+        if(x > Global.canvasWidth || x < 0) {
+            return false;
+        }
+
+        float y = getScreenPoint((float)point.getY(), Axis.yAxis);
+        if(y > Global.canvasHeight || y < 0) {
+            return false;
+        }
+
+        return true;
+    }
+
     public static Paint getLinePaint(int color) {
         Paint paint = new Paint();
         paint.setColor(color);
@@ -32,12 +75,12 @@ public class DrawingUtils {
     public static void drawLine(Canvas canvas,
                                  final float fromX, final float fromY, final float toX, final float toY,
                                  Paint paint) {
-        float moveUnitPerPixel = (float) SimConfig.PIXEL_PER_MOVE_UNIT;
         canvas.drawLine(
-                moveUnitPerPixel * (fromX + (float)Global.canvasWidth / 2.0f / moveUnitPerPixel),
-                moveUnitPerPixel * (-1 * fromY + (float)Global.canvasHeight / 2.0f / moveUnitPerPixel),
-                moveUnitPerPixel * (toX + (float)Global.canvasWidth / 2.0f / moveUnitPerPixel),
-                moveUnitPerPixel * (-1 * toY + (float)Global.canvasHeight / 2.0f / moveUnitPerPixel), paint);
+                getScreenPoint(fromX, Axis.xAxis),
+                getScreenPoint(fromY, Axis.yAxis),
+                getScreenPoint(toX, Axis.xAxis),
+                getScreenPoint(toY, Axis.yAxis),
+                paint);
     }
 
     public static void drawBoundaries(Canvas canvas, Boundaries boundaries, Paint paint) {

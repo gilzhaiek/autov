@@ -9,10 +9,12 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import com.eightman.autov.Configurations.Global;
+import com.eightman.autov.Objects.CarCharacteristics;
 import com.eightman.autov.Simulation.Drawings.AbstractDrawing;
 import com.eightman.autov.Simulation.Drawings.CarDrawing;
 import com.eightman.autov.Simulation.Objects.AbstractSimulation;
 import com.eightman.autov.Simulation.Objects.CarSimulation;
+import com.eightman.autov.Utils.XY;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -89,9 +91,11 @@ public class SimulationView extends SurfaceView {
         simulations.clear();
     }
 
-    public void addRandomCar() {
-        CarSimulation carSimulation = new CarSimulation();
+    public void addRandomCar(XY launchPosition) throws Exception {
+        CarSimulation carSimulation;
         synchronized (simulations) {
+            final CarCharacteristics carChars = CarCharacteristics.generateRandom();
+            carSimulation = new CarSimulation(carChars, launchPosition);
             simulations.add(carSimulation);
         }
         synchronized (drawings) {

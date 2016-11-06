@@ -14,24 +14,20 @@ public class Boundaries {
     final XY rightBack;
     final XY leftBack;
     final XY leftFront;
-    final long timestamp;
 
     public Boundaries(double rFrontX, double rFrontY, double rBackX, double rBackY,
-                      double lBackX, double lBackY, double lFrontX, double lFrontY,
-                      long timestamp) {
+                      double lBackX, double lBackY, double lFrontX, double lFrontY) {
         this.rightFront = new XY(rFrontX, rFrontY);
         this.rightBack = new XY(rBackX, rBackY);
         this.leftBack = new XY(lBackX, lBackY);
         this.leftFront = new XY(lFrontX, lFrontY);
-        this.timestamp = timestamp;
     }
 
-    public Boundaries(XY rFront, XY rBack, XY lBack, XY lFront, long timestamp) {
+    public Boundaries(XY rFront, XY rBack, XY lBack, XY lFront) {
         this.rightFront = rFront;
         this.rightBack = rBack;
         this.leftBack = lBack;
         this.leftFront = lFront;
-        this.timestamp = timestamp;
     }
 
     public Boundaries addOffset(XY offset) {
@@ -39,8 +35,7 @@ public class Boundaries {
                 this.rightFront.add(offset),
                 this.rightBack.add(offset),
                 this.leftBack.add(offset),
-                this.leftFront.add(offset),
-                this.timestamp);
+                this.leftFront.add(offset));
     }
 
     private double getCenter(double left, double right) {
@@ -98,10 +93,6 @@ public class Boundaries {
         return leftFront;
     }
 
-    public long getTimestamp() {
-        return timestamp;
-    }
-
     public double getWidth() {
         if(width == null) {
             width = new Double(MathUtils.getDistance(leftFront, rightFront));
@@ -126,8 +117,7 @@ public class Boundaries {
         return other.rightFront.equals(rightFront) &&
                 other.rightBack.equals(rightBack) &&
                 other.leftBack.equals(leftBack) &&
-                other.leftFront.equals(leftFront) &&
-                other.getTimestamp() == timestamp;
+                other.leftFront.equals(leftFront);
     }
 
     @Override
@@ -135,7 +125,6 @@ public class Boundaries {
         return "rf=" + rightFront.toString() +
                 ",rb=" + rightBack.toString() +
                 ",lb=" + leftBack.toString() +
-                ",lf=" + leftFront.toString() +
-                ",ts=" + timestamp;
+                ",lf=" + leftFront.toString();
     }
 }

@@ -49,4 +49,8 @@ public class CarCharacteristics {
     public double getTopSpeed() {
         return topSpeed;
     }
+
+    public double getSafeRadius() {
+        return (length > width) ? length : width;
+    }
 }
