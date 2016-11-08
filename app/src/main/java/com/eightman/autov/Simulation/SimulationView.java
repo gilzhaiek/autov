@@ -90,7 +90,7 @@ public class SimulationView extends SurfaceView {
     }
 
     public void registerStats(StatsInterface statsInterface) {
-        if(!statsInterfaces.contains(statsInterface)) {
+        if (!statsInterfaces.contains(statsInterface)) {
             statsInterfaces.add(statsInterface);
         }
 

@@ -26,7 +26,7 @@ public final class XY {
     }
 
     public double getVector() {
-        return Math.sqrt(x*x + y*y);
+        return Math.sqrt(x * x + y * y);
     }
 
     @Override

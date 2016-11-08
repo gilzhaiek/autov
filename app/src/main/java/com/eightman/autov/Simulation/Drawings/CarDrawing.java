@@ -25,7 +25,7 @@ public class CarDrawing extends AbstractDrawing {
         super(simulationView);
         this.car = car;
 
-        if(frontWheelsPaint == null) {
+        if (frontWheelsPaint == null) {
             frontWheelsPaint = DrawingUtils.getLinePaint(Color.rgb(0xFF, 0xFF, 0xFF));
             backWheelsPaint = DrawingUtils.getLinePaint(Color.rgb(0xFF, 0xFF, 0xFF));
         }
@@ -36,14 +36,14 @@ public class CarDrawing extends AbstractDrawing {
     @Override
     void onDraw(Canvas canvas) {
         CarPosition.Final carPosition = car.getCarPath().peekFirstPosition();
-        if(carPosition == null) {
+        if (carPosition == null) {
             return;
         }
 
         Boundaries boundaries = carPosition.getBoundaries();
 
-        if(SimConfig.DRAW_WHEEL_PATH) {
-            if(lastBoundries != null && !lastBoundries.equals(boundaries)) {
+        if (SimConfig.DRAW_WHEEL_PATH) {
+            if (lastBoundries != null && !lastBoundries.equals(boundaries)) {
                 DrawingUtils.drawLine(canvas, lastBoundries.getRightBack(), boundaries.getRightBack(), backWheelsPaint);
                 DrawingUtils.drawLine(canvas, lastBoundries.getLeftBack(), boundaries.getLeftBack(), backWheelsPaint);
                 DrawingUtils.drawLine(canvas, lastBoundries.getRightFront(), boundaries.getRightFront(), frontWheelsPaint);

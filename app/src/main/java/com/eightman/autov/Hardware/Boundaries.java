@@ -39,7 +39,7 @@ public class Boundaries {
     }
 
     private double getCenter(double left, double right) {
-        return left+(right - left) / 2.0;
+        return left + (right - left) / 2.0;
     }
 
     public XY getCenterFront() {
@@ -94,14 +94,14 @@ public class Boundaries {
     }
 
     public double getWidth() {
-        if(width == null) {
+        if (width == null) {
             width = new Double(MathUtils.getDistance(leftFront, rightFront));
         }
         return width.doubleValue();
     }
 
     public double getLength() {
-        if(length == null) {
+        if (length == null) {
             length = new Double(MathUtils.getDistance(leftFront, leftBack));
         }
         return length.doubleValue();
@@ -113,7 +113,7 @@ public class Boundaries {
             return false;
         }
 
-        Boundaries other = (Boundaries)obj;
+        Boundaries other = (Boundaries) obj;
         return other.rightFront.equals(rightFront) &&
                 other.rightBack.equals(rightBack) &&
                 other.leftBack.equals(leftBack) &&
@@ -122,7 +122,7 @@ public class Boundaries {
 
     @Override
     public String toString() {
-        return  "rf=" + rightFront.toString() +
+        return "rf=" + rightFront.toString() +
                 ",rb=" + rightBack.toString() +
                 ",lb=" + leftBack.toString() +
                 ",lf=" + leftFront.toString();

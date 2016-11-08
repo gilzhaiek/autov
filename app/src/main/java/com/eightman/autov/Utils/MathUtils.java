@@ -19,31 +19,31 @@ public class MathUtils {
     }
 
     public static int getRandomInt(int from, int to) {
-        if(from == to) {
+        if (from == to) {
             return from;
         }
 
-        if(from > to) {
+        if (from > to) {
             int tmp = from;
             from = to;
             to = tmp;
         }
 
-        return from+random.nextInt(to-from+1);
+        return from + random.nextInt(to - from + 1);
     }
 
     public static double getRandomDouble(double from, double to) {
-        if(from == to) {
+        if (from == to) {
             return from;
         }
 
-        if(from > to) {
+        if (from > to) {
             double tmp = from;
             from = to;
             to = tmp;
         }
 
-        return from+random.nextDouble()*(to-from);
+        return from + random.nextDouble() * (to - from);
     }
 
     public static double getDistance(XY xy1, XY xy2) {

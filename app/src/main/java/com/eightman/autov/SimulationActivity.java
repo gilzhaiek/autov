@@ -35,16 +35,12 @@ public class SimulationActivity extends AppCompatActivity implements View.OnClic
     @Override
     protected void onResume() {
         super.onResume();
-        addCar(null);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         simulationView.clearWorld();
-    }
-
-    protected void addCar(View v) {
     }
 
     @Override

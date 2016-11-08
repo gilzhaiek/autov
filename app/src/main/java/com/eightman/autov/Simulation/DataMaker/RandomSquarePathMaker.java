@@ -39,7 +39,7 @@ public class RandomSquarePathMaker implements IRandomPathMaker {
             } while ((!DrawingUtils.inOnScreen(to) && SimConfig.LIMIT_CARS_TO_SCREEN) ||
                     DrawingUtils.enteredLaunchArea(from, to));
 
-            if(delta.getX() == delta.getY() && delta.getX() == 0) {
+            if (delta.getX() == delta.getY() && delta.getX() == 0) {
                 i--;
                 continue;
             }
@@ -48,7 +48,7 @@ public class RandomSquarePathMaker implements IRandomPathMaker {
             CarPosition.Final fromRotated = rotateCar(fromPosition, from, to, speed).getPosition();
             CarPosition.Final carPosition = fromRotated;
             double totalSecondsDouble = delta.getVector() / speed;
-            int totalSeconds = (int)totalSecondsDouble;
+            int totalSeconds = (int) totalSecondsDouble;
             XY deltaPerSecond = new XY(delta.getX() / totalSeconds, delta.getY() / totalSeconds);
             for (int sec = 0; sec < totalSeconds; sec++) {
                 carPosition = (new CarPosition(
@@ -58,8 +58,8 @@ public class RandomSquarePathMaker implements IRandomPathMaker {
 
                 path.add(carPosition);
             }
-            long leftOver = (long)(totalSecondsDouble*1000 - totalSeconds*1000);
-            if(leftOver > 0) {
+            long leftOver = (long) (totalSecondsDouble * 1000 - totalSeconds * 1000);
+            if (leftOver > 0) {
                 carPosition = (new CarPosition(
                         fromRotated.getBoundaries().addOffset(delta),
                         speed,
@@ -83,7 +83,7 @@ public class RandomSquarePathMaker implements IRandomPathMaker {
     private double getRandomEdge() {
         // Edge can be positive or negative
         //return (random.nextInt(3)-1)*SimConfig.EDGE_METERS; // <-- Uncomment this for 8 directions
-        return (random.nextInt(2) == 1 ? 1 : -1)*SimConfig.EDGE_METERS;
+        return (random.nextInt(2) == 1 ? 1 : -1) * SimConfig.EDGE_METERS;
         /*double range = (SimConfig.MAX_EDGE_METERS - SimConfig.MIN_EDGE_METERS);
         int sign = random.nextInt(2) == 1 ? 1 : -1;
         double edge = sign * ((int) SimConfig.MIN_EDGE_METERS + random.nextInt((int) range + 1));

@@ -18,13 +18,13 @@ public class CarPath {
 
     public boolean add(List<CarPosition.Final> path, boolean firstPositionIsLast) {
         synchronized (lock) {
-            if(firstPositionIsLast && this.path.size() > 0) {
-                if(peekLastPosition() != path.get(0)) {
+            if (firstPositionIsLast && this.path.size() > 0) {
+                if (peekLastPosition() != path.get(0)) {
                     return false;
                 }
             }
             for (CarPosition.Final position : path) {
-                if(firstPositionIsLast) {
+                if (firstPositionIsLast) {
                     firstPositionIsLast = false;
                     continue;
                 }

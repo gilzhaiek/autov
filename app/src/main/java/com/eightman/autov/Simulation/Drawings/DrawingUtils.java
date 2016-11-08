@@ -20,7 +20,7 @@ public class DrawingUtils {
     public static float getScreenPoint(float carPosition, Axis axis) {
         float moveUnitPerPixel = (float) SimConfig.PIXEL_PER_MOVE_UNIT;
 
-        if(axis == Axis.xAxis) {
+        if (axis == Axis.xAxis) {
             return moveUnitPerPixel * (carPosition + (float) Global.canvasWidth / 2.0f / moveUnitPerPixel);
         } else {
             return moveUnitPerPixel * (-1 * carPosition + (float) Global.canvasHeight / 2.0f / moveUnitPerPixel);
@@ -35,7 +35,7 @@ public class DrawingUtils {
     }
 
     public static boolean enteredLaunchArea(XY from, XY to) {
-        if(isInLaunchArea(from)) {
+        if (isInLaunchArea(from)) {
             return false;  // Already in Launch Area
         }
 
@@ -43,13 +43,13 @@ public class DrawingUtils {
     }
 
     public static boolean inOnScreen(XY point) {
-        float x = getScreenPoint((float)point.getX(), Axis.xAxis);
-        if(x > Global.canvasWidth || x < 0) {
+        float x = getScreenPoint((float) point.getX(), Axis.xAxis);
+        if (x > Global.canvasWidth || x < 0) {
             return false;
         }
 
-        float y = getScreenPoint((float)point.getY(), Axis.yAxis);
-        if(y > Global.canvasHeight || y < 0) {
+        float y = getScreenPoint((float) point.getY(), Axis.yAxis);
+        if (y > Global.canvasHeight || y < 0) {
             return false;
         }
 
@@ -65,16 +65,16 @@ public class DrawingUtils {
     }
 
     public static void drawLine(Canvas canvas,
-                                 final XY fromXY, final XY toXY,
-                                 Paint paint) {
+                                final XY fromXY, final XY toXY,
+                                Paint paint) {
         drawLine(canvas,
-                (float)fromXY.getX(), (float)fromXY.getY(), (float)toXY.getX(), (float)toXY.getY(),
+                (float) fromXY.getX(), (float) fromXY.getY(), (float) toXY.getX(), (float) toXY.getY(),
                 paint);
     }
 
     public static void drawLine(Canvas canvas,
-                                 final float fromX, final float fromY, final float toX, final float toY,
-                                 Paint paint) {
+                                final float fromX, final float fromY, final float toX, final float toY,
+                                Paint paint) {
         canvas.drawLine(
                 getScreenPoint(fromX, Axis.xAxis),
                 getScreenPoint(fromY, Axis.yAxis),

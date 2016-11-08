@@ -69,9 +69,9 @@ public class CarPosition {
                 return false;
             }
 
-            CarPosition.Final other = (CarPosition.Final)obj;
+            CarPosition.Final other = (CarPosition.Final) obj;
 
-            return  other.getBoundaries().equals(boundaries) &&
+            return other.getBoundaries().equals(boundaries) &&
                     other.getSpeed() == speed &&
                     other.getTimeOffset() == timeOffset;
         }

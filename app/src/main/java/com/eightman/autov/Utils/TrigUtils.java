@@ -8,28 +8,28 @@ import com.eightman.autov.Hardware.Boundaries;
 
 public class TrigUtils {
     public static Boundaries getBoundariesLookingNorth(double x, double y, double width, double length) {
-        double dx = width/2;
-        double dy = length/2;
-        return new Boundaries(x+dx, y+dy, x+dx, y-dy, x-dx, y-dy, x-dx, y+dy);
+        double dx = width / 2;
+        double dy = length / 2;
+        return new Boundaries(x + dx, y + dy, x + dx, y - dy, x - dx, y - dy, x - dx, y + dy);
     }
 
     public static Boundaries getBoundaries(XY yourXY, XY lookingAtXY, double width, double length) {
         // https://goo.gl/photos/kT3nq51TM7fqiLjQ6
-        double dx = lookingAtXY.getX()-yourXY.getX();
-        double dy = lookingAtXY.getY()-yourXY.getY();
-        double alpha = Math.atan(dy/dx);
-        double beta = Math.PI-alpha;
-        double adjAlpha = (width/2)*Math.sin(alpha);
-        double oppAlpha = (width/2)*Math.cos(alpha);
-        double adjBeta = (length)*Math.sin(beta);
-        double oppBeta = (length)*Math.cos(beta);
+        double dx = lookingAtXY.getX() - yourXY.getX();
+        double dy = lookingAtXY.getY() - yourXY.getY();
+        double alpha = Math.atan(dy / dx);
+        double beta = Math.PI - alpha;
+        double adjAlpha = (width / 2) * Math.sin(alpha);
+        double oppAlpha = (width / 2) * Math.cos(alpha);
+        double adjBeta = (length) * Math.sin(beta);
+        double oppBeta = (length) * Math.cos(beta);
 
         double rFrontX, rFrontY, lFrontX, lFrontY;
         double rBackX, rBackY, lBackX, lBackY;
         boolean lookingUp = (lookingAtXY.getY() > yourXY.getY());
         boolean lookingRight = (lookingAtXY.getX() > yourXY.getX());
 
-        if(lookingRight) {
+        if (lookingRight) {
             rFrontX = yourXY.getX() + adjAlpha;
             lFrontX = yourXY.getX() - adjAlpha;
             rFrontY = yourXY.getY() - oppAlpha;

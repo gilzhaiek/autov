@@ -35,7 +35,7 @@ public class CarSimulation extends AbstractSimulation {
     @Override
     public void advanceTime() {
         CarPosition.Final position = myCar.getCarPath().popFirstPosition();
-        if(myCar.getCarPath().size() == 0 && generatePathTask == null) {
+        if (myCar.getCarPath().size() == 0 && generatePathTask == null) {
             generatePathTask = new GeneratePathTask();
             generatePathTask.execute(position);
         }
@@ -47,7 +47,7 @@ public class CarSimulation extends AbstractSimulation {
         }
 
         protected void onPostExecute(List<CarPosition.Final> carPositions) {
-            if(!myCar.addPath(carPositions, true)) {
+            if (!myCar.addPath(carPositions, true)) {
                 generatePathTask = new GeneratePathTask();
                 generatePathTask.execute(myCar.getCarPath().peekLastPosition());
             } else {

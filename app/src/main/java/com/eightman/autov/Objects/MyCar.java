@@ -15,6 +15,7 @@ public class MyCar {
     double currentSpeed;
     double targetSpeed;
     double acceleration;
+    boolean isInAccident = false;
 
     public MyCar(CarCharacteristics carChar, CarPosition carPosition) {
         this.carCharacteristics = carChar;
@@ -40,6 +41,14 @@ public class MyCar {
 
     public boolean addPath(List<CarPosition.Final> path, boolean firstPositionIsLast) {
         return this.carPath.add(path, firstPositionIsLast);
+    }
+
+    public boolean isInAccident() {
+        return isInAccident;
+    }
+
+    public void setInAccident(boolean inAccident) {
+        isInAccident = inAccident;
     }
 
     public double getCurrentSpeed() {

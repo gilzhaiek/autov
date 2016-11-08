@@ -3,32 +3,39 @@
              android:layout_width="match_parent"
              android:layout_height="match_parent"
              android:stretchColumns="1">
+
     <TableRow>
+
         <TextView
             android:text="@string/number_of_cars"
             style="@style/stats"/>
+
         <TextView
             android:id="@+id/tvNumOfCars"
             android:text="0"
-            style="@style/stats" />
+            style="@style/stats"/>
     </TableRow>
 
     <TableRow>
+
         <TextView
             android:text="@string/efficiency"
-            style="@style/stats" />
+            style="@style/stats"/>
+
         <TextView
             android:text="@string/na"
-            style="@style/stats" />
+            style="@style/stats"/>
     </TableRow>
 
     <TableRow>
+
         <TextView
             android:text="@string/fps"
-            style="@style/stats" />
+            style="@style/stats"/>
+
         <TextView
             android:id="@+id/tvFPS"
             android:text="0"
-            style="@style/stats" />
+            style="@style/stats"/>
     </TableRow>
 </TableLayout>

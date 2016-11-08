@@ -73,7 +73,7 @@ public class DrawingThread extends Thread {
             long deltaTime = System.currentTimeMillis() - lastTime;
             long delay = SimConfig.DELAY_MS - deltaTime;
 
-            updateFPS((int)(1000.0/deltaTime));
+            updateFPS((int) (1000.0 / deltaTime));
 
             if (delay > 0) {
                 try {
