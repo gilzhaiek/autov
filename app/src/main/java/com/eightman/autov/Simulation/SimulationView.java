@@ -14,6 +14,7 @@ import com.eightman.autov.Simulation.Drawings.AbstractDrawing;
 import com.eightman.autov.Simulation.Drawings.CarDrawing;
 import com.eightman.autov.Simulation.Objects.AbstractSimulation;
 import com.eightman.autov.Simulation.Objects.CarSimulation;
+import com.eightman.autov.StatsInterface;
 import com.eightman.autov.Utils.XY;
 
 import java.util.LinkedList;
@@ -28,6 +29,7 @@ public class SimulationView extends SurfaceView {
 
     SurfaceHolder surfaceHolder;
     DrawingThread drawingThread;
+    List<StatsInterface> statsInterfaces = new LinkedList<>();
     List<AbstractSimulation> simulations = new LinkedList<>();
     List<AbstractDrawing> drawings = new LinkedList<>();
 
@@ -87,6 +89,14 @@ public class SimulationView extends SurfaceView {
         });
     }
 
+    public void registerStats(StatsInterface statsInterface) {
+        if(!statsInterfaces.contains(statsInterface)) {
+            statsInterfaces.add(statsInterface);
+        }
+
+        drawingThread.registerStats(statsInterface);
+    }
+
     public void clearWorld() {
         simulations.clear();
     }
@@ -100,6 +110,12 @@ public class SimulationView extends SurfaceView {
         }
         synchronized (drawings) {
             drawings.add(new CarDrawing(this, carSimulation.getMyCar()));
+        }
+    }
+
+    public int getNumberOfCars() {
+        synchronized (simulations) {
+            return simulations.size();
         }
     }
 

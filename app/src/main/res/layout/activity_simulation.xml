@@ -7,10 +7,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.eightman.autov.SimulationActivity">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
+
         <Button
             android:id="@+id/btnStartSimulation"
             android:layout_width="wrap_content"
@@ -18,12 +20,14 @@
             android:text="@string/start_simulation"
             android:visibility="gone"
             />
+
         <Button
             android:id="@+id/btnAddCar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/add_car"
             />
+
         <Button
             android:id="@+id/btnAdd5Cars"
             android:layout_width="wrap_content"
@@ -31,8 +35,17 @@
             android:text="@string/add_5_cars"
             />
     </LinearLayout>
-    <com.eightman.autov.Simulation.SimulationView
-        android:id="@+id/surfaceSimulation"
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent">
+
+        <com.eightman.autov.Simulation.SimulationView
+            android:id="@+id/surfaceSimulation"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <include layout="@layout/stats"/>
+
+    </RelativeLayout>
 </LinearLayout>

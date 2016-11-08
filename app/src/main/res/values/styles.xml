@@ -8,4 +8,9 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="stats">
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:padding">3dip</item>
+    </style>
+
 </resources>
