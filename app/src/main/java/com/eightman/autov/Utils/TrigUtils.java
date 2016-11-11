@@ -13,6 +13,10 @@ public class TrigUtils {
         return new Boundaries(x + dx, y + dy, x + dx, y - dy, x - dx, y - dy, x - dx, y + dy);
     }
 
+    public static Boundaries boundariesAddition(Boundaries currentBoundaries, double length, double width) {
+
+    }
+
     public static Boundaries getBoundaries(XY yourXY, XY lookingAtXY, double width, double length) {
         // https://goo.gl/photos/kT3nq51TM7fqiLjQ6
         double dx = lookingAtXY.getX() - yourXY.getX();

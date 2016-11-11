@@ -38,19 +38,25 @@ public class Boundaries {
                 this.leftFront.add(offset));
     }
 
-    private double getCenter(double left, double right) {
+    private double getMiddle(double left, double right) {
         return left + (right - left) / 2.0;
     }
 
     public XY getCenterFront() {
-        double centerX = getCenter(leftFront.getX(), rightFront.getX());
-        double centerY = getCenter(leftFront.getY(), rightFront.getY());
+        double centerX = getMiddle(leftFront.getX(), rightFront.getX());
+        double centerY = getMiddle(leftFront.getY(), rightFront.getY());
+        return new XY(centerX, centerY);
+    }
+
+    public XY getCenter() {
+        double centerX = getMiddle(leftFront.getX(), rightBack.getX());
+        double centerY = getMiddle(leftFront.getY(), rightBack.getY());
         return new XY(centerX, centerY);
     }
 
     public XY getCenterBack() {
-        return new XY(getCenter(leftBack.getX(), rightBack.getX()),
-                getCenter(leftBack.getY(), rightBack.getY()));
+        return new XY(getMiddle(leftBack.getX(), rightBack.getX()),
+                getMiddle(leftBack.getY(), rightBack.getY()));
     }
 
     /*
@@ -105,6 +111,10 @@ public class Boundaries {
             length = new Double(MathUtils.getDistance(leftFront, leftBack));
         }
         return length.doubleValue();
+    }
+
+    public double getLargestSide() {
+        return (getLength() >= getWidth()) ? getLength() : getWidth();
     }
 
     @Override

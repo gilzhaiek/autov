@@ -2,6 +2,7 @@ package com.eightman.autov.Objects;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by gilzhaiek on 2016-10-25.
@@ -10,9 +11,11 @@ import java.util.List;
 public class CarPath {
     Object lock = new Object();
 
-    List<CarPosition.Final> path = new LinkedList<>();
+    final UUID carUUID;
+    final List<CarPosition.Final> path = new LinkedList<>();
 
-    public CarPath(CarPosition.Final initialPosition) {
+    public CarPath(UUID carUUID, CarPosition.Final initialPosition) {
+        this.carUUID = carUUID;
         path.add(initialPosition);
     }
 
@@ -32,6 +35,15 @@ public class CarPath {
             }
 
             return true;
+        }
+    }
+
+    public CarPosition.Final getPosition(int index) {
+        synchronized (lock) {
+            if (index >= size()) {
+                return null;
+            }
+            return path.get(index);
         }
     }
 

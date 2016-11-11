@@ -1,6 +1,7 @@
 package com.eightman.autov.Objects;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by gilzhaiek on 2016-10-25.
@@ -9,6 +10,7 @@ import java.util.List;
 public class MyCar {
     Object lock = new Object();
 
+    final UUID uuid;
     final CarCharacteristics carCharacteristics;
     final CarPosition carPosition;
     final CarPath carPath;
@@ -17,10 +19,11 @@ public class MyCar {
     double acceleration;
     boolean isInAccident = false;
 
-    public MyCar(CarCharacteristics carChar, CarPosition carPosition) {
+    public MyCar(UUID uuid, CarCharacteristics carChar, CarPosition carPosition) {
+        this.uuid = uuid;
         this.carCharacteristics = carChar;
         this.carPosition = carPosition;
-        this.carPath = new CarPath(carPosition.getPosition());
+        this.carPath = new CarPath(uuid, carPosition.getPosition());
     }
 
     public CarCharacteristics getCarCharacteristics() {
@@ -49,6 +52,10 @@ public class MyCar {
 
     public void setInAccident(boolean inAccident) {
         isInAccident = inAccident;
+    }
+
+    public UUID getUuid() {
+        return uuid;
     }
 
     public double getCurrentSpeed() {

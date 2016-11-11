@@ -10,6 +10,7 @@ import com.eightman.autov.Utils.TrigUtils;
 import com.eightman.autov.Utils.XY;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by gilzhaiek on 2016-11-03.
@@ -28,7 +29,7 @@ public class CarSimulation extends AbstractSimulation {
                 0,
                 0);
 
-        myCar = new MyCar(carChars, carPosition);
+        myCar = new MyCar(UUID.randomUUID(), carChars, carPosition);
         new GeneratePathTask().execute(myCar.getCarPath().peekLastPosition());
     }
 
