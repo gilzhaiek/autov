@@ -8,6 +8,7 @@ import com.eightman.autov.Simulation.Drawings.DrawingUtils;
 import com.eightman.autov.Utils.MathUtils;
 import com.eightman.autov.Utils.TrigUtils;
 import com.eightman.autov.Utils.XY;
+import com.eightman.autov.ai.CollisionDetector;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -51,19 +52,27 @@ public class RandomSquarePathMaker implements IRandomPathMaker {
             int totalSeconds = (int) totalSecondsDouble;
             XY deltaPerSecond = new XY(delta.getX() / totalSeconds, delta.getY() / totalSeconds);
             for (int sec = 0; sec < totalSeconds; sec++) {
+                carPosition.setCollisionZone(
+                        CollisionDetector.getHeadingBoundaries(carPosition, Constants.ONE_SECOND));
+
                 carPosition = (new CarPosition(
                         carPosition.getBoundaries().addOffset(deltaPerSecond),
                         speed,
-                        Constants.ONE_SECOND)).getPosition();
+                        Constants.ONE_SECOND,
+                        null)).getPosition();
 
                 path.add(carPosition);
             }
             long leftOver = (long) (totalSecondsDouble * 1000 - totalSeconds * 1000);
             if (leftOver > 0) {
+                carPosition.setCollisionZone(
+                        CollisionDetector.getHeadingBoundaries(carPosition, leftOver));
+
                 carPosition = (new CarPosition(
                         fromRotated.getBoundaries().addOffset(delta),
                         speed,
-                        leftOver)).getPosition();
+                        leftOver,
+                        null)).getPosition();
 
                 path.add(carPosition);
             }
@@ -77,7 +86,7 @@ public class RandomSquarePathMaker implements IRandomPathMaker {
         Boundaries toBoundaries = TrigUtils.getBoundaries(
                 from, to, position.getBoundaries().getWidth(), position.getBoundaries().getLength());
 
-        return new CarPosition(toBoundaries, speed, 0);
+        return new CarPosition(toBoundaries, speed, 0, position.getCollisionZone());
     }
 
     private double getRandomEdge() {

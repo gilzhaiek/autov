@@ -100,23 +100,26 @@ public class DrawingUtils {
     }
 
     public static void fillBoundaries(Canvas canvas, Boundaries boundaries, Paint paint) {
+        if (boundaries == null) {
+            return;
+        }
         Path path = new Path();
 
         path.moveTo(
-                getScreenPoint((float)boundaries.getRightFront().getX(), Axis.xAxis),
-                getScreenPoint((float)boundaries.getRightFront().getY(), Axis.yAxis));
+                getScreenPoint((float) boundaries.getRightFront().getX(), Axis.xAxis),
+                getScreenPoint((float) boundaries.getRightFront().getY(), Axis.yAxis));
         path.lineTo(
-                getScreenPoint((float)boundaries.getRightBack().getX(), Axis.xAxis),
-                getScreenPoint((float)boundaries.getRightBack().getY(), Axis.yAxis));
+                getScreenPoint((float) boundaries.getRightBack().getX(), Axis.xAxis),
+                getScreenPoint((float) boundaries.getRightBack().getY(), Axis.yAxis));
         path.lineTo(
-                getScreenPoint((float)boundaries.getLeftBack().getX(), Axis.xAxis),
-                getScreenPoint((float)boundaries.getLeftBack().getY(), Axis.yAxis));
+                getScreenPoint((float) boundaries.getLeftBack().getX(), Axis.xAxis),
+                getScreenPoint((float) boundaries.getLeftBack().getY(), Axis.yAxis));
         path.lineTo(
-                getScreenPoint((float)boundaries.getLeftFront().getX(), Axis.xAxis),
-                getScreenPoint((float)boundaries.getLeftFront().getY(), Axis.yAxis));
+                getScreenPoint((float) boundaries.getLeftFront().getX(), Axis.xAxis),
+                getScreenPoint((float) boundaries.getLeftFront().getY(), Axis.yAxis));
         path.lineTo(
-                getScreenPoint((float)boundaries.getRightFront().getX(), Axis.xAxis),
-                getScreenPoint((float)boundaries.getRightFront().getY(), Axis.yAxis));
+                getScreenPoint((float) boundaries.getRightFront().getX(), Axis.xAxis),
+                getScreenPoint((float) boundaries.getRightFront().getY(), Axis.yAxis));
 
         canvas.drawPath(path, paint);
     }

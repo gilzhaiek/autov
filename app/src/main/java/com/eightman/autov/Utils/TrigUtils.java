@@ -53,7 +53,7 @@ public class TrigUtils {
             lFrontX = boundaries.getLeftFront().getX() + fxl + xw;
             lFrontY = boundaries.getLeftFront().getY() + fyl + yw;
         }
-        
+
         return new Boundaries(rFrontX, rFrontY, rBackX, rBackY, lBackX, lBackY, lFrontX, lFrontY);
 
     }

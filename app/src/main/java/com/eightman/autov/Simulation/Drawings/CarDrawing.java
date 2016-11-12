@@ -9,7 +9,6 @@ import com.eightman.autov.Hardware.Boundaries;
 import com.eightman.autov.Objects.CarPosition;
 import com.eightman.autov.Objects.MyCar;
 import com.eightman.autov.Simulation.SimulationView;
-import com.eightman.autov.ai.CollisionDetector;
 import com.eightman.autov.ai.CollisionManager;
 
 /**
@@ -55,7 +54,7 @@ public class CarDrawing extends AbstractDrawing {
         if (deltaTime <= 0) {
             deltaTime = 1000;
         }
-        DrawingUtils.fillBoundaries(canvas, CollisionDetector.getHeadingBoundary(carPosition, deltaTime),
+        DrawingUtils.fillBoundaries(canvas, carPosition.getCollisionZone(),
                 collisionManager.isInCollision(car) ? collisionPaint : headingPaint);
 
         if (SimConfig.DRAW_WHEEL_PATH) {

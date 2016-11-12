@@ -12,6 +12,7 @@ public class CarPosition {
     Boundaries boundaries;
     double speed;
     long timeOffset;
+    Boundaries collisionZone;
     // TODO: Add direction - front or back
     // TODO: Add wheels angles
 
@@ -21,17 +22,17 @@ public class CarPosition {
         setPosition(position);
     }
 
-    public CarPosition(Boundaries boundaries, double speed, long timeOffset) {
-        setPosition(Global.generateId(), boundaries, speed, timeOffset);
+    public CarPosition(Boundaries boundaries, double speed, long timeOffset, Boundaries collisionZone) {
+        setPosition(Global.generateId(), boundaries, speed, timeOffset, collisionZone);
     }
 
-    public CarPosition(long id, Boundaries boundaries, double speed, long timeOffset) {
-        setPosition(id, boundaries, speed, timeOffset);
+    public CarPosition(long id, Boundaries boundaries, double speed, long timeOffset, Boundaries collisionZone) {
+        setPosition(id, boundaries, speed, timeOffset, collisionZone);
     }
 
     public CarPosition.Final getPosition() {
         synchronized (lock) {
-            return new CarPosition.Final(id, boundaries, speed, timeOffset);
+            return new CarPosition.Final(id, boundaries, speed, timeOffset, collisionZone);
         }
     }
 
@@ -44,15 +45,17 @@ public class CarPosition {
                 position.getId(),
                 position.getBoundaries(),
                 position.getSpeed(),
-                position.getTimeOffset());
+                position.getTimeOffset(),
+                position.getCollisionZone());
     }
 
-    public void setPosition(long id, Boundaries boundaries, double speed, long timeOffset) {
+    public void setPosition(long id, Boundaries boundaries, double speed, long timeOffset, Boundaries collisionZone) {
         synchronized (lock) {
             this.id = id;
             this.boundaries = boundaries;
             this.speed = speed;
             this.timeOffset = timeOffset;
+            this.collisionZone = collisionZone;
         }
     }
 
@@ -61,12 +64,14 @@ public class CarPosition {
         final Boundaries boundaries;
         final double speed;
         final long timeOffset;
+        Boundaries collisionZone;
 
-        public Final(long id, Boundaries boundaries, double speed, long timeOffset) {
+        public Final(long id, Boundaries boundaries, double speed, long timeOffset, Boundaries collisionZone) {
             this.id = id;
             this.boundaries = boundaries;
             this.speed = speed;
             this.timeOffset = timeOffset;
+            this.collisionZone = collisionZone;
         }
 
         public Boundaries getBoundaries() {
@@ -83,6 +88,14 @@ public class CarPosition {
 
         public long getId() {
             return id;
+        }
+
+        public Boundaries getCollisionZone() {
+            return collisionZone;
+        }
+
+        public void setCollisionZone(Boundaries collisionZone) {
+            this.collisionZone = collisionZone;
         }
 
         @Override

@@ -2,12 +2,14 @@ package com.eightman.autov.Simulation.Objects;
 
 import android.os.AsyncTask;
 
+import com.eightman.autov.Configurations.Constants;
 import com.eightman.autov.Objects.CarCharacteristics;
 import com.eightman.autov.Objects.CarPosition;
 import com.eightman.autov.Objects.MyCar;
 import com.eightman.autov.Simulation.DataMaker.RandomSquarePathMaker;
 import com.eightman.autov.Utils.TrigUtils;
 import com.eightman.autov.Utils.XY;
+import com.eightman.autov.ai.CollisionDetector;
 
 import java.util.List;
 import java.util.UUID;
@@ -27,10 +29,24 @@ public class CarSimulation extends AbstractSimulation {
                         position.getX(), position.getY(),
                         carChars.getWidth(), carChars.getLength()),
                 0,
-                0);
+                0,
+                null);
 
         myCar = new MyCar(UUID.randomUUID(), carChars, carPosition);
         new GeneratePathTask().execute(myCar.getCarPath().peekLastPosition());
+    }
+
+    private void moveToFirstPosition() {
+        CarPosition.Final position = myCar.getCarPath().peekFirstPosition();
+        if(position != null) {
+            myCar.setCarPosition(position);
+            if (position.getCollisionZone() == null) {
+                CarPosition.Final nextPosition = myCar.getCarPath().getPosition(1);
+                position.setCollisionZone(CollisionDetector.getHeadingBoundaries(
+                        position,
+                        nextPosition != null ? nextPosition.getTimeOffset() : Constants.ONE_SECOND));
+            }
+        }
     }
 
     @Override
@@ -40,7 +56,7 @@ public class CarSimulation extends AbstractSimulation {
             generatePathTask = new GeneratePathTask();
             generatePathTask.execute(position);
         } else {
-            myCar.setCarPosition(myCar.getCarPath().peekFirstPosition());
+            moveToFirstPosition();
         }
     }
 
@@ -54,7 +70,7 @@ public class CarSimulation extends AbstractSimulation {
                 generatePathTask = new GeneratePathTask();
                 generatePathTask.execute(myCar.getCarPath().peekLastPosition());
             } else {
-                myCar.setCarPosition(myCar.getCarPath().peekFirstPosition());
+                moveToFirstPosition();
                 generatePathTask = null;
             }
         }
