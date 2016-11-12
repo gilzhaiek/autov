@@ -1,33 +1,31 @@
 package com.eightman.autov.ai;
 
-import android.util.Pair;
-
 import com.eightman.autov.Hardware.Boundaries;
 import com.eightman.autov.Objects.CarPath;
 import com.eightman.autov.Objects.CarPosition;
 import com.eightman.autov.Objects.Collision;
-import com.eightman.autov.Utils.XY;
+import com.eightman.autov.Utils.TrigUtils;
 
 /**
  * Created by gilzhaiek on 2016-11-10.
  */
 
 public class CollisionDetector {
-    private Boundaries getRealBoundary(CarPosition.Final carPosition, long deltaTime) {
+    public static Boundaries getHeadingBoundary(CarPosition.Final carPosition, long timeToNextPosition) {
         Boundaries carBoundaries = carPosition.getBoundaries();
 
-        double maxDistanceMeters = carPosition.getSpeed() * deltaTime / 1000.0;
+        double maxDistanceMeters = carPosition.getSpeed() * timeToNextPosition / 1000.0;
         double largestSide = carBoundaries.getLargestSide();
 
         // TODO: Fix
         if (maxDistanceMeters >= largestSide) {
-            return new Pair<>(maxDistanceMeters, carBoundaries.getCenterFront());
+            return TrigUtils.boundariesAddition(carBoundaries, maxDistanceMeters, 0, largestSide);
         } else {
-            return new Pair<>(largestSide + maxDistanceMeters, carBoundaries.getCenter());
+            return TrigUtils.boundariesAddition(carBoundaries, largestSide + maxDistanceMeters, 0, largestSide);
         }
     }
 
-    public Collision getFirstCollision(CarPath carPathActive, long lastPoppedTimestampActive,
+    public static Collision getFirstCollision(CarPath carPathActive, long lastPoppedTimestampActive,
                                        CarPath carPathPassive, long lastPoppedTimestampPassive) {
         int idxActive = 0;
         int idxPassive = 0;

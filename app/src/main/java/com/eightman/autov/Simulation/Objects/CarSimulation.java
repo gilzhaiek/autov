@@ -39,6 +39,8 @@ public class CarSimulation extends AbstractSimulation {
         if (myCar.getCarPath().size() == 0 && generatePathTask == null) {
             generatePathTask = new GeneratePathTask();
             generatePathTask.execute(position);
+        } else {
+            myCar.setCarPosition(myCar.getCarPath().peekFirstPosition());
         }
     }
 
@@ -52,6 +54,7 @@ public class CarSimulation extends AbstractSimulation {
                 generatePathTask = new GeneratePathTask();
                 generatePathTask.execute(myCar.getCarPath().peekLastPosition());
             } else {
+                myCar.setCarPosition(myCar.getCarPath().peekFirstPosition());
                 generatePathTask = null;
             }
         }

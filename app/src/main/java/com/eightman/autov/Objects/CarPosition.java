@@ -36,6 +36,10 @@ public class CarPosition {
     }
 
     public void setPosition(CarPosition.Final position) {
+        if(position == null) {
+            return;
+        }
+
         setPosition(
                 position.getId(),
                 position.getBoundaries(),

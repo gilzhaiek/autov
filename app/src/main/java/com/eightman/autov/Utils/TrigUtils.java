@@ -13,7 +13,48 @@ public class TrigUtils {
         return new Boundaries(x + dx, y + dy, x + dx, y - dy, x - dx, y - dy, x - dx, y + dy);
     }
 
-    public static Boundaries boundariesAddition(Boundaries currentBoundaries, double length, double width) {
+    public static Boundaries boundariesAddition(
+            Boundaries boundaries, double frontLength, double backLength, double width) {
+        double dxw = boundaries.getRightFront().getX() - boundaries.getLeftFront().getX();
+        double dyw = boundaries.getRightFront().getY() - boundaries.getLeftFront().getY();
+
+        double dxl = boundaries.getCenterFront().getX() - boundaries.getCenterBack().getX();
+        double dyl = boundaries.getCenterFront().getY() - boundaries.getCenterBack().getY();
+
+        double xw = (dxw / boundaries.getWidth()) * width;
+        double yw = (dyw / boundaries.getWidth()) * width;
+        double fyl = (dyl / boundaries.getLength()) * frontLength;
+        double byl = (dyl / boundaries.getLength()) * backLength;
+        double fxl = (dxl / boundaries.getLength()) * frontLength;
+        double bxl = (dxl / boundaries.getLength()) * backLength;
+
+        boolean lookingUp = boundaries.getCenterFront().getY() > boundaries.getCenterBack().getY();
+        boolean lookingRight = boundaries.getCenterFront().getX() > boundaries.getCenterBack().getX();
+
+        double rFrontX, rFrontY, lFrontX, lFrontY;
+        double rBackX, rBackY, lBackX, lBackY;
+
+        if (lookingUp) {
+            rFrontY = boundaries.getRightFront().getY() + fyl + yw;
+            rFrontX = boundaries.getRightFront().getX() + fxl + xw;
+            rBackX = boundaries.getRightBack().getX() + xw;
+            rBackY = boundaries.getRightBack().getY() + yw;
+            lBackX = boundaries.getLeftBack().getX() - xw;
+            lBackY = boundaries.getLeftBack().getY() - yw;
+            lFrontX = boundaries.getLeftFront().getX() + fxl - xw;
+            lFrontY = boundaries.getLeftFront().getY() + fyl - yw;
+        } else {
+            rFrontY = boundaries.getRightFront().getY() + fyl - yw;
+            rFrontX = boundaries.getRightFront().getX() + fxl - xw;
+            rBackX = boundaries.getRightBack().getX() - xw;
+            rBackY = boundaries.getRightBack().getY() - yw;
+            lBackX = boundaries.getLeftBack().getX() + xw;
+            lBackY = boundaries.getLeftBack().getY() + yw;
+            lFrontX = boundaries.getLeftFront().getX() + fxl + xw;
+            lFrontY = boundaries.getLeftFront().getY() + fyl + yw;
+        }
+        
+        return new Boundaries(rFrontX, rFrontY, rBackX, rBackY, lBackX, lBackY, lFrontX, lFrontY);
 
     }
 
@@ -54,5 +95,85 @@ public class TrigUtils {
         }
 
         return new Boundaries(rFrontX, rFrontY, rBackX, rBackY, lBackX, lBackY, lFrontX, lFrontY);
+    }
+
+    public static double determinant(XY xyA, XY xyB) {
+        return xyA.getX() * xyB.getY() - xyA.getY() * xyB.getX();
+    }
+
+    public static XY edgeIntersection(Edge edgeA, Edge edgeB) {
+        double det = determinant(
+                MathUtils.getDelta(edgeA.getPointB(), edgeA.getPointA()),
+                MathUtils.getDelta(edgeB.getPointA(), edgeB.getPointB()));
+        double t = determinant(
+                MathUtils.getDelta(edgeB.getPointA(), edgeA.getPointA()),
+                MathUtils.getDelta(edgeB.getPointA(), edgeB.getPointB())) / det;
+        double u = determinant(
+                MathUtils.getDelta(edgeA.getPointB(), edgeA.getPointA()),
+                MathUtils.getDelta(edgeB.getPointA(), edgeA.getPointA())) / det;
+
+        if ((t < 0) || (u < 0) || (t > 1) || (u > 1)) {
+            return null;
+        } else {
+            return new XY(
+                    edgeA.getPointA().getX() * (1 - t) + t * edgeA.getPointB().getX(),
+                    edgeA.getPointA().getY() * (1 - t) + t * edgeA.getPointB().getY());
+        }
+    }
+
+    public static boolean isColliding(Boundaries boundariesA, Boundaries boundariesB) {
+        if (edgeIntersection(boundariesA.getFrontEdge(), boundariesB.getFrontEdge()) != null) {
+            return true;
+        }
+        if (edgeIntersection(boundariesA.getFrontEdge(), boundariesB.getRightEdge()) != null) {
+            return true;
+        }
+        if (edgeIntersection(boundariesA.getFrontEdge(), boundariesB.getBackEdge()) != null) {
+            return true;
+        }
+        if (edgeIntersection(boundariesA.getFrontEdge(), boundariesB.getLeftEdge()) != null) {
+            return true;
+        }
+
+        if (edgeIntersection(boundariesA.getRightEdge(), boundariesB.getFrontEdge()) != null) {
+            return true;
+        }
+        if (edgeIntersection(boundariesA.getRightEdge(), boundariesB.getRightEdge()) != null) {
+            return true;
+        }
+        if (edgeIntersection(boundariesA.getRightEdge(), boundariesB.getBackEdge()) != null) {
+            return true;
+        }
+        if (edgeIntersection(boundariesA.getRightEdge(), boundariesB.getLeftEdge()) != null) {
+            return true;
+        }
+
+        if (edgeIntersection(boundariesA.getBackEdge(), boundariesB.getFrontEdge()) != null) {
+            return true;
+        }
+        if (edgeIntersection(boundariesA.getBackEdge(), boundariesB.getRightEdge()) != null) {
+            return true;
+        }
+        if (edgeIntersection(boundariesA.getBackEdge(), boundariesB.getBackEdge()) != null) {
+            return true;
+        }
+        if (edgeIntersection(boundariesA.getBackEdge(), boundariesB.getLeftEdge()) != null) {
+            return true;
+        }
+
+        if (edgeIntersection(boundariesA.getLeftEdge(), boundariesB.getFrontEdge()) != null) {
+            return true;
+        }
+        if (edgeIntersection(boundariesA.getLeftEdge(), boundariesB.getRightEdge()) != null) {
+            return true;
+        }
+        if (edgeIntersection(boundariesA.getLeftEdge(), boundariesB.getBackEdge()) != null) {
+            return true;
+        }
+        if (edgeIntersection(boundariesA.getLeftEdge(), boundariesB.getLeftEdge()) != null) {
+            return true;
+        }
+
+        return false;
     }
 }

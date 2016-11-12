@@ -9,6 +9,8 @@ import com.eightman.autov.Hardware.Boundaries;
 import com.eightman.autov.Objects.CarPosition;
 import com.eightman.autov.Objects.MyCar;
 import com.eightman.autov.Simulation.SimulationView;
+import com.eightman.autov.ai.CollisionDetector;
+import com.eightman.autov.ai.CollisionManager;
 
 /**
  * Created by gilzhaiek on 2016-10-25.
@@ -19,11 +21,16 @@ public class CarDrawing extends AbstractDrawing {
     static Paint frontWheelsPaint;
     static Paint backWheelsPaint;
     Paint carPaint;
+    Paint headingPaint;
+    Paint collisionPaint;
     Boundaries lastBoundries;
+    CollisionManager collisionManager;
 
     public CarDrawing(SimulationView simulationView, MyCar car) {
         super(simulationView);
         this.car = car;
+
+        collisionManager = CollisionManager.getInstance();
 
         if (frontWheelsPaint == null) {
             frontWheelsPaint = DrawingUtils.getLinePaint(Color.rgb(0xFF, 0xFF, 0xFF));
@@ -31,16 +38,25 @@ public class CarDrawing extends AbstractDrawing {
         }
 
         carPaint = DrawingUtils.getLinePaint(car.getCarCharacteristics().getColor());
+        headingPaint = DrawingUtils.getFillPaint(Color.argb(0x77, 0xA1, 0x00, 0x1E));
+        collisionPaint = DrawingUtils.getFillPaint(Color.argb(0x77, 0xFF, 0xFF, 0x00));
     }
 
     @Override
     void onDraw(Canvas canvas) {
-        CarPosition.Final carPosition = car.getCarPath().peekFirstPosition();
+        CarPosition.Final carPosition = car.getCarPosition().getPosition();
         if (carPosition == null) {
             return;
         }
 
         Boundaries boundaries = carPosition.getBoundaries();
+
+        long deltaTime = car.getCarPath().getDeltaTime(0, 1);
+        if (deltaTime <= 0) {
+            deltaTime = 1000;
+        }
+        DrawingUtils.fillBoundaries(canvas, CollisionDetector.getHeadingBoundary(carPosition, deltaTime),
+                collisionManager.isInCollision(car) ? collisionPaint : headingPaint);
 
         if (SimConfig.DRAW_WHEEL_PATH) {
             if (lastBoundries != null && !lastBoundries.equals(boundaries)) {

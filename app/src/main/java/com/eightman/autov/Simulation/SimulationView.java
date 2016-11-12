@@ -16,6 +16,7 @@ import com.eightman.autov.Simulation.Objects.AbstractSimulation;
 import com.eightman.autov.Simulation.Objects.CarSimulation;
 import com.eightman.autov.StatsInterface;
 import com.eightman.autov.Utils.XY;
+import com.eightman.autov.ai.CollisionManager;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -32,6 +33,7 @@ public class SimulationView extends SurfaceView {
     List<StatsInterface> statsInterfaces = new LinkedList<>();
     List<AbstractSimulation> simulations = new LinkedList<>();
     List<AbstractDrawing> drawings = new LinkedList<>();
+    CollisionManager collisionManager = CollisionManager.getInstance();
 
     public SimulationView(Context context) {
         super(context);
@@ -110,6 +112,10 @@ public class SimulationView extends SurfaceView {
         }
         synchronized (drawings) {
             drawings.add(new CarDrawing(this, carSimulation.getMyCar()));
+        }
+
+        synchronized (collisionManager) {
+            collisionManager.addCar(carSimulation.getMyCar());
         }
     }
 

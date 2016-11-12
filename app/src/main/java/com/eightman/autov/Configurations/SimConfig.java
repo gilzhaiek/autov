@@ -27,6 +27,8 @@ public class SimConfig {
     final public static double MIN_SPEED = 1.5;
     final public static double MAX_SPEED = 4;
 
+    final public static double MAX_COLLISION_VALIDATION = MAX_CAR_LENGTH*3;
+
     // Stroke Width
     final public static float STROKE_WIDTH = 3.0f;
     final public static boolean DRAW_WHEEL_PATH = true;

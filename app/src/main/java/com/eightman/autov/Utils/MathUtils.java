@@ -9,7 +9,11 @@ import java.util.Random;
 public class MathUtils {
     static Random random = new Random();
 
-    public static double getSpeed(XY xy1, long timeStamp1, XY xy2, long timeStamp2) {
+    public static XY getDelta(XY xyA, XY xyB) {
+        return new XY(xyA.getX() - xyB.getX(), xyA.getY() - xyB.getY());
+    }
+
+    public static double getSpeed(XY xyA, long timeStampA, XY xyB, long timeStampB) {
         // TODO: finish
         return 0;
     }

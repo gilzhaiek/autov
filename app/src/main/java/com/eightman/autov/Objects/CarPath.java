@@ -38,6 +38,20 @@ public class CarPath {
         }
     }
 
+    public long getDeltaTime(int fromIndex, int toIndex) {
+        long deltaTime = 0;
+        while(fromIndex < toIndex) {
+            fromIndex++;
+            CarPosition.Final nextPosition = getPosition(fromIndex);
+            if(nextPosition == null) {
+                break;
+            }
+            deltaTime += nextPosition.getTimeOffset();
+        }
+
+        return deltaTime;
+    }
+
     public CarPosition.Final getPosition(int index) {
         synchronized (lock) {
             if (index >= size()) {
