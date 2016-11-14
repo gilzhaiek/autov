@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.eightman.autov.Configurations.Global;
 import com.eightman.autov.Hardware.Boundaries;
+import com.eightman.autov.Utils.CollisionUtils;
 
 /**
  * Created by gilzhaiek on 2016-10-25.
@@ -15,6 +16,7 @@ public class CarPosition {
     private final double speed;
     private final long timeToNextPosition;
     private final Boundaries collisionZone;
+    private final Boundaries safeZone;
 
     private CarPosition next;
     private CarPosition previous;
@@ -25,12 +27,14 @@ public class CarPosition {
     // TODO: Add direction - front or back
     // TODO: Add wheels angles
 
+    //
     private CarPosition(Boundaries boundaries) {
         this.id = Global.generateId();
         this.boundaries = boundaries;
         this.speed = 0;
         this.timeToNextPosition = 0;
-        this.collisionZone = boundaries;
+        this.collisionZone = CollisionUtils.getParkingBoundaries(boundaries);
+        this.safeZone = this.collisionZone;
         this.last = this;
     }
 
@@ -38,12 +42,14 @@ public class CarPosition {
             @NonNull Boundaries boundaries,
             double speed,
             long timeToNextPosition,
-            @NonNull Boundaries collisionZone) {
+            @NonNull Boundaries collisionZone,
+            @NonNull Boundaries safeZone) {
         this.id = Global.generateId();
         this.boundaries = boundaries;
         this.speed = speed;
         this.timeToNextPosition = timeToNextPosition;
         this.collisionZone = collisionZone;
+        this.safeZone = safeZone;
         this.last = this;
     }
 
@@ -52,8 +58,8 @@ public class CarPosition {
     }
 
     public static CarPosition getMovingPosition(
-            Boundaries boundaries, double speed, long timeOffset, Boundaries collisionZone) {
-        return new CarPosition(boundaries, speed, timeOffset, collisionZone);
+            Boundaries boundaries, double speed, long timeOffset, Boundaries collisionZone, Boundaries safeZone) {
+        return new CarPosition(boundaries, speed, timeOffset, collisionZone, safeZone);
     }
 
     public synchronized int getLinkSize() {
@@ -184,5 +190,9 @@ public class CarPosition {
 
     public Boundaries getCollisionZone() {
         return collisionZone;
+    }
+
+    public Boundaries getSafeZone() {
+        return safeZone;
     }
 }

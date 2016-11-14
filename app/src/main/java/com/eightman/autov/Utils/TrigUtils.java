@@ -14,6 +14,11 @@ public class TrigUtils {
     }
 
     public static Boundaries boundariesAddition(
+            Boundaries boundaries, double margin) {
+        return boundariesAddition(boundaries, margin, margin, margin);
+    }
+
+    public static Boundaries boundariesAddition(
             Boundaries boundaries, double frontLength, double backLength, double width) {
         double dxw = boundaries.getRightFront().getX() - boundaries.getLeftFront().getX();
         double dyw = boundaries.getRightFront().getY() - boundaries.getLeftFront().getY();
@@ -34,25 +39,14 @@ public class TrigUtils {
         double rFrontX, rFrontY, lFrontX, lFrontY;
         double rBackX, rBackY, lBackX, lBackY;
 
-        if (lookingUp) {
-            rFrontY = boundaries.getRightFront().getY() + fyl + yw;
-            rFrontX = boundaries.getRightFront().getX() + fxl + xw;
-            rBackX = boundaries.getRightBack().getX() + xw;
-            rBackY = boundaries.getRightBack().getY() + yw;
-            lBackX = boundaries.getLeftBack().getX() - xw;
-            lBackY = boundaries.getLeftBack().getY() - yw;
-            lFrontX = boundaries.getLeftFront().getX() + fxl - xw;
-            lFrontY = boundaries.getLeftFront().getY() + fyl - yw;
-        } else {
-            rFrontY = boundaries.getRightFront().getY() + fyl - yw;
-            rFrontX = boundaries.getRightFront().getX() + fxl - xw;
-            rBackX = boundaries.getRightBack().getX() - xw;
-            rBackY = boundaries.getRightBack().getY() - yw;
-            lBackX = boundaries.getLeftBack().getX() + xw;
-            lBackY = boundaries.getLeftBack().getY() + yw;
-            lFrontX = boundaries.getLeftFront().getX() + fxl + xw;
-            lFrontY = boundaries.getLeftFront().getY() + fyl + yw;
-        }
+        rFrontX = boundaries.getRightFront().getX() + fxl + xw;
+        rFrontY = boundaries.getRightFront().getY() + fyl + yw;
+        rBackX = boundaries.getRightBack().getX() - bxl + xw;
+        rBackY = boundaries.getRightBack().getY() - byl + yw;
+        lBackX = boundaries.getLeftBack().getX() - bxl - xw;
+        lBackY = boundaries.getLeftBack().getY() - byl - yw;
+        lFrontX = boundaries.getLeftFront().getX() + fxl - xw;
+        lFrontY = boundaries.getLeftFront().getY() + fyl - yw;
 
         return new Boundaries(rFrontX, rFrontY, rBackX, rBackY, lBackX, lBackY, lFrontX, lFrontY);
 

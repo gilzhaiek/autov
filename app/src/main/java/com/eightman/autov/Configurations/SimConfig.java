@@ -13,7 +13,11 @@ public class SimConfig {
     final public static double PIXEL_PER_MOVE_UNIT = 3.0;
 
     // Other
+    final public static double MIN_MOVING_SPEED = 0.01; // 1 cm per second
     final public static double MIN_MOVING_DISTANCE = 0.01; // 1 cm
+    final public static double PARKING_SAFE_DISTANCE = 0.10; // 10 cm
+    final public static double COLLISION_ZONE_ERROR_ADDITION  = 1.25; // 25%
+    final public static double SAFE_ZONE_ERROR_ADDITION  = 1.25; // 25%
 
     // Car
     final public static double MIN_CAR_LENGTH = 3.0;

@@ -10,7 +10,7 @@ import com.eightman.autov.Simulation.Interfaces.IRandomPathMaker;
 import com.eightman.autov.Utils.MathUtils;
 import com.eightman.autov.Utils.TrigUtils;
 import com.eightman.autov.Utils.XY;
-import com.eightman.autov.ai.CollisionDetector;
+import com.eightman.autov.Utils.CollisionUtils;
 
 import java.util.Random;
 
@@ -53,13 +53,23 @@ public class RandomSquarePathMaker implements IRandomPathMaker {
         XY deltaPerSecond = new XY(delta.getX() / totalSeconds, delta.getY() / totalSeconds);
         for (int sec = 0; sec < totalSeconds; ++sec) {
             long timeOffset = (sec == totalSeconds) ? leftOver : Constants.ONE_SECOND;
+            Boundaries boundaries = carPosition.getBoundaries().addOffset(deltaPerSecond);
             carPosition = CarPosition.getMovingPosition(
-                    carPosition.getBoundaries().addOffset(deltaPerSecond),
+                    boundaries,
                     speed,
                     timeOffset,
-                    CollisionDetector.getHeadingBoundaries(carPosition, timeOffset));
+                    CollisionUtils.getHeadingBoundaries(
+                            boundaries,
+                            speed,
+                            timeOffset,
+                            CollisionUtils.Zone.COLLISION_ZONE),
+                    CollisionUtils.getHeadingBoundaries(
+                            boundaries,
+                            speed,
+                            timeOffset,
+                            CollisionUtils.Zone.SAFE_ZONE));
 
-            if(!lastPosition.setNext(carPosition, true)) { // In case anyone altered th
+            if (!lastPosition.setNext(carPosition, true)) { // In case anyone altered th
                 return false;
             }
             lastPosition = carPosition;
@@ -69,7 +79,7 @@ public class RandomSquarePathMaker implements IRandomPathMaker {
         if (leftOver > 0) {
             carPosition = CarPosition.getRestedPosition(fromRotated.getBoundaries().addOffset(delta));
 
-            if(!lastPosition.setNext(carPosition, true)) { // In case anyone altered th
+            if (!lastPosition.setNext(carPosition, true)) { // In case anyone altered th
                 return false;
             }
             lastPosition = carPosition;
@@ -86,7 +96,12 @@ public class RandomSquarePathMaker implements IRandomPathMaker {
         Boundaries toBoundaries = TrigUtils.getBoundaries(
                 from, to, position.getBoundaries().getWidth(), position.getBoundaries().getLength());
 
-        return CarPosition.getMovingPosition(toBoundaries, speed, timeOffset, position.getCollisionZone());
+        return CarPosition.getMovingPosition(
+                toBoundaries,
+                speed,
+                timeOffset,
+                position.getCollisionZone(),
+                position.getSafeZone());
     }
 
     private double getRandomEdge() {

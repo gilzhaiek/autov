@@ -4,6 +4,7 @@ import com.eightman.autov.Configurations.SimConfig;
 import com.eightman.autov.Hardware.Boundaries;
 import com.eightman.autov.Objects.CarPosition;
 import com.eightman.autov.Objects.MyCar;
+import com.eightman.autov.Utils.CollisionUtils;
 import com.eightman.autov.Utils.TrigUtils;
 
 import java.util.LinkedList;
@@ -30,14 +31,16 @@ public class CollisionManager {
         }
     }
 
-    public boolean isInCollision(MyCar car) {
+    private boolean isInZone(MyCar car, CollisionUtils.Zone zone) {
         CarPosition carPosition = car.getCarPosition();
-        Boundaries carBoundaries = carPosition.getCollisionZone();
+        Boundaries carBoundaries = (zone == CollisionUtils.Zone.COLLISION_ZONE) ?
+                carPosition.getCollisionZone() : carPosition.getSafeZone();
 
         for (int i = 0; i < cars.size(); i++) {
             if (!car.getUuid().equals(cars.get(i).getUuid())) {
                 carPosition = cars.get(i).getCarPosition();
-                Boundaries otherBoundaries = carPosition.getCollisionZone();
+                Boundaries otherBoundaries = (zone == CollisionUtils.Zone.COLLISION_ZONE) ?
+                        carPosition.getCollisionZone() : carPosition.getSafeZone();
                 if (Math.abs(
                         carBoundaries.getCenter().getX() - otherBoundaries.getCenter().getX())
                         <= SimConfig.MAX_COLLISION_VALIDATION) {
@@ -49,6 +52,14 @@ public class CollisionManager {
         }
 
         return false;
+    }
+
+    public boolean isInCollision(MyCar car) {
+        return isInZone(car, CollisionUtils.Zone.COLLISION_ZONE);
+    }
+
+    public boolean isInSafeZone(MyCar car) {
+        return isInZone(car, CollisionUtils.Zone.SAFE_ZONE);
     }
 
 }

@@ -1,5 +1,6 @@
 package com.eightman.autov.Simulation;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -50,6 +51,7 @@ public class SimulationView extends SurfaceView {
         init();
     }
 
+    @SuppressLint("NewApi")
     public SimulationView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         init();
