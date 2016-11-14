@@ -1,9 +1,7 @@
 package com.eightman.autov.ai;
 
 import com.eightman.autov.Hardware.Boundaries;
-import com.eightman.autov.Objects.CarPath;
 import com.eightman.autov.Objects.CarPosition;
-import com.eightman.autov.Objects.Collision;
 import com.eightman.autov.Utils.TrigUtils;
 
 /**
@@ -25,7 +23,7 @@ public class CollisionDetector {
         }
     }
 
-    public static Collision getFirstCollision(CarPath carPathActive, long lastPoppedTimestampActive,
+    /*public static Collision getFirstCollision(CarPath carPathActive, long lastPoppedTimestampActive,
                                        CarPath carPathPassive, long lastPoppedTimestampPassive) {
         int idxActive = 0;
         int idxPassive = 0;
@@ -49,5 +47,5 @@ public class CollisionDetector {
         }
 
         return null;
-    }
+    }*/
 }

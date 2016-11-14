@@ -1,5 +1,8 @@
 package com.eightman.autov.Utils;
 
+import com.eightman.autov.Configurations.SimConfig;
+import com.eightman.autov.Objects.CarPosition;
+
 import java.util.Random;
 
 /**
@@ -13,9 +16,30 @@ public class MathUtils {
         return new XY(xyA.getX() - xyB.getX(), xyA.getY() - xyB.getY());
     }
 
-    public static double getSpeed(XY xyA, long timeStampA, XY xyB, long timeStampB) {
-        // TODO: finish
-        return 0;
+    /**
+     * @param position
+     * @param expectedCompletionTime Millis
+     * @return
+     */
+    public static double getSpeedToNextPosition(CarPosition position, long expectedCompletionTime) {
+        // TODO: add front/back direction
+
+        CarPosition nextPosition = position.getNext();
+        if (nextPosition == null) {
+            return 0;
+        }
+
+        XY from = position.getBoundaries().getCenterFront();
+        XY to = nextPosition.getBoundaries().getCenterFront();
+
+        double distance = getDistance(from, to); // Meters
+        if (distance < SimConfig.MIN_MOVING_DISTANCE) {
+            return 0;
+        }
+
+        // 3.0 meters in 1000 millis -> 3.0 meters per seconds
+        // 3.0 meters in 500 millis -> 6.0 meters per second
+        return (distance * 1000) / expectedCompletionTime;
     }
 
     public static int getRandomInt(int max) {

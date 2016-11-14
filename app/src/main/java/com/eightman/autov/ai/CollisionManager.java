@@ -1,6 +1,5 @@
 package com.eightman.autov.ai;
 
-import com.eightman.autov.Configurations.Constants;
 import com.eightman.autov.Configurations.SimConfig;
 import com.eightman.autov.Hardware.Boundaries;
 import com.eightman.autov.Objects.CarPosition;
@@ -32,20 +31,13 @@ public class CollisionManager {
     }
 
     public boolean isInCollision(MyCar car) {
-        CarPosition.Final carPosition = car.getCarPosition().getPosition();
+        CarPosition carPosition = car.getCarPosition();
         Boundaries carBoundaries = carPosition.getCollisionZone();
-        if(carBoundaries == null) {
-            carBoundaries = CollisionDetector.getHeadingBoundaries(carPosition, Constants.ONE_SECOND);
-            carPosition.setCollisionZone(carBoundaries);
-        }
+
         for (int i = 0; i < cars.size(); i++) {
             if (!car.getUuid().equals(cars.get(i).getUuid())) {
-                carPosition = cars.get(i).getCarPosition().getPosition();
+                carPosition = cars.get(i).getCarPosition();
                 Boundaries otherBoundaries = carPosition.getCollisionZone();
-                if (otherBoundaries == null) {
-                    otherBoundaries = CollisionDetector.getHeadingBoundaries(carPosition, Constants.ONE_SECOND);
-                    carPosition.setCollisionZone(otherBoundaries);
-                }
                 if (Math.abs(
                         carBoundaries.getCenter().getX() - otherBoundaries.getCenter().getX())
                         <= SimConfig.MAX_COLLISION_VALIDATION) {

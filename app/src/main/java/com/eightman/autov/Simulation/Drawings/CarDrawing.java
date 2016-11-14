@@ -43,17 +43,13 @@ public class CarDrawing extends AbstractDrawing {
 
     @Override
     void onDraw(Canvas canvas) {
-        CarPosition.Final carPosition = car.getCarPosition().getPosition();
+        CarPosition carPosition = car.getCarPosition();
         if (carPosition == null) {
             return;
         }
 
         Boundaries boundaries = carPosition.getBoundaries();
 
-        long deltaTime = car.getCarPath().getDeltaTime(0, 1);
-        if (deltaTime <= 0) {
-            deltaTime = 1000;
-        }
         DrawingUtils.fillBoundaries(canvas, carPosition.getCollisionZone(),
                 collisionManager.isInCollision(car) ? collisionPaint : headingPaint);
 

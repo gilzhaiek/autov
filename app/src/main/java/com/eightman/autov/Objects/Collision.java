@@ -10,8 +10,8 @@ public class Collision {
     private CollisionPosition collisionPositionActive;
     private CollisionPosition collisionPositionPassive;
 
-    public Collision(CarPosition.Final positionActive, UUID uuidActive,
-                     CarPosition.Final positionPassive, UUID uuidPassive) {
+    public Collision(CarPosition positionActive, UUID uuidActive,
+                     CarPosition positionPassive, UUID uuidPassive) {
         this.collisionPositionActive = new CollisionPosition(uuidActive, positionActive);
         this.collisionPositionPassive = new CollisionPosition(uuidPassive, positionPassive);
     }
@@ -26,9 +26,9 @@ public class Collision {
 
     public class CollisionPosition {
         UUID carUUID;
-        CarPosition.Final position;
+        CarPosition position;
 
-        public CollisionPosition(UUID carUUID, CarPosition.Final position) {
+        public CollisionPosition(UUID carUUID, CarPosition position) {
             this.carUUID = carUUID;
             this.position = position;
         }
@@ -37,7 +37,7 @@ public class Collision {
             return carUUID;
         }
 
-        public CarPosition.Final getPosition() {
+        public CarPosition getPosition() {
             return position;
         }
     }

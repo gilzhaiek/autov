@@ -45,7 +45,7 @@ public class RandomSquarePathMaker implements IRandomPathMaker {
         }
 
         double speed = MathUtils.getRandomDouble(SimConfig.MIN_SPEED, SimConfig.MAX_SPEED);
-        CarPosition fromRotated = rotateCar(lastPosition, from, to, lastPosition.getTimeOffset(), speed);
+        CarPosition fromRotated = rotateCar(lastPosition, from, to, lastPosition.getTimeToNextPosition(), speed);
         CarPosition carPosition = fromRotated;
         double totalSecondsDouble = delta.getVector() / speed;
         int totalSeconds = (int) totalSecondsDouble;

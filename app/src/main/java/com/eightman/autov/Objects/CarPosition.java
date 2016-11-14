@@ -1,5 +1,7 @@
 package com.eightman.autov.Objects;
 
+import android.support.annotation.NonNull;
+
 import com.eightman.autov.Configurations.Global;
 import com.eightman.autov.Hardware.Boundaries;
 
@@ -11,7 +13,7 @@ public class CarPosition {
     private final long id;
     private final Boundaries boundaries;
     private final double speed;
-    private final long timeOffset;
+    private final long timeToNextPosition;
     private final Boundaries collisionZone;
 
     private CarPosition next;
@@ -27,16 +29,20 @@ public class CarPosition {
         this.id = Global.generateId();
         this.boundaries = boundaries;
         this.speed = 0;
-        this.timeOffset = 0;
+        this.timeToNextPosition = 0;
         this.collisionZone = boundaries;
         this.last = this;
     }
 
-    private CarPosition(Boundaries boundaries, double speed, long timeOffset, Boundaries collisionZone) {
+    private CarPosition(
+            @NonNull Boundaries boundaries,
+            double speed,
+            long timeToNextPosition,
+            @NonNull Boundaries collisionZone) {
         this.id = Global.generateId();
         this.boundaries = boundaries;
         this.speed = speed;
-        this.timeOffset = timeOffset;
+        this.timeToNextPosition = timeToNextPosition;
         this.collisionZone = collisionZone;
         this.last = this;
     }
@@ -96,7 +102,7 @@ public class CarPosition {
             this.previous.setLast(this.last);
         }
 
-        if(this.parentCarPath != null) {
+        if (this.parentCarPath != null) {
             this.parentCarPath.onCarPositionChanged(this);
         }
 
@@ -131,7 +137,7 @@ public class CarPosition {
             this.parentCarPath = this.previous.getParentCarPath(); // First element points to parent
         }
 
-        if(this.parentCarPath != null) {
+        if (this.parentCarPath != null) {
             this.parentCarPath.onCarPositionChanged(this);
         }
     }
@@ -163,8 +169,13 @@ public class CarPosition {
         return speed;
     }
 
-    public long getTimeOffset() {
-        return timeOffset;
+    /**
+     * 0 for rested
+     *
+     * @return
+     */
+    public long getTimeToNextPosition() {
+        return timeToNextPosition;
     }
 
     public long getId() {

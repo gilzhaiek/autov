@@ -1,6 +1,5 @@
 package com.eightman.autov.Objects;
 
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -12,11 +11,11 @@ public class MyCar {
 
     final UUID uuid;
     final CarCharacteristics carCharacteristics;
-    final CarPosition carPosition;
     final CarPath carPath;
+
+    CarPosition carPosition;
     double currentSpeed;
     double targetSpeed;
-    double acceleration;
     boolean isInAccident = false;
 
     public MyCar(UUID uuid, CarCharacteristics carChar, CarPosition carPosition) {
@@ -31,19 +30,22 @@ public class MyCar {
     }
 
     public CarPosition getCarPosition() {
-        return carPosition;
+        synchronized (carPosition) {
+            return carPosition;
+        }
     }
 
-    public void setCarPosition(CarPosition.Final carPosition) {
-        this.carPosition.setPosition(carPosition);
+    public void setCarPosition(CarPosition carPosition) {
+        if (carPosition == null) {
+            return;
+        }
+        synchronized (carPosition) {
+            this.carPosition = carPosition;
+        }
     }
 
     public CarPath getCarPath() {
         return carPath;
-    }
-
-    public boolean addPath(List<CarPosition.Final> path, boolean firstPositionIsLast) {
-        return this.carPath.add(path, firstPositionIsLast);
     }
 
     public boolean isInAccident() {
@@ -70,20 +72,13 @@ public class MyCar {
         }
     }
 
-    public double getAcceleration() {
-        synchronized (lock) {
-            return acceleration;
-        }
-    }
-
     public double getTargetSpeed() {
         return targetSpeed;
     }
 
-    public void setTargetSpeed(double targetSpeed, double acceleration) {
+    public void setTargetSpeed(double targetSpeed) {
         synchronized (lock) {
             this.targetSpeed = targetSpeed;
-            this.acceleration = acceleration;
         }
     }
 }

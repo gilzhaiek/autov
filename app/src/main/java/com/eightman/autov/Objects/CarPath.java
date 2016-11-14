@@ -5,6 +5,7 @@ import android.os.Message;
 import android.support.annotation.NonNull;
 
 import com.eightman.autov.Interfaces.ICarPathListener;
+import com.eightman.autov.Utils.MathUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -21,6 +22,7 @@ public class CarPath {
     final UUID carUUID;
     CarPosition currentPosition;
     List<ICarPathListener> carPathListeners = new LinkedList<>();
+    long timeNextPosition = 0;
 
     public CarPath(@NonNull UUID carUUID, @NonNull CarPosition initialPosition) {
         this.carUUID = carUUID;
@@ -32,13 +34,18 @@ public class CarPath {
         if (position != null) {
             while (!currentPosition.getLast().setNext(position, true)) {
             }
+
+            if (timeNextPosition == 0) {
+                timeNextPosition = System.currentTimeMillis() + currentPosition.getTimeToNextPosition();
+            }
+
             return true;
         } else {
             return false;
         }
     }
 
-    public synchronized int size() {
+    public synchronized int getSize() {
         return currentPosition.getLinkSize();
     }
 
@@ -46,8 +53,9 @@ public class CarPath {
         return currentPosition;
     }
 
-    public synchronized CarPosition moveToNextPosition() {
+    public synchronized PositionInfo moveToNextPosition() {
         if (currentPosition.getLinkSize() == 1) {
+            timeNextPosition = 0;
             return null;
         }
 
@@ -56,11 +64,36 @@ public class CarPath {
         currentPosition.setPrevious(null);
         oldPosition.makeIsland(false, false);
 
-        return currentPosition;
+        long timeToNextPosition = currentPosition.getTimeToNextPosition();
+        long currentTime = System.currentTimeMillis();
+
+        if(timeNextPosition > currentTime) { // Too Early: 1250 > 1200
+            timeNextPosition = timeNextPosition - currentTime + timeToNextPosition;
+        } else { // Too Late: 1250 < 1300
+            timeNextPosition = currentTime - timeNextPosition + timeToNextPosition;
+        }
+
+        double adjustedSpeed = MathUtils.getSpeedToNextPosition(currentPosition, timeToNextPosition);
+
+        return new PositionInfo(currentPosition, timeNextPosition, timeToNextPosition, adjustedSpeed);
     }
 
     public synchronized CarPosition getLastPosition() {
         return currentPosition.getLast();
+    }
+
+    public synchronized long getTimeNextPosition() {
+        return timeNextPosition;
+    }
+
+    public synchronized boolean needToMove() {
+        if (timeNextPosition == 0 && getSize() <= 1) {
+            return false;
+        }
+
+        long currentTime = System.currentTimeMillis();
+        boolean needToMove = (timeNextPosition <= currentTime);
+        return needToMove;
     }
 
     public void removeCarPathListener(ICarPathListener carPathListener) {
@@ -90,5 +123,35 @@ public class CarPath {
 
     public void onCarPositionChanged(CarPosition carPosition) {
         handler.sendEmptyMessage(carPosition == currentPosition ? CURRENT_POS : OTHER_POS);
+    }
+
+    public class PositionInfo {
+        final CarPosition position;
+        final long timeNextPosition;
+        final long timeToNextPosition;
+        final double adjustedSpeed;
+
+        public PositionInfo(CarPosition position, long timeNextPosition, long timeToNextPosition, double adjustedSpeed) {
+            this.position = position;
+            this.timeNextPosition = timeNextPosition;
+            this.timeToNextPosition = timeToNextPosition;
+            this.adjustedSpeed = adjustedSpeed;
+        }
+
+        public CarPosition getPosition() {
+            return position;
+        }
+
+        public long getTimeNextPosition() {
+            return timeNextPosition;
+        }
+
+        public long getTimeToNextPosition() {
+            return timeToNextPosition;
+        }
+
+        public double getAdjustedSpeed() {
+            return adjustedSpeed;
+        }
     }
 }

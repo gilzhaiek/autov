@@ -6,11 +6,14 @@ package com.eightman.autov.Configurations;
 
 public class SimConfig {
     final public static boolean IS_SIMULATION = true;
-    final public static int DELAY_MS = 100;
+    final public static int DELAY_MS = 10;
     final public static boolean LIMIT_CARS_TO_SCREEN = true;
 
     // Our unit is 1 meter
     final public static double PIXEL_PER_MOVE_UNIT = 3.0;
+
+    // Other
+    final public static double MIN_MOVING_DISTANCE = 0.01; // 1 cm
 
     // Car
     final public static double MIN_CAR_LENGTH = 3.0;
