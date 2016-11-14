@@ -23,7 +23,7 @@ public class MyCar {
         this.uuid = uuid;
         this.carCharacteristics = carChar;
         this.carPosition = carPosition;
-        this.carPath = new CarPath(uuid, carPosition.getPosition());
+        this.carPath = new CarPath(uuid, carPosition);
     }
 
     public CarCharacteristics getCarCharacteristics() {

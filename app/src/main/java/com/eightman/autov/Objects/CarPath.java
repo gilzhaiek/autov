@@ -1,5 +1,11 @@
 package com.eightman.autov.Objects;
 
+import android.os.Handler;
+import android.os.Message;
+import android.support.annotation.NonNull;
+
+import com.eightman.autov.Interfaces.ICarPathListener;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -9,89 +15,80 @@ import java.util.UUID;
  */
 
 public class CarPath {
-    Object lock = new Object();
+    private final static int CURRENT_POS = 1;
+    private final static int OTHER_POS = 2;
 
     final UUID carUUID;
-    final List<CarPosition.Final> path = new LinkedList<>();
+    CarPosition currentPosition;
+    List<ICarPathListener> carPathListeners = new LinkedList<>();
 
-    public CarPath(UUID carUUID, CarPosition.Final initialPosition) {
+    public CarPath(@NonNull UUID carUUID, @NonNull CarPosition initialPosition) {
         this.carUUID = carUUID;
-        path.add(initialPosition);
+        currentPosition = initialPosition;
+        currentPosition.setParentCarPath(this);
     }
 
-    public boolean add(List<CarPosition.Final> path, boolean firstPositionIsLast) {
-        synchronized (lock) {
-            if (firstPositionIsLast && this.path.size() > 0) {
-                if (peekLastPosition() != path.get(0)) {
-                    return false;
-                }
+    public synchronized boolean add(CarPosition position) {
+        if (position != null) {
+            while (!currentPosition.getLast().setNext(position, true)) {
             }
-            for (CarPosition.Final position : path) {
-                if (firstPositionIsLast) {
-                    firstPositionIsLast = false;
-                    continue;
-                }
-                this.path.add(position);
-            }
-
             return true;
+        } else {
+            return false;
         }
     }
 
-    public long getDeltaTime(int fromIndex, int toIndex) {
-        long deltaTime = 0;
-        while(fromIndex < toIndex) {
-            fromIndex++;
-            CarPosition.Final nextPosition = getPosition(fromIndex);
-            if(nextPosition == null) {
-                break;
-            }
-            deltaTime += nextPosition.getTimeOffset();
+    public synchronized int size() {
+        return currentPosition.getLinkSize();
+    }
+
+    public synchronized CarPosition getCurrentPosition() {
+        return currentPosition;
+    }
+
+    public synchronized CarPosition moveToNextPosition() {
+        if (currentPosition.getLinkSize() == 1) {
+            return null;
         }
 
-        return deltaTime;
+        CarPosition oldPosition = currentPosition;
+        currentPosition = currentPosition.getNext();
+        currentPosition.setPrevious(null);
+        oldPosition.makeIsland(false, false);
+
+        return currentPosition;
     }
 
-    public CarPosition.Final getPosition(int index) {
-        synchronized (lock) {
-            if (index >= size()) {
-                return null;
-            }
-            return path.get(index);
-        }
+    public synchronized CarPosition getLastPosition() {
+        return currentPosition.getLast();
     }
 
-    public int size() {
-        return path.size();
-    }
-
-    public CarPosition.Final popFirstPosition() {
-        synchronized (lock) {
-            if (path.size() > 0) {
-                return path.remove(0);
-            } else {
-                return null;
-            }
+    public void removeCarPathListener(ICarPathListener carPathListener) {
+        synchronized (carPathListener) {
+            carPathListeners.remove(carPathListener);
         }
     }
 
-    public CarPosition.Final peekFirstPosition() {
-        synchronized (lock) {
-            if (path.size() > 0) {
-                return path.get(0);
-            } else {
-                return null;
+    public void addCarPathListener(ICarPathListener carPathListener) {
+        synchronized (carPathListener) {
+            if (!carPathListeners.contains(carPathListener)) {
+                carPathListeners.add(carPathListener);
             }
         }
     }
 
-    public CarPosition.Final peekLastPosition() {
-        synchronized (lock) {
-            if (path.size() > 0) {
-                return path.get(path.size() - 1);
-            } else {
-                return null;
+    Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            synchronized (carPathListeners) {
+                for (ICarPathListener carPathListener : carPathListeners) {
+                    carPathListener.onPathChanged(CarPath.this, (msg.what == CURRENT_POS));
+                }
             }
         }
+    };
+
+    public void onCarPositionChanged(CarPosition carPosition) {
+        handler.sendEmptyMessage(carPosition == currentPosition ? CURRENT_POS : OTHER_POS);
     }
 }

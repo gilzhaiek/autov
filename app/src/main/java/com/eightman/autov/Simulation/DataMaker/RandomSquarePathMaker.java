@@ -3,15 +3,15 @@ package com.eightman.autov.Simulation.DataMaker;
 import com.eightman.autov.Configurations.Constants;
 import com.eightman.autov.Configurations.SimConfig;
 import com.eightman.autov.Hardware.Boundaries;
+import com.eightman.autov.Objects.CarPath;
 import com.eightman.autov.Objects.CarPosition;
 import com.eightman.autov.Simulation.Drawings.DrawingUtils;
+import com.eightman.autov.Simulation.Interfaces.IRandomPathMaker;
 import com.eightman.autov.Utils.MathUtils;
 import com.eightman.autov.Utils.TrigUtils;
 import com.eightman.autov.Utils.XY;
 import com.eightman.autov.ai.CollisionDetector;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Random;
 
 /**
@@ -22,71 +22,71 @@ public class RandomSquarePathMaker implements IRandomPathMaker {
     static Random random = new Random();
 
     @Override
-    public List<CarPosition.Final> generatePath(CarPosition.Final fromPosition) {
-        final List<CarPosition.Final> path = new LinkedList<>();
-
+    public boolean generatePath(CarPath carPath) {
         int cnt = random.nextInt(
                 SimConfig.MAX_NUM_EDGES - SimConfig.MIN_NUM_EDGES + 1) +
                 SimConfig.MIN_NUM_EDGES;
 
-        path.add(fromPosition);
-        for (int i = 0; i < cnt; i++) {
-            XY from = fromPosition.getBoundaries().getCenterFront();
-            XY delta = null;
-            XY to = null;
-            do {
-                delta = new XY(getRandomEdge(), getRandomEdge());
-                to = from.add(delta);
-            } while ((!DrawingUtils.inOnScreen(to) && SimConfig.LIMIT_CARS_TO_SCREEN) ||
-                    DrawingUtils.enteredLaunchArea(from, to));
-
-            if (delta.getX() == delta.getY() && delta.getX() == 0) {
-                i--;
-                continue;
-            }
-
-            double speed = MathUtils.getRandomDouble(SimConfig.MIN_SPEED, SimConfig.MAX_SPEED);
-            CarPosition.Final fromRotated = rotateCar(fromPosition, from, to, speed).getPosition();
-            CarPosition.Final carPosition = fromRotated;
-            double totalSecondsDouble = delta.getVector() / speed;
-            int totalSeconds = (int) totalSecondsDouble;
-            XY deltaPerSecond = new XY(delta.getX() / totalSeconds, delta.getY() / totalSeconds);
-            for (int sec = 0; sec < totalSeconds; sec++) {
-                carPosition.setCollisionZone(
-                        CollisionDetector.getHeadingBoundaries(carPosition, Constants.ONE_SECOND));
-
-                carPosition = (new CarPosition(
-                        carPosition.getBoundaries().addOffset(deltaPerSecond),
-                        speed,
-                        Constants.ONE_SECOND,
-                        null)).getPosition();
-
-                path.add(carPosition);
-            }
-            long leftOver = (long) (totalSecondsDouble * 1000 - totalSeconds * 1000);
-            if (leftOver > 0) {
-                carPosition.setCollisionZone(
-                        CollisionDetector.getHeadingBoundaries(carPosition, leftOver));
-
-                carPosition = (new CarPosition(
-                        fromRotated.getBoundaries().addOffset(delta),
-                        speed,
-                        leftOver,
-                        null)).getPosition();
-
-                path.add(carPosition);
-            }
-            fromPosition = carPosition;
-        }
-
-        return path;
+        return generatePositions(carPath.getLastPosition(), cnt);
     }
 
-    private CarPosition rotateCar(CarPosition.Final position, XY from, XY to, double speed) {
+    private boolean generatePositions(CarPosition lastPosition, int cnt) {
+        XY from = lastPosition.getBoundaries().getCenterFront();
+        XY delta = null;
+        XY to = null;
+        do {
+            delta = new XY(getRandomEdge(), getRandomEdge());
+            to = from.add(delta);
+        } while ((!DrawingUtils.inOnScreen(to) && SimConfig.LIMIT_CARS_TO_SCREEN) ||
+                DrawingUtils.enteredLaunchArea(from, to));
+
+        if (delta.getX() == delta.getY() && delta.getX() == 0) {
+            return generatePositions(lastPosition, cnt);
+        }
+
+        double speed = MathUtils.getRandomDouble(SimConfig.MIN_SPEED, SimConfig.MAX_SPEED);
+        CarPosition fromRotated = rotateCar(lastPosition, from, to, lastPosition.getTimeOffset(), speed);
+        CarPosition carPosition = fromRotated;
+        double totalSecondsDouble = delta.getVector() / speed;
+        int totalSeconds = (int) totalSecondsDouble;
+        long leftOver = (long) (totalSecondsDouble * 1000 - totalSeconds * 1000);
+        XY deltaPerSecond = new XY(delta.getX() / totalSeconds, delta.getY() / totalSeconds);
+        for (int sec = 0; sec < totalSeconds; ++sec) {
+            long timeOffset = (sec == totalSeconds) ? leftOver : Constants.ONE_SECOND;
+            carPosition = CarPosition.getMovingPosition(
+                    carPosition.getBoundaries().addOffset(deltaPerSecond),
+                    speed,
+                    timeOffset,
+                    CollisionDetector.getHeadingBoundaries(carPosition, timeOffset));
+
+            if(!lastPosition.setNext(carPosition, true)) { // In case anyone altered th
+                return false;
+            }
+            lastPosition = carPosition;
+        }
+
+
+        if (leftOver > 0) {
+            carPosition = CarPosition.getRestedPosition(fromRotated.getBoundaries().addOffset(delta));
+
+            if(!lastPosition.setNext(carPosition, true)) { // In case anyone altered th
+                return false;
+            }
+            lastPosition = carPosition;
+        }
+
+        if (--cnt <= 0) {
+            return true;
+        }
+
+        return generatePositions(lastPosition, cnt);
+    }
+
+    private CarPosition rotateCar(CarPosition position, XY from, XY to, long timeOffset, double speed) {
         Boundaries toBoundaries = TrigUtils.getBoundaries(
                 from, to, position.getBoundaries().getWidth(), position.getBoundaries().getLength());
 
-        return new CarPosition(toBoundaries, speed, 0, position.getCollisionZone());
+        return CarPosition.getMovingPosition(toBoundaries, speed, timeOffset, position.getCollisionZone());
     }
 
     private double getRandomEdge() {

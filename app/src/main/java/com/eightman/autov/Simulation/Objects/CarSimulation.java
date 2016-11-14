@@ -24,13 +24,10 @@ public class CarSimulation extends AbstractSimulation {
     GeneratePathTask generatePathTask = null;
 
     public CarSimulation(final CarCharacteristics carChars, final XY position) {
-        final CarPosition carPosition = new CarPosition(
+        final CarPosition carPosition = CarPosition.getRestedPosition(
                 TrigUtils.getBoundariesLookingNorth(
                         position.getX(), position.getY(),
-                        carChars.getWidth(), carChars.getLength()),
-                0,
-                0,
-                null);
+                        carChars.getWidth(), carChars.getLength()));
 
         myCar = new MyCar(UUID.randomUUID(), carChars, carPosition);
         new GeneratePathTask().execute(myCar.getCarPath().peekLastPosition());

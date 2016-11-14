@@ -11,7 +11,7 @@ import com.eightman.autov.Utils.TrigUtils;
  */
 
 public class CollisionDetector {
-    public static Boundaries getHeadingBoundaries(CarPosition.Final carPosition, long timeToNextPosition) {
+    public static Boundaries getHeadingBoundaries(CarPosition carPosition, long timeToNextPosition) {
         Boundaries carBoundaries = carPosition.getBoundaries();
 
         double maxDistanceMeters = carPosition.getSpeed() * timeToNextPosition / 1000.0;
@@ -30,10 +30,10 @@ public class CollisionDetector {
         int idxActive = 0;
         int idxPassive = 0;
 
-        CarPosition.Final currentCarPositionActive = null;
-        CarPosition.Final previousCarPositionActive = null;
-        CarPosition.Final currentCarPositionPassive = null;
-        CarPosition.Final previousCarPositionPassive = null;
+        CarPosition currentCarPositionActive = null;
+        CarPosition previousCarPositionActive = null;
+        CarPosition currentCarPositionPassive = null;
+        CarPosition previousCarPositionPassive = null;
         while (true) {
             currentCarPositionActive = carPathActive.getPosition(idxActive);
             if (currentCarPositionActive == null) {
