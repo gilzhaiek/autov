@@ -28,7 +28,15 @@ public class CarSimulation extends AbstractSimulation {
                         carChars.getWidth(), carChars.getLength()));
 
         myCar = new MyCar(UUID.randomUUID(), carChars, carPosition);
-        new GeneratePathTask().execute(myCar.getCarPath());
+        generatePath();
+    }
+
+    private synchronized void generatePath() {
+        if (generatePathTask == null) {
+            generatePathTask = new GeneratePathTask();
+            generatePathTask.execute(myCar.getCarPath());
+            addBusy(this);
+        }
     }
 
     private void move() {
@@ -48,10 +56,7 @@ public class CarSimulation extends AbstractSimulation {
     @Override
     public void advanceTime() {
         if (myCar.getCarPath().getSize() <= 1) {
-            if (generatePathTask == null) {
-                generatePathTask = new GeneratePathTask();
-                generatePathTask.execute(myCar.getCarPath());
-            } // else working on path
+            generatePath();
         } else {
             if (myCar.getCarPath().needToMove()) {
                 move();
@@ -60,19 +65,26 @@ public class CarSimulation extends AbstractSimulation {
     }
 
     private class GeneratePathTask extends AsyncTask<CarPath, Void, Boolean> {
-        protected Boolean doInBackground(CarPath... carPath) {
-            return randomSquarePathMaker.generatePath(carPath[0]);
+        protected Boolean doInBackground(CarPath... carPaths) {
+            CarPath carPath = carPaths[0];
+            try {
+                while (!randomSquarePathMaker.generatePath(carPath)) {
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            carPath.removeCollisions();
+
+            return true;
         }
 
         protected void onPostExecute(Boolean success) {
+            generatePathTask = null;
             if (success) {
-                generatePathTask = null;
-                if (myCar.getCarPath().needToMove()) {
-                    move();
-                }
+                removeBusy(CarSimulation.this);
             } else {
-                generatePathTask = new GeneratePathTask();
-                generatePathTask.execute(myCar.getCarPath());
+                generatePath();
             }
         }
     }

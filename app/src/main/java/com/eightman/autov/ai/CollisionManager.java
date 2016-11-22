@@ -3,12 +3,13 @@ package com.eightman.autov.ai;
 import com.eightman.autov.Configurations.SimConfig;
 import com.eightman.autov.Hardware.Boundaries;
 import com.eightman.autov.Objects.CarPosition;
+import com.eightman.autov.Objects.Collision;
 import com.eightman.autov.Objects.MyCar;
 import com.eightman.autov.Utils.CollisionUtils;
-import com.eightman.autov.Utils.TrigUtils;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by gilzhaiek on 2016-11-11.
@@ -44,7 +45,7 @@ public class CollisionManager {
                 if (Math.abs(
                         carBoundaries.getCenter().getX() - otherBoundaries.getCenter().getX())
                         <= SimConfig.MAX_COLLISION_VALIDATION) {
-                    if (TrigUtils.isColliding(carBoundaries, otherBoundaries)) {
+                    if (CollisionUtils.isColliding(carBoundaries, otherBoundaries) != CollisionUtils.Side.NONE) {
                         return true;
                     }
                 }
@@ -60,6 +61,46 @@ public class CollisionManager {
 
     public boolean isInSafeZone(MyCar car) {
         return isInZone(car, CollisionUtils.Zone.SAFE_ZONE);
+    }
+
+    public Collision getFirstCollision(CarPosition carPosition, UUID carUUID) {
+        Boundaries carBoundaries = carPosition.getCollisionZone();
+        for (int i = 0; i < cars.size(); i++) {
+            if (!carUUID.equals(cars.get(i).getUuid())) {
+                CarPosition otherCarPosition = cars.get(i).getCarPosition();
+                do {
+                    Boundaries otherBoundaries = otherCarPosition.getCollisionZone();
+                    if (Math.abs(
+                            carBoundaries.getCenter().getX() - otherBoundaries.getCenter().getX())
+                            <= SimConfig.MAX_COLLISION_VALIDATION) {
+                        CollisionUtils.Side side = CollisionUtils.isColliding(carBoundaries, otherBoundaries);
+                        if (side != CollisionUtils.Side.NONE) {
+                            return new Collision(
+                                    carPosition, carUUID,
+                                    otherCarPosition, cars.get(i).getUuid(),
+                                    side);
+                        }
+                    }
+                    otherCarPosition = otherCarPosition.getNext();
+                } while (!otherCarPosition.isLast());
+            }
+        }
+
+        return null;
+    }
+
+    public Collision getFirstCollision(MyCar car) {
+        CarPosition carPosition = car.getCarPosition();
+
+        do {
+            Collision collision = getFirstCollision(carPosition, car.getUuid());
+            if (collision != null) {
+                return collision;
+            }
+            carPosition = carPosition.getNext();
+        } while (!carPosition.isLast());
+
+        return null;
     }
 
 }

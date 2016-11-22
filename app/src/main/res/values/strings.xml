@@ -4,6 +4,7 @@
     <string name="add_car">Add Car</string>
     <string name="add_5_cars">Add 5 Cars</string>
     <string name="number_of_cars">Cars</string>
+    <string name="time">Time</string>
     <string name="efficiency">Efficiency</string>
     <string name="na">NA</string>
     <string name="fps">FPS</string>

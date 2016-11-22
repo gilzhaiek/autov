@@ -7,10 +7,10 @@ import com.eightman.autov.Objects.CarPath;
 import com.eightman.autov.Objects.CarPosition;
 import com.eightman.autov.Simulation.Drawings.DrawingUtils;
 import com.eightman.autov.Simulation.Interfaces.IRandomPathMaker;
+import com.eightman.autov.Utils.CollisionUtils;
 import com.eightman.autov.Utils.MathUtils;
 import com.eightman.autov.Utils.TrigUtils;
 import com.eightman.autov.Utils.XY;
-import com.eightman.autov.Utils.CollisionUtils;
 
 import java.util.Random;
 
@@ -22,7 +22,7 @@ public class RandomSquarePathMaker implements IRandomPathMaker {
     static Random random = new Random();
 
     @Override
-    public boolean generatePath(CarPath carPath) {
+    public boolean generatePath(CarPath carPath) throws Exception {
         int cnt = random.nextInt(
                 SimConfig.MAX_NUM_EDGES - SimConfig.MIN_NUM_EDGES + 1) +
                 SimConfig.MIN_NUM_EDGES;
@@ -30,7 +30,7 @@ public class RandomSquarePathMaker implements IRandomPathMaker {
         return generatePositions(carPath.getLastPosition(), cnt);
     }
 
-    private boolean generatePositions(CarPosition lastPosition, int cnt) {
+    private boolean generatePositions(CarPosition lastPosition, int cnt) throws Exception {
         XY from = lastPosition.getBoundaries().getCenterFront();
         XY delta = null;
         XY to = null;
@@ -51,7 +51,7 @@ public class RandomSquarePathMaker implements IRandomPathMaker {
         int totalSeconds = (int) totalSecondsDouble;
         long leftOver = (long) (totalSecondsDouble * 1000 - totalSeconds * 1000);
         XY deltaPerSecond = new XY(delta.getX() / totalSeconds, delta.getY() / totalSeconds);
-        for (int sec = 0; sec < totalSeconds; ++sec) {
+        for (int sec = 0; ; ++sec) {
             long timeOffset = (sec == totalSeconds) ? leftOver : Constants.ONE_SECOND;
             Boundaries boundaries = carPosition.getBoundaries().addOffset(deltaPerSecond);
             carPosition = CarPosition.getMovingPosition(
@@ -69,10 +69,22 @@ public class RandomSquarePathMaker implements IRandomPathMaker {
                             timeOffset,
                             CollisionUtils.Zone.SAFE_ZONE));
 
-            if (!lastPosition.setNext(carPosition, true)) { // In case anyone altered th
+//            Collision collision = CollisionManager.getInstance().getFirstCollision(
+//                    carPosition, lastPosition.getCarUUID());
+//
+//            if (collision != null) {
+//                totalSeconds++;
+//                carPosition = CarPosition.copy(lastPosition);
+//            }
+
+            if (!lastPosition.setNext(carPosition, true)) { // In case anyone altered the path
                 return false;
             }
             lastPosition = carPosition;
+
+            if (sec >= totalSeconds) {
+                break;
+            }
         }
 
 

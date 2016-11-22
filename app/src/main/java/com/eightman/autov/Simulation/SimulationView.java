@@ -135,6 +135,10 @@ public class SimulationView extends SurfaceView {
         }
     }
 
+    public void waitUntilIdle() {
+        AbstractSimulation.waitUntilIdle();
+    }
+
     public void drawWorld(Canvas canvas) {
         canvas.drawColor(Color.BLACK);
 

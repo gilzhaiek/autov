@@ -5,6 +5,7 @@ import android.os.Message;
 import android.support.annotation.NonNull;
 
 import com.eightman.autov.Interfaces.ICarPathListener;
+import com.eightman.autov.Simulation.SimTime;
 import com.eightman.autov.Utils.MathUtils;
 
 import java.util.LinkedList;
@@ -30,20 +31,20 @@ public class CarPath {
         currentPosition.setParentCarPath(this);
     }
 
-    public synchronized boolean add(CarPosition position) {
+    /*public synchronized boolean add(CarPosition position) throws Exception {
         if (position != null) {
             while (!currentPosition.getLast().setNext(position, true)) {
             }
 
             if (timeNextPosition == 0) {
-                timeNextPosition = System.currentTimeMillis() + currentPosition.getTimeToNextPosition();
+                timeNextPosition = SimTime.getInstance().getTime() + currentPosition.getTimeToNextPosition();
             }
 
             return true;
         } else {
             return false;
         }
-    }
+    }*/
 
     public synchronized int getSize() {
         return currentPosition.getLinkSize();
@@ -61,13 +62,16 @@ public class CarPath {
 
         CarPosition oldPosition = currentPosition;
         currentPosition = currentPosition.getNext();
-        currentPosition.setPrevious(null);
+        try {
+            currentPosition.setPrevious(null);
+        } catch (Exception e) {
+        }
         oldPosition.makeIsland(false, false);
 
         long timeToNextPosition = currentPosition.getTimeToNextPosition();
-        long currentTime = System.currentTimeMillis();
+        long currentTime = SimTime.getInstance().getTime();
 
-        if(timeNextPosition > currentTime) { // Too Early: 1250 > 1200
+        if (timeNextPosition > currentTime) { // Too Early: 1250 > 1200
             timeNextPosition = timeNextPosition - currentTime + timeToNextPosition;
         } else { // Too Late: 1250 < 1300
             timeNextPosition = currentTime - timeNextPosition + timeToNextPosition;
@@ -86,12 +90,20 @@ public class CarPath {
         return timeNextPosition;
     }
 
+    public UUID getCarUUID() {
+        return carUUID;
+    }
+
+    public synchronized void removeCollisions() {
+
+    }
+
     public synchronized boolean needToMove() {
         if (timeNextPosition == 0 && getSize() <= 1) {
             return false;
         }
 
-        long currentTime = System.currentTimeMillis();
+        long currentTime = SimTime.getInstance().getTime();
         boolean needToMove = (timeNextPosition <= currentTime);
         return needToMove;
     }

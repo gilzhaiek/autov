@@ -7,5 +7,5 @@ import com.eightman.autov.Objects.CarPath;
  */
 
 public interface IRandomPathMaker {
-    boolean generatePath(CarPath carPath);
+    boolean generatePath(CarPath carPath) throws Exception;
 }

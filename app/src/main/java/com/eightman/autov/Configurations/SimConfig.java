@@ -26,6 +26,10 @@ public class SimConfig {
     final public static double MAX_CAR_WIDTH = 4.0;
     final public static double MIN_TOP_SPEED = 1.0; // Meters per second
     final public static double MAX_TOP_SPEED = 5.0; // Meters per second
+    final public static double MIN_CAR_ACC = 0.5; // 0.5 meters addition per second
+    final public static double MAX_CAR_ACC = 1.5; // 1.5 meters addition per second
+    final public static double MIN_CAR_BRAKE = 0.5; // 0.5 meters subtract per second
+    final public static double MAX_CAR_BRAKE = 1.5; // 1.5 meters subtract per second
 
     // Random Square Path Maker
     final public static double EDGE_METERS = 20.0;
@@ -34,7 +38,7 @@ public class SimConfig {
     final public static double MIN_SPEED = 1.5;
     final public static double MAX_SPEED = 4;
 
-    final public static double MAX_COLLISION_VALIDATION = MAX_CAR_LENGTH*3;
+    final public static double MAX_COLLISION_VALIDATION = MAX_CAR_LENGTH*2;
 
     // Stroke Width
     final public static float STROKE_WIDTH = 3.0f;

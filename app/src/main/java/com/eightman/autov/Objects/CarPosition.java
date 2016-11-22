@@ -6,6 +6,8 @@ import com.eightman.autov.Configurations.Global;
 import com.eightman.autov.Hardware.Boundaries;
 import com.eightman.autov.Utils.CollisionUtils;
 
+import java.util.UUID;
+
 /**
  * Created by gilzhaiek on 2016-10-25.
  */
@@ -58,8 +60,21 @@ public class CarPosition {
     }
 
     public static CarPosition getMovingPosition(
-            Boundaries boundaries, double speed, long timeOffset, Boundaries collisionZone, Boundaries safeZone) {
-        return new CarPosition(boundaries, speed, timeOffset, collisionZone, safeZone);
+            Boundaries boundaries,
+            double speed,
+            long timeToNextPosition,
+            Boundaries collisionZone,
+            Boundaries safeZone) {
+        return new CarPosition(boundaries, speed, timeToNextPosition, collisionZone, safeZone);
+    }
+
+    public static CarPosition copy(CarPosition carPosition) {
+        return new CarPosition(
+                carPosition.getBoundaries(),
+                carPosition.getSpeed(),
+                carPosition.getTimeToNextPosition(),
+                carPosition.getCollisionZone(),
+                carPosition.getSafeZone());
     }
 
     public synchronized int getLinkSize() {
@@ -83,11 +98,14 @@ public class CarPosition {
         }
     }
 
-    public synchronized boolean setNext(CarPosition next, boolean mustBeLast) {
+    public synchronized boolean setNext(CarPosition next, boolean mustBeLast) throws Exception {
         if (next == null) {
             this.last = this;
             linkSize = 1;
         } else {
+            if (this == next) {
+                throw new Exception("Infinite Linked List");
+            }
             if (this.next != null) {
                 if (mustBeLast) {
                     return false;
@@ -130,10 +148,14 @@ public class CarPosition {
         last = null;
     }
 
-    public synchronized void setPrevious(CarPosition previous) {
+    public synchronized void setPrevious(CarPosition previous) throws Exception {
         if (this.previous != null && this.previous != previous) {
             this.previous.setLinkSize(1);
             this.previous.setNext(null, false);
+        }
+
+        if (this == previous) {
+            throw new Exception("Infinite Linked List");
         }
 
         this.previous = previous;
@@ -146,6 +168,14 @@ public class CarPosition {
         if (this.parentCarPath != null) {
             this.parentCarPath.onCarPositionChanged(this);
         }
+    }
+
+    public synchronized UUID getCarUUID() {
+        if (parentCarPath != null) {
+            return parentCarPath.getCarUUID();
+        }
+
+        return null;
     }
 
     public synchronized CarPath getParentCarPath() {
@@ -165,6 +195,10 @@ public class CarPosition {
 
     public synchronized CarPosition getPrevious() {
         return previous;
+    }
+
+    public synchronized boolean isLast() {
+        return (this.next == null);
     }
 
     public Boundaries getBoundaries() {

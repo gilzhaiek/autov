@@ -1,5 +1,7 @@
 package com.eightman.autov.Objects;
 
+import com.eightman.autov.Utils.CollisionUtils;
+
 import java.util.UUID;
 
 /**
@@ -7,13 +9,16 @@ import java.util.UUID;
  */
 
 public class Collision {
-    private CollisionPosition collisionPositionActive;
-    private CollisionPosition collisionPositionPassive;
+    final private CollisionPosition collisionPositionActive;
+    final private CollisionPosition collisionPositionPassive;
+    final private CollisionUtils.Side side;
 
     public Collision(CarPosition positionActive, UUID uuidActive,
-                     CarPosition positionPassive, UUID uuidPassive) {
+                     CarPosition positionPassive, UUID uuidPassive,
+                     CollisionUtils.Side side) {
         this.collisionPositionActive = new CollisionPosition(uuidActive, positionActive);
         this.collisionPositionPassive = new CollisionPosition(uuidPassive, positionPassive);
+        this.side = side;
     }
 
     public CollisionPosition getCollisionPositionActive() {
@@ -22,6 +27,10 @@ public class Collision {
 
     public CollisionPosition getCollisionPositionPassive() {
         return collisionPositionPassive;
+    }
+
+    public CollisionUtils.Side getSide() {
+        return side;
     }
 
     public class CollisionPosition {
