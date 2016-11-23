@@ -13,6 +13,7 @@ import java.util.UUID;
  */
 
 public class CarPosition {
+    private final static String TAG = CarPosition.class.getSimpleName();
     private final long id;
     private final Boundaries boundaries;
     private final double speed;
@@ -82,7 +83,13 @@ public class CarPosition {
     }
 
     private synchronized void setLinkSize(int linkSize) {
+        if (this.linkSize == linkSize) {
+            return;
+        }
         this.linkSize = linkSize;
+        if (this.previous != null) {
+            this.previous.setLinkSize(this.linkSize + 1);
+        }
     }
 
     public synchronized CarPosition getLast() {
@@ -101,6 +108,7 @@ public class CarPosition {
     public synchronized boolean setNext(CarPosition next, boolean mustBeLast) throws Exception {
         if (next == null) {
             this.last = this;
+            this.next = null;
             linkSize = 1;
         } else {
             if (this == next) {
@@ -110,20 +118,22 @@ public class CarPosition {
                 if (mustBeLast) {
                     return false;
                 }
-                if (this.next != next) {
+                if (this.next != next) { // Detaching Next
                     this.next.setParentCarPath(null);
                     this.next.setPrevious(null);
                 }
             }
-            linkSize = 1 + next.getLinkSize();
-            this.last = next.getLast();
-            next.setParentCarPath(this.parentCarPath);
-            next.setPrevious(this);
+            this.next = next;
+
+            linkSize = 1 + this.next.getLinkSize();
+            this.last = this.next.getLast();
+            this.next.setParentCarPath(this.parentCarPath);
+            this.next.setPrevious(this);
         }
-        this.next = next;
 
         if (this.previous != null) {
             this.previous.setLast(this.last);
+            this.previous.setLinkSize(linkSize + 1);
         }
 
         if (this.parentCarPath != null) {
@@ -149,8 +159,8 @@ public class CarPosition {
     }
 
     public synchronized void setPrevious(CarPosition previous) throws Exception {
+        // Making an island as we are replacing the current previous
         if (this.previous != null && this.previous != previous) {
-            this.previous.setLinkSize(1);
             this.previous.setNext(null, false);
         }
 

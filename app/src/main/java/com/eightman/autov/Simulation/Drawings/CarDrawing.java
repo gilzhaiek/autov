@@ -16,6 +16,8 @@ import com.eightman.autov.ai.CollisionManager;
  */
 
 public class CarDrawing extends AbstractDrawing {
+    public static final String TAG = CarDrawing.class.getSimpleName();
+
     MyCar car;
     static Paint frontWheelsPaint;
     static Paint backWheelsPaint;
@@ -51,6 +53,14 @@ public class CarDrawing extends AbstractDrawing {
         if (carPosition == null) {
             return;
         }
+
+        /*Log.d(TAG,
+                "UUID=" + car.getUuid() +
+                        " id=" + carPosition.getId() +
+                        " linkSize=" + carPosition.getLinkSize() +
+                        " speed=" + carPosition.getSpeed() +
+                        " time=" + SimTime.getInstance().getTime() +
+                        " timeToNP=" + carPosition.getTimeToNextPosition());*/
 
         Boundaries boundaries = carPosition.getBoundaries();
 

@@ -83,12 +83,7 @@ public class DrawingThread extends Thread {
 
             updateFPS();
 
-            try {
-                sleep(SimConfig.DELAY_MS);
-                SimTime.getInstance().addTime(SimConfig.DELAY_MS);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            SimTime.getInstance().addTime(SimConfig.DELAY_MS);
         }
     }
 }

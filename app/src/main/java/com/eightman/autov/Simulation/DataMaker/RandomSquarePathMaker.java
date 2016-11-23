@@ -20,6 +20,7 @@ import java.util.Random;
 
 public class RandomSquarePathMaker implements IRandomPathMaker {
     static Random random = new Random();
+    private double speed;
 
     @Override
     public boolean generatePath(CarPath carPath) throws Exception {
@@ -44,7 +45,7 @@ public class RandomSquarePathMaker implements IRandomPathMaker {
             return generatePositions(lastPosition, cnt);
         }
 
-        double speed = MathUtils.getRandomDouble(SimConfig.MIN_SPEED, SimConfig.MAX_SPEED);
+        double speed =  MathUtils.getRandomDouble(SimConfig.MIN_SPEED, SimConfig.MAX_SPEED);
         CarPosition fromRotated = rotateCar(lastPosition, from, to, lastPosition.getTimeToNextPosition(), speed);
         CarPosition carPosition = fromRotated;
         double totalSecondsDouble = delta.getVector() / speed;

@@ -17,13 +17,16 @@ import java.util.UUID;
  */
 
 public class CarPath {
+    private final static String TAG = CarPath.class.getSimpleName();
     private final static int CURRENT_POS = 1;
     private final static int OTHER_POS = 2;
+
+    private final static long PARKING_TIME = 0;
 
     final UUID carUUID;
     CarPosition currentPosition;
     List<ICarPathListener> carPathListeners = new LinkedList<>();
-    long timeNextPosition = 0;
+    long absTimeNextPosition = PARKING_TIME;
 
     public CarPath(@NonNull UUID carUUID, @NonNull CarPosition initialPosition) {
         this.carUUID = carUUID;
@@ -56,7 +59,7 @@ public class CarPath {
 
     public synchronized PositionInfo moveToNextPosition() {
         if (currentPosition.getLinkSize() == 1) {
-            timeNextPosition = 0;
+            absTimeNextPosition = PARKING_TIME;
             return null;
         }
 
@@ -69,25 +72,25 @@ public class CarPath {
         oldPosition.makeIsland(false, false);
 
         long timeToNextPosition = currentPosition.getTimeToNextPosition();
-        long currentTime = SimTime.getInstance().getTime();
+        long absTime = SimTime.getInstance().getTime();
 
-        if (timeNextPosition > currentTime) { // Too Early: 1250 > 1200
-            timeNextPosition = timeNextPosition - currentTime + timeToNextPosition;
+        if (absTimeNextPosition > absTime) { // Too Early: 1250 > 1200
+            absTimeNextPosition += absTimeNextPosition - absTime + timeToNextPosition;
         } else { // Too Late: 1250 < 1300
-            timeNextPosition = currentTime - timeNextPosition + timeToNextPosition;
+            absTimeNextPosition += absTime - absTimeNextPosition + timeToNextPosition;
         }
 
         double adjustedSpeed = MathUtils.getSpeedToNextPosition(currentPosition, timeToNextPosition);
 
-        return new PositionInfo(currentPosition, timeNextPosition, timeToNextPosition, adjustedSpeed);
+        return new PositionInfo(currentPosition, absTimeNextPosition, timeToNextPosition, adjustedSpeed);
     }
 
     public synchronized CarPosition getLastPosition() {
         return currentPosition.getLast();
     }
 
-    public synchronized long getTimeNextPosition() {
-        return timeNextPosition;
+    public synchronized long getAbsTimeNextPosition() {
+        return absTimeNextPosition;
     }
 
     public UUID getCarUUID() {
@@ -99,12 +102,12 @@ public class CarPath {
     }
 
     public synchronized boolean needToMove() {
-        if (timeNextPosition == 0 && getSize() <= 1) {
+        if (absTimeNextPosition == PARKING_TIME && getSize() <= 1) {
             return false;
         }
 
         long currentTime = SimTime.getInstance().getTime();
-        boolean needToMove = (timeNextPosition <= currentTime);
+        boolean needToMove = (absTimeNextPosition <= currentTime);
         return needToMove;
     }
 
@@ -139,13 +142,13 @@ public class CarPath {
 
     public class PositionInfo {
         final CarPosition position;
-        final long timeNextPosition;
+        final long absTimeNextPosition;
         final long timeToNextPosition;
         final double adjustedSpeed;
 
-        public PositionInfo(CarPosition position, long timeNextPosition, long timeToNextPosition, double adjustedSpeed) {
+        public PositionInfo(CarPosition position, long absTimeNextPosition, long timeToNextPosition, double adjustedSpeed) {
             this.position = position;
-            this.timeNextPosition = timeNextPosition;
+            this.absTimeNextPosition = absTimeNextPosition;
             this.timeToNextPosition = timeToNextPosition;
             this.adjustedSpeed = adjustedSpeed;
         }
@@ -154,8 +157,8 @@ public class CarPath {
             return position;
         }
 
-        public long getTimeNextPosition() {
-            return timeNextPosition;
+        public long getTimeAbsNextPosition() {
+            return absTimeNextPosition;
         }
 
         public long getTimeToNextPosition() {
