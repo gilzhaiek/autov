@@ -1,12 +1,15 @@
 package com.eightman.autov.Simulation.Objects;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
+import com.eightman.autov.Configurations.SimConfig;
 import com.eightman.autov.Objects.CarCharacteristics;
 import com.eightman.autov.Objects.CarPath;
 import com.eightman.autov.Objects.CarPosition;
 import com.eightman.autov.Objects.MyCar;
 import com.eightman.autov.Simulation.DataMaker.RandomSquarePathMaker;
+import com.eightman.autov.Simulation.SimTime;
 import com.eightman.autov.Utils.TrigUtils;
 import com.eightman.autov.Utils.XY;
 
@@ -17,6 +20,8 @@ import java.util.UUID;
  */
 
 public class CarSimulation extends AbstractSimulation {
+    private final static String TAG = CarSimulation.class.getSimpleName();
+
     boolean stopped = false;
     MyCar myCar;
     static RandomSquarePathMaker randomSquarePathMaker = new RandomSquarePathMaker();
@@ -40,7 +45,7 @@ public class CarSimulation extends AbstractSimulation {
         }
     }
 
-    private void move() {
+    private void moveIfNeeded() {
         if (!myCar.getCarPath().needToMove() || stopped) {
             return;
         }
@@ -50,8 +55,17 @@ public class CarSimulation extends AbstractSimulation {
             return;
         }
 
-        myCar.setCarPosition(positionInfo.getPosition());
-        myCar.setTargetSpeed(positionInfo.getAdjustedSpeed());
+        Log.d(TAG, "Moving from " + myCar.getCarPosition().getAbsTime() +
+                " to " + positionInfo.getPosition().getAbsTime() +
+                " absTime = " + SimTime.getInstance().getTime());
+
+        if (SimTime.getInstance().getTime() > (positionInfo.getPosition().getAbsTime() + SimConfig.DELAY_MS * 2)) {
+            Log.e(TAG, "Time ERROR");
+            stop();
+        } else {
+            myCar.setCarPosition(positionInfo.getPosition());
+            myCar.setTargetSpeed(positionInfo.getAdjustedSpeed());
+        }
     }
 
     @Override
@@ -61,9 +75,7 @@ public class CarSimulation extends AbstractSimulation {
         } else if (myCar.getCarPath().getSize() <= 1) {
             generatePath();
         } else {
-            if (myCar.getCarPath().needToMove()) {
-                move();
-            }
+            moveIfNeeded();
         }
     }
 

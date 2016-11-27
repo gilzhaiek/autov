@@ -11,7 +11,7 @@ public class SimConfig {
     final public static int SIM_DELAY_ADDITION = 100000;
 
     //final public static int DELAY_MS = 16; // 60fps
-    final public static int DELAY_MS = 1000; // Every frame is a second
+    final public static int DELAY_MS = 500; // Every frame is a second
     final public static boolean LIMIT_CARS_TO_SCREEN = true;
 
     // Our unit is 1 meter

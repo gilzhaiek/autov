@@ -1,8 +1,10 @@
 package com.eightman.autov.Objects;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.eightman.autov.Configurations.Global;
+import com.eightman.autov.Configurations.SimConfig;
 import com.eightman.autov.Hardware.Boundaries;
 import com.eightman.autov.Utils.CollisionUtils;
 
@@ -26,6 +28,7 @@ public class CarPosition {
     private CarPosition last;
     private int linkSize = 1;
     private CarPath parentCarPath;
+    private long absTime = 0;
 
     // TODO: Add direction - front or back
     // TODO: Add wheels angles
@@ -172,6 +175,7 @@ public class CarPosition {
         if (this.previous != null) {
             this.previous.setLinkSize(linkSize + 1);
             this.previous.setLast(this.last);
+            updateAbsTime(this.previous.getAbsTime() + this.previous.getTimeToNextPosition());
             this.parentCarPath = this.previous.getParentCarPath(); // First element points to parent
         }
 
@@ -238,5 +242,30 @@ public class CarPosition {
 
     public Boundaries getSafeZone() {
         return safeZone;
+    }
+
+    public long getAbsTime() {
+        return absTime;
+    }
+
+    private void updateAbsTime(long absTime) {
+        this.absTime = absTime;
+        if (this.next != null) {
+            this.next.updateAbsTime(absTime + this.timeToNextPosition);
+        }
+    }
+
+    public void setAbsTime(long absTime, boolean forceInit) {
+        if (this.absTime == 0 || forceInit) {
+            updateAbsTime(absTime);
+        } else{
+            if((Math.abs(this.absTime - absTime) > SimConfig.DELAY_MS)) {
+                Log.w(TAG, "WARN : Expected Time = " + this.absTime +
+                        " : New Time = " + absTime);
+            } else {
+                Log.d(TAG, "Expected Time = " + this.absTime +
+                        " : New Time = " + absTime);
+            }
+        }
     }
 }

@@ -1,5 +1,7 @@
 package com.eightman.autov.Objects;
 
+import com.eightman.autov.Simulation.SimTime;
+
 import java.util.UUID;
 
 /**

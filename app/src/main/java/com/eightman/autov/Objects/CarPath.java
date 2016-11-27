@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.eightman.autov.Interfaces.ICarPathListener;
 import com.eightman.autov.Simulation.SimTime;
@@ -63,26 +64,32 @@ public class CarPath {
             absTimeNextPosition = PARKING_TIME;
             return null;
         }
-
         CarPosition oldPosition = currentPosition;
-        currentPosition = currentPosition.getNext();
+
+        long timeToNextPosition;
+        do {
+            currentPosition = currentPosition.getNext();
+            timeToNextPosition = currentPosition.getTimeToNextPosition();
+        } while (timeToNextPosition == 0 && !currentPosition.isLast());
+
         try {
             currentPosition.setPrevious(null);
         } catch (Exception e) {
         }
         oldPosition.makeIsland(false, false);
 
-        long timeToNextPosition = currentPosition.getTimeToNextPosition();
         long absTime = SimTime.getInstance().getTime();
-
-        if (absTimeNextPosition > absTime) { // Too Early: 1250 > 1200
+        if (absTimeNextPosition == PARKING_TIME) {
+            absTimeNextPosition = absTime + timeToNextPosition;
+        } else if (absTimeNextPosition > absTime) { // Too Early: 1250 > 1200
             absTimeNextPosition += absTimeNextPosition - absTime + timeToNextPosition;
         } else { // Too Late: 1250 < 1300
             absTimeNextPosition += absTime - absTimeNextPosition + timeToNextPosition;
         }
 
-        double adjustedSpeed = MathUtils.getSpeedToNextPosition(currentPosition, timeToNextPosition);
+        currentPosition.setAbsTime(absTime, false);
 
+        double adjustedSpeed = MathUtils.getSpeedToNextPosition(currentPosition, timeToNextPosition);
         return new PositionInfo(currentPosition, absTimeNextPosition, timeToNextPosition, adjustedSpeed);
     }
 
@@ -109,6 +116,10 @@ public class CarPath {
 
         long currentTime = SimTime.getInstance().getTime();
         boolean needToMove = (absTimeNextPosition <= currentTime);
+        Log.d(TAG, needToMove +
+                " : absTimeNP = " + absTimeNextPosition +
+                " : currentTime = " + currentTime);
+
         return needToMove;
     }
 
