@@ -1,6 +1,7 @@
 package com.eightman.autov.Objects;
 
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.NonNull;
 
@@ -125,7 +126,7 @@ public class CarPath {
         }
     }
 
-    Handler handler = new Handler() {
+    Handler handler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
             synchronized (carPathListeners) {

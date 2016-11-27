@@ -23,4 +23,16 @@ public class SimTime {
     public long getTime() {
         return absTime.get();
     }
+
+    public void resetTime() {
+        absTime.set(0);
+    }
+
+    // TODO
+    public void registerForRecurringTime() {
+    }
+
+    interface SimTimeCallback {
+
+    }
 }

@@ -36,6 +36,9 @@ public class SimulationView extends SurfaceView {
     List<AbstractDrawing> drawings = new LinkedList<>();
     CollisionManager collisionManager = CollisionManager.getInstance();
 
+    Object preDrawNotify = new Object();
+    Object postDrawNotify = new Object();
+
     public SimulationView(Context context) {
         super(context);
         init();
@@ -102,6 +105,12 @@ public class SimulationView extends SurfaceView {
     }
 
     public void clearWorld() {
+        synchronized (simulations) {
+            for (AbstractSimulation simulation : simulations) {
+                simulation.stop();
+            }
+        }
+
         simulations.clear();
     }
 
@@ -127,6 +136,16 @@ public class SimulationView extends SurfaceView {
         }
     }
 
+    public int getTotalCollisions() {
+        int totalCollisions = 0;
+        synchronized (simulations) {
+            for (AbstractSimulation simulation : simulations) {
+                totalCollisions += simulation.getTotalCollisions();
+            }
+        }
+        return totalCollisions;
+    }
+
     public void advanceTime() {
         synchronized (simulations) {
             for (AbstractSimulation simulation : simulations) {
@@ -139,13 +158,42 @@ public class SimulationView extends SurfaceView {
         AbstractSimulation.waitUntilIdle();
     }
 
+    public void waitForPreDraw() {
+        try {
+            // TODO: change this to support multiple threads
+            synchronized (preDrawNotify) {
+                preDrawNotify.wait();
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void waitForPostDraw() {
+        try {
+            synchronized (postDrawNotify) {
+                postDrawNotify.wait();
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void drawWorld(Canvas canvas) {
+        synchronized (preDrawNotify) {
+            preDrawNotify.notifyAll();
+        }
+
         canvas.drawColor(Color.BLACK);
 
         synchronized (drawings) {
             for (AbstractDrawing drawing : drawings) {
                 drawing.draw(canvas);
             }
+        }
+
+        synchronized (postDrawNotify) {
+            postDrawNotify.notifyAll();
         }
     }
 }

@@ -8,4 +8,6 @@
     <string name="efficiency">Efficiency</string>
     <string name="na">NA</string>
     <string name="fps">FPS</string>
+    <string name="total_collisions">Total Collisions</string>
+    <string name="simulate">Simulate</string>
 </resources>

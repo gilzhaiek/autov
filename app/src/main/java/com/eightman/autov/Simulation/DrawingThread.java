@@ -18,6 +18,8 @@ import java.util.Queue;
 
 public class DrawingThread extends Thread {
     private static final int UPDATE_FPS = 1;
+    private static final int UPDATE_TOTAL_COLLISIONS = UPDATE_FPS + 1;
+    private static final int UPDATE_TIME = UPDATE_TOTAL_COLLISIONS + 1;
 
     SimulationView simulationView;
     List<StatsInterface> statsInterfaces = new LinkedList<>();
@@ -47,6 +49,14 @@ public class DrawingThread extends Thread {
                 for (StatsInterface statsInterface : statsInterfaces) {
                     statsInterface.onFPSChanged(msg.arg1);
                 }
+            } else if (msg.what == UPDATE_TOTAL_COLLISIONS) {
+                for (StatsInterface statsInterface : statsInterfaces) {
+                    statsInterface.onTotalCollisionsChanged(msg.arg1);
+                }
+            } else if (msg.what == UPDATE_TIME) {
+                for (StatsInterface statsInterface : statsInterfaces) {
+                    statsInterface.onTimeChanged(msg.arg1);
+                }
             }
         }
     };
@@ -62,6 +72,20 @@ public class DrawingThread extends Thread {
         Message message = handler.obtainMessage();
         message.what = UPDATE_FPS;
         message.arg1 = frameTimestamps.size();
+        handler.sendMessage(message);
+    }
+
+    private void updateTotalCollisions() {
+        Message message = handler.obtainMessage();
+        message.what = UPDATE_TOTAL_COLLISIONS;
+        message.arg1 = simulationView.getTotalCollisions();
+        handler.sendMessage(message);
+    }
+
+    private void updateTime() {
+        Message message = handler.obtainMessage();
+        message.what = UPDATE_TIME;
+        message.arg1 = (int)SimTime.getInstance().getTime();
         handler.sendMessage(message);
     }
 
@@ -82,8 +106,10 @@ public class DrawingThread extends Thread {
             simulationView.waitUntilIdle();
 
             updateFPS();
+            updateTotalCollisions();
 
             SimTime.getInstance().addTime(SimConfig.DELAY_MS);
+            updateTime();
         }
     }
 }

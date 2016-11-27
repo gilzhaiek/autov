@@ -32,6 +32,18 @@
     <TableRow>
 
         <TextView
+            android:text="@string/total_collisions"
+            style="@style/stats"/>
+
+        <TextView
+            android:id="@+id/tvTotalCollisions"
+            android:text="0"
+            style="@style/stats"/>
+    </TableRow>
+
+    <TableRow>
+
+        <TextView
             android:text="@string/efficiency"
             style="@style/stats"/>
 

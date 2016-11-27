@@ -17,6 +17,7 @@ public class MyCar {
     double currentSpeed;
     double targetSpeed;
     boolean isInAccident = false;
+    int numOfAccidents = 0;
 
     public MyCar(UUID uuid, CarCharacteristics carChar, CarPosition carPosition) {
         this.uuid = uuid;
@@ -53,7 +54,14 @@ public class MyCar {
     }
 
     public void setInAccident(boolean inAccident) {
+        if (inAccident == true && isInAccident == false) {
+            numOfAccidents++;
+        }
         isInAccident = inAccident;
+    }
+
+    public int getNumOfAccidents() {
+        return numOfAccidents;
     }
 
     public UUID getUuid() {

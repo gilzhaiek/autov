@@ -10,7 +10,7 @@ import java.util.Random;
  */
 
 public class MathUtils {
-    static Random random = new Random();
+    static Random random = new Random(0);
 
     public static XY getDelta(XY xyA, XY xyB) {
         return new XY(xyA.getX() - xyB.getX(), xyA.getY() - xyB.getY());

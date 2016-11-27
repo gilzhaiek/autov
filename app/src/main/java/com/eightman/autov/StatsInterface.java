@@ -6,4 +6,8 @@ package com.eightman.autov;
 
 public interface StatsInterface {
     void onFPSChanged(int fps);
+
+    void onTotalCollisionsChanged(int totalCollisions);
+
+    void onTimeChanged(long time);
 }

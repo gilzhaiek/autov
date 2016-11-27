@@ -64,11 +64,16 @@ public class CarDrawing extends AbstractDrawing {
 
         Boundaries boundaries = carPosition.getBoundaries();
 
+        boolean isInCollisions = collisionManager.isInCollision(car);
+        boolean isInSafeZone = collisionManager.isInSafeZone(car);
+
+        car.setInAccident(isInCollisions);
+
         DrawingUtils.fillBoundaries(canvas, carPosition.getSafeZone(),
-                collisionManager.isInSafeZone(car) ? safeZoneDirtyPaint : safeZoneClearPaint);
+                isInSafeZone ? safeZoneDirtyPaint : safeZoneClearPaint);
 
         DrawingUtils.fillBoundaries(canvas, carPosition.getCollisionZone(),
-                collisionManager.isInCollision(car) ? collisionPaint : headingPaint);
+                isInCollisions ? collisionPaint : headingPaint);
 
         if (SimConfig.DRAW_WHEEL_PATH) {
             if (lastBoundaries != null && !lastBoundaries.equals(boundaries)) {

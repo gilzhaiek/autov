@@ -17,6 +17,7 @@ import java.util.UUID;
  */
 
 public class CarSimulation extends AbstractSimulation {
+    boolean stopped = false;
     MyCar myCar;
     static RandomSquarePathMaker randomSquarePathMaker = new RandomSquarePathMaker();
     GeneratePathTask generatePathTask = null;
@@ -32,7 +33,7 @@ public class CarSimulation extends AbstractSimulation {
     }
 
     private synchronized void generatePath() {
-        if (generatePathTask == null) {
+        if (generatePathTask == null && !stopped) {
             generatePathTask = new GeneratePathTask();
             generatePathTask.execute(myCar.getCarPath());
             addBusy(this);
@@ -40,7 +41,7 @@ public class CarSimulation extends AbstractSimulation {
     }
 
     private void move() {
-        if (!myCar.getCarPath().needToMove()) {
+        if (!myCar.getCarPath().needToMove() || stopped) {
             return;
         }
 
@@ -55,13 +56,25 @@ public class CarSimulation extends AbstractSimulation {
 
     @Override
     public void advanceTime() {
-        if (myCar.getCarPath().getSize() <= 1) {
+        if (stopped) {
+            return;
+        } else if (myCar.getCarPath().getSize() <= 1) {
             generatePath();
         } else {
             if (myCar.getCarPath().needToMove()) {
                 move();
             }
         }
+    }
+
+    @Override
+    public int getTotalCollisions() {
+        return myCar.getNumOfAccidents();
+    }
+
+    @Override
+    public void stop() {
+        stopped = true;
     }
 
     private class GeneratePathTask extends AsyncTask<CarPath, Void, Boolean> {
@@ -82,6 +95,7 @@ public class CarSimulation extends AbstractSimulation {
         protected void onPostExecute(Boolean success) {
             generatePathTask = null;
             if (success) {
+                attemptRemoveCollisions();
                 removeBusy(CarSimulation.this);
             } else {
                 generatePath();
@@ -91,5 +105,9 @@ public class CarSimulation extends AbstractSimulation {
 
     public MyCar getMyCar() {
         return myCar;
+    }
+
+    public void attemptRemoveCollisions() {
+
     }
 }

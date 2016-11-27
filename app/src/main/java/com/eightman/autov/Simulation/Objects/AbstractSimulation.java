@@ -16,6 +16,8 @@ public abstract class AbstractSimulation {
     private static List<Object> busyObjects = new LinkedList<>();
 
     public abstract void advanceTime();
+    public abstract int getTotalCollisions();
+    public abstract void stop();
 
     public void addBusy(Object object) {
         synchronized (busyObjects) {
