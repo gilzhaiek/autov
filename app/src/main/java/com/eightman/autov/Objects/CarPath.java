@@ -4,7 +4,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.eightman.autov.Interfaces.ICarPathListener;
 import com.eightman.autov.Simulation.SimTime;
@@ -23,12 +22,9 @@ public class CarPath {
     private final static int CURRENT_POS = 1;
     private final static int OTHER_POS = 2;
 
-    private final static long PARKING_TIME = 0;
-
     final UUID carUUID;
     CarPosition currentPosition;
     List<ICarPathListener> carPathListeners = new LinkedList<>();
-    long absTimeNextPosition = PARKING_TIME;
 
     public CarPath(@NonNull UUID carUUID, @NonNull CarPosition initialPosition) {
         this.carUUID = carUUID;
@@ -61,7 +57,6 @@ public class CarPath {
 
     public synchronized PositionInfo moveToNextPosition() {
         if (currentPosition.getLinkSize() == 1) {
-            absTimeNextPosition = PARKING_TIME;
             return null;
         }
         CarPosition oldPosition = currentPosition;
@@ -79,26 +74,15 @@ public class CarPath {
         oldPosition.makeIsland(false, false);
 
         long absTime = SimTime.getInstance().getTime();
-        if (absTimeNextPosition == PARKING_TIME) {
-            absTimeNextPosition = absTime + timeToNextPosition;
-        } else if (absTimeNextPosition > absTime) { // Too Early: 1250 > 1200
-            absTimeNextPosition += absTimeNextPosition - absTime + timeToNextPosition;
-        } else { // Too Late: 1250 < 1300
-            absTimeNextPosition += absTime - absTimeNextPosition + timeToNextPosition;
-        }
 
         currentPosition.setAbsTime(absTime, false);
 
         double adjustedSpeed = MathUtils.getSpeedToNextPosition(currentPosition, timeToNextPosition);
-        return new PositionInfo(currentPosition, absTimeNextPosition, timeToNextPosition, adjustedSpeed);
+        return new PositionInfo(currentPosition, timeToNextPosition, adjustedSpeed);
     }
 
     public synchronized CarPosition getLastPosition() {
         return currentPosition.getLast();
-    }
-
-    public synchronized long getAbsTimeNextPosition() {
-        return absTimeNextPosition;
     }
 
     public UUID getCarUUID() {
@@ -110,15 +94,19 @@ public class CarPath {
     }
 
     public synchronized boolean needToMove() {
-        if (absTimeNextPosition == PARKING_TIME && getSize() <= 1) {
+        if (currentPosition.isParkingPosition()) {
+            return !currentPosition.isLast();
+        }
+
+        if (currentPosition.isLast()) {
             return false;
         }
 
         long currentTime = SimTime.getInstance().getTime();
-        boolean needToMove = (absTimeNextPosition <= currentTime);
-        Log.d(TAG, needToMove +
-                " : absTimeNP = " + absTimeNextPosition +
-                " : currentTime = " + currentTime);
+        boolean needToMove = (currentPosition.getNext().getAbsTime() <= currentTime);
+//        Log.d(TAG, needToMove +
+//                " : absTimeNP = " + currentPosition.getNext().getAbsTime() +
+//                " : currentTime = " + currentTime);
 
         return needToMove;
     }
@@ -154,13 +142,11 @@ public class CarPath {
 
     public class PositionInfo {
         final CarPosition position;
-        final long absTimeNextPosition;
         final long timeToNextPosition;
         final double adjustedSpeed;
 
-        public PositionInfo(CarPosition position, long absTimeNextPosition, long timeToNextPosition, double adjustedSpeed) {
+        public PositionInfo(CarPosition position, long timeToNextPosition, double adjustedSpeed) {
             this.position = position;
-            this.absTimeNextPosition = absTimeNextPosition;
             this.timeToNextPosition = timeToNextPosition;
             this.adjustedSpeed = adjustedSpeed;
         }
@@ -169,16 +155,19 @@ public class CarPath {
             return position;
         }
 
-        public long getTimeAbsNextPosition() {
-            return absTimeNextPosition;
-        }
-
         public long getTimeToNextPosition() {
             return timeToNextPosition;
         }
 
         public double getAdjustedSpeed() {
             return adjustedSpeed;
+        }
+
+        @Override
+        public String toString() {
+            return "{timeToNextPosition = " + timeToNextPosition + "," +
+                    "adjustedSpeed = " + adjustedSpeed + "," +
+                    "position = " + position.toString() + "}";
         }
     }
 }

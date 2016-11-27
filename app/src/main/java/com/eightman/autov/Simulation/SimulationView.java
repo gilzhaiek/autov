@@ -112,6 +112,8 @@ public class SimulationView extends SurfaceView {
         }
 
         simulations.clear();
+        drawings.clear();
+        collisionManager.clear();
     }
 
     public void addRandomCar(XY launchPosition) throws Exception {
@@ -152,9 +154,6 @@ public class SimulationView extends SurfaceView {
                 simulation.advanceTime();
             }
         }
-    }
-
-    public void waitUntilIdle() {
         AbstractSimulation.waitUntilIdle();
     }
 

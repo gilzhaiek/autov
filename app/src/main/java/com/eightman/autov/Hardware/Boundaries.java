@@ -179,9 +179,9 @@ public class Boundaries {
 
     @Override
     public String toString() {
-        return "rf=" + rightFront.toString() +
-                ",rb=" + rightBack.toString() +
-                ",lb=" + leftBack.toString() +
-                ",lf=" + leftFront.toString();
+        return "{rf=" + rightFront.toString() + "," +
+                "rb=" + rightBack.toString() + "," +
+                "lb=" + leftBack.toString() + "," +
+                "lf=" + leftFront.toString() + "}";
     }
 }

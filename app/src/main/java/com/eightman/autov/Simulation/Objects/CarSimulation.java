@@ -47,6 +47,7 @@ public class CarSimulation extends AbstractSimulation {
 
     private void moveIfNeeded() {
         if (!myCar.getCarPath().needToMove() || stopped) {
+            //Log.d(TAG, "Don't need to move...");
             return;
         }
 
@@ -55,17 +56,15 @@ public class CarSimulation extends AbstractSimulation {
             return;
         }
 
-        Log.d(TAG, "Moving from " + myCar.getCarPosition().getAbsTime() +
-                " to " + positionInfo.getPosition().getAbsTime() +
-                " absTime = " + SimTime.getInstance().getTime());
-
-        if (SimTime.getInstance().getTime() > (positionInfo.getPosition().getAbsTime() + SimConfig.DELAY_MS * 2)) {
-            Log.e(TAG, "Time ERROR");
+        if (SimTime.getInstance().getTime() > (positionInfo.getPosition().getAbsTime() + SimConfig.DELAY_MS * 3)) {
+            Log.e(TAG, "Time ERROR: myCar=" + myCar.getCarPosition().toString() +
+                    " position=" + positionInfo.getPosition().toString());
             stop();
-        } else {
-            myCar.setCarPosition(positionInfo.getPosition());
-            myCar.setTargetSpeed(positionInfo.getAdjustedSpeed());
+            return;
         }
+
+        myCar.setCarPosition(positionInfo.getPosition());
+        myCar.setTargetSpeed(positionInfo.getAdjustedSpeed());
     }
 
     @Override
@@ -108,6 +107,7 @@ public class CarSimulation extends AbstractSimulation {
             generatePathTask = null;
             if (success) {
                 attemptRemoveCollisions();
+                moveIfNeeded();
                 removeBusy(CarSimulation.this);
             } else {
                 generatePath();

@@ -1,10 +1,8 @@
 package com.eightman.autov.Objects;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.eightman.autov.Configurations.Global;
-import com.eightman.autov.Configurations.SimConfig;
 import com.eightman.autov.Hardware.Boundaries;
 import com.eightman.autov.Utils.CollisionUtils;
 
@@ -215,6 +213,10 @@ public class CarPosition {
         return (this.next == null);
     }
 
+    public synchronized boolean isParkingPosition() {
+        return (timeToNextPosition == 0);
+    }
+
     public Boundaries getBoundaries() {
         return boundaries;
     }
@@ -258,14 +260,20 @@ public class CarPosition {
     public void setAbsTime(long absTime, boolean forceInit) {
         if (this.absTime == 0 || forceInit) {
             updateAbsTime(absTime);
-        } else{
-            if((Math.abs(this.absTime - absTime) > SimConfig.DELAY_MS)) {
-                Log.w(TAG, "WARN : Expected Time = " + this.absTime +
-                        " : New Time = " + absTime);
-            } else {
-                Log.d(TAG, "Expected Time = " + this.absTime +
-                        " : New Time = " + absTime);
-            }
         }
+    }
+
+    @Override
+    public String toString() {
+        return "{id=" + id + "," +
+                "next(id)=" + (next == null ? "null" : next.getId()) + "," +
+                "prev(id)=" + (previous == null ? "null" : previous.getId()) + "," +
+                "speed=" + speed + "," +
+                "timeToNextPosition=" + timeToNextPosition + "," +
+                "linkSize=" + linkSize + "," +
+                "absTime=" + absTime + "," +
+                "boundaries=" + boundaries.toString() + "," +
+                "collisionZone=" + collisionZone.toString() + "," +
+                "safeZone=" + safeZone.toString() + "}";
     }
 }

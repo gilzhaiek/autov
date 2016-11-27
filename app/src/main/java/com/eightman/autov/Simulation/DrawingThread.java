@@ -17,6 +17,8 @@ import java.util.Queue;
  */
 
 public class DrawingThread extends Thread {
+    static String TAG = DrawingThread.class.getSimpleName();
+
     private static final int UPDATE_FPS = 1;
     private static final int UPDATE_TOTAL_COLLISIONS = UPDATE_FPS + 1;
     private static final int UPDATE_TIME = UPDATE_TOTAL_COLLISIONS + 1;
@@ -85,15 +87,18 @@ public class DrawingThread extends Thread {
     private void updateTime() {
         Message message = handler.obtainMessage();
         message.what = UPDATE_TIME;
-        message.arg1 = (int)SimTime.getInstance().getTime();
+        message.arg1 = (int) SimTime.getInstance().getTime();
         handler.sendMessage(message);
     }
 
     @Override
     public void run() {
+        SimTime simTime = SimTime.getInstance();
 
         while (running) {
             Canvas canvas = simulationView.getHolder().lockCanvas();
+
+            //Log.d(TAG, "Drawing @ " + simTime.getTime());
 
             if (canvas != null) {
                 synchronized (simulationView.getHolder()) {
@@ -103,12 +108,11 @@ public class DrawingThread extends Thread {
             }
 
             simulationView.advanceTime();
-            simulationView.waitUntilIdle();
 
             updateFPS();
             updateTotalCollisions();
 
-            SimTime.getInstance().addTime(SimConfig.DELAY_MS);
+            simTime.addTime(SimConfig.DELAY_MS);
             updateTime();
         }
     }

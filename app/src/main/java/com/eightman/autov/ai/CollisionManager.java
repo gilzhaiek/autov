@@ -32,6 +32,12 @@ public class CollisionManager {
         }
     }
 
+    public void clear() {
+        synchronized (cars) {
+            cars.clear();
+        }
+    }
+
     private boolean isInZone(MyCar car, CollisionUtils.Zone zone) {
         CarPosition carPosition = car.getCarPosition();
         Boundaries carBoundaries = (zone == CollisionUtils.Zone.COLLISION_ZONE) ?
