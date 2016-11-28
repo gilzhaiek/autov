@@ -1,6 +1,6 @@
 package com.eightman.autov.Objects;
 
-import com.eightman.autov.Simulation.SimTime;
+import com.eightman.autov.Configurations.Constants;
 
 import java.util.UUID;
 
@@ -20,6 +20,7 @@ public class MyCar {
     double targetSpeed;
     boolean isInAccident = false;
     int numOfAccidents = 0;
+    final static long timeResolution = Constants.ONE_SECOND;
 
     public MyCar(UUID uuid, CarCharacteristics carChar, CarPosition carPosition) {
         this.uuid = uuid;
@@ -90,5 +91,9 @@ public class MyCar {
         synchronized (lock) {
             this.targetSpeed = targetSpeed;
         }
+    }
+
+    public static long getTimeResolution() {
+        return timeResolution;
     }
 }

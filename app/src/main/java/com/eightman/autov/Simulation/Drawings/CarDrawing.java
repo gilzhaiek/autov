@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import com.eightman.autov.Configurations.SimConfig;
 import com.eightman.autov.Hardware.Boundaries;
 import com.eightman.autov.Objects.CarPosition;
+import com.eightman.autov.Objects.Collision;
 import com.eightman.autov.Objects.MyCar;
 import com.eightman.autov.Simulation.SimulationView;
 import com.eightman.autov.ai.CollisionManager;
@@ -74,6 +75,14 @@ public class CarDrawing extends AbstractDrawing {
 
         DrawingUtils.fillBoundaries(canvas, carPosition.getCollisionZone(),
                 isInCollisions ? collisionPaint : headingPaint);
+
+        Collision nextCollision = CollisionManager.getInstance().getFirstCollision(carPosition);
+        if(nextCollision != null) {
+            DrawingUtils.fillBoundaries(
+                    canvas,
+                    nextCollision.getCollisionPositionActive().getPosition().getBoundaries(),
+                    collisionPaint);
+        }
 
         if (SimConfig.DRAW_WHEEL_PATH) {
             if (lastBoundaries != null && !lastBoundaries.equals(boundaries)) {

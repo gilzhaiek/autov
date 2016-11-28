@@ -15,7 +15,7 @@ public class SimConfig {
     final public static boolean LIMIT_CARS_TO_SCREEN = true;
 
     // Our unit is 1 meter
-    final public static double PIXEL_PER_MOVE_UNIT = 3.0;
+    final public static double PIXEL_PER_MOVE_UNIT = 7.0;
 
     // Other
     final public static double MIN_MOVING_SPEED = 0.01; // 1 cm per second

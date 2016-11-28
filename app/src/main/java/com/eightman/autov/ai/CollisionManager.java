@@ -9,13 +9,16 @@ import com.eightman.autov.Utils.CollisionUtils;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Created by gilzhaiek on 2016-11-11.
  */
 
 public class CollisionManager {
+    static String TAG = CollisionManager.class.getSimpleName();
+
+    long largestTimeResolution = MyCar.getTimeResolution(); // TODO: Change
+
     List<MyCar> cars = new LinkedList<>();
 
     private static class InternalSingleton {
@@ -69,42 +72,83 @@ public class CollisionManager {
         return isInZone(car, CollisionUtils.Zone.SAFE_ZONE);
     }
 
-    public Collision getFirstCollision(CarPosition carPosition, UUID carUUID) {
-        Boundaries carBoundaries = carPosition.getCollisionZone();
-        for (int i = 0; i < cars.size(); i++) {
-            if (!carUUID.equals(cars.get(i).getUuid())) {
-                CarPosition otherCarPosition = cars.get(i).getCarPosition();
-                do {
-                    Boundaries otherBoundaries = otherCarPosition.getCollisionZone();
-                    if (Math.abs(
-                            carBoundaries.getCenter().getX() - otherBoundaries.getCenter().getX())
-                            <= SimConfig.MAX_COLLISION_VALIDATION) {
-                        CollisionUtils.Side side = CollisionUtils.isColliding(carBoundaries, otherBoundaries);
-                        if (side != CollisionUtils.Side.NONE) {
-                            return new Collision(
-                                    carPosition, carUUID,
-                                    otherCarPosition, cars.get(i).getUuid(),
-                                    side);
-                        }
-                    }
-                    otherCarPosition = otherCarPosition.getNext();
-                } while (!otherCarPosition.isLast());
+    private List<CarPosition> updateCarPositions(final List<CarPosition> carPositions, long absTime) {
+        final List<CarPosition> retCarPositions = new LinkedList<>();
+
+        for (CarPosition carPosition : carPositions) {
+            boolean doInsert = true;
+            // MY   - OTHER
+            // 1000 - 500 = 500 > 1000 -> insert
+            // 1000 - 1500 = -500 > 1000 -> insert
+            // 3000 - 500 = 2500 > 1000 -> move if not last
+            // 1000 - 3000 = -2000 > wait another 1000
+            while (absTime - carPosition.getAbsTime() > largestTimeResolution && doInsert != false) { // need to move forward
+                if (!carPosition.isLast()) {
+                    carPosition = carPosition.getNext();
+                } else {
+                    doInsert = false;
+                }
+            }
+
+            if (doInsert) {
+                retCarPositions.add(carPosition);
             }
         }
 
-        return null;
+        return retCarPositions;
     }
 
-    public Collision getFirstCollision(MyCar car) {
-        CarPosition carPosition = car.getCarPosition();
+    public Collision getFirstCollision(CarPosition myCarPosition) {
+        List<CarPosition> otherCarPositions = new LinkedList<>();
+
+        for (MyCar car : cars) {
+            if (myCarPosition.getCarUUID().equals(car.getUuid())) {
+                continue;
+            }
+
+            otherCarPositions.add(car.getCarPosition());
+        }
+
+        if(otherCarPositions.isEmpty()) {
+            return null;
+        }
 
         do {
-            Collision collision = getFirstCollision(carPosition, car.getUuid());
-            if (collision != null) {
-                return collision;
+            otherCarPositions = updateCarPositions(otherCarPositions, myCarPosition.getAbsTime());
+            if(otherCarPositions.isEmpty()) {
+                return null;
             }
-            carPosition = carPosition.getNext();
-        } while (!carPosition.isLast());
+
+            Boundaries myCarBoundaries = myCarPosition.getCollisionZone();
+            for (int i = 0; i < otherCarPositions.size(); ) {
+                CarPosition otherCarPosition = otherCarPositions.get(i);
+                if (otherCarPosition.getAbsTime() - myCarPosition.getAbsTime() < largestTimeResolution) {
+                    Boundaries otherBoundaries = otherCarPosition.getCollisionZone();
+                    if (Math.abs(myCarBoundaries.getCenter().getX() - otherBoundaries.getCenter().getX())
+                            <= SimConfig.MAX_COLLISION_VALIDATION) {
+                        CollisionUtils.Side side = CollisionUtils.isColliding(myCarBoundaries, otherBoundaries);
+                        if (side != CollisionUtils.Side.NONE) {
+                            return new Collision(
+                                    myCarPosition, myCarPosition.getCarUUID(),
+                                    otherCarPosition, otherCarPosition.getCarUUID(),
+                                    side);
+                        }
+                    }
+                }
+
+                if (!otherCarPosition.isLast() &&
+                        otherCarPosition.getNext().getAbsTime() - myCarPosition.getAbsTime() < largestTimeResolution) {
+                    otherCarPositions.set(i, otherCarPosition.getNext());
+                } else {
+                    i++;
+                }
+            }
+
+            if(myCarPosition.isLast()) {
+                break;
+            }
+            myCarPosition = myCarPosition.getNext();
+        } while(true);
 
         return null;
     }
