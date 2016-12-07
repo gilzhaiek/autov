@@ -127,7 +127,7 @@ public class MathUtils {
                         slopeAY * (segmentB.getPointA().getX() - segmentA.getPointA().getX());
                 tb /= slopeAY * slopeBX - slopeBY * slopeAX;
                 if (tb >= 0 && tb <= 1.0) {
-                    return new Pair(0, null);
+                    return new Pair(0.0, null);
                 }
             }
         }

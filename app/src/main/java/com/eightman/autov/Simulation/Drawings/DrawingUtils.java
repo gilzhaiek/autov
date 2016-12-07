@@ -7,6 +7,7 @@ import android.graphics.Path;
 import com.eightman.autov.Configurations.Global;
 import com.eightman.autov.Configurations.SimConfig;
 import com.eightman.autov.Hardware.Boundaries;
+import com.eightman.autov.Utils.LineSegment;
 import com.eightman.autov.Utils.XY;
 
 /**
@@ -71,6 +72,14 @@ public class DrawingUtils {
         paint.setStyle(Paint.Style.FILL);
 
         return paint;
+    }
+
+    public static void drawLine(Canvas canvas,
+                                final LineSegment lineSegment,
+                                Paint paint) {
+        if(lineSegment != null) {
+            drawLine(canvas, lineSegment.getPointA(), lineSegment.getPointB(), paint);
+        }
     }
 
     public static void drawLine(Canvas canvas,

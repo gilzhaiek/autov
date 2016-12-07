@@ -10,6 +10,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import com.eightman.autov.Configurations.Global;
+import com.eightman.autov.Managers.DistanceManager;
 import com.eightman.autov.Objects.CarCharacteristics;
 import com.eightman.autov.Simulation.Drawings.AbstractDrawing;
 import com.eightman.autov.Simulation.Drawings.CarDrawing;
@@ -35,6 +36,7 @@ public class SimulationView extends SurfaceView {
     List<AbstractSimulation> simulations = new LinkedList<>();
     List<AbstractDrawing> drawings = new LinkedList<>();
     CollisionManager collisionManager = CollisionManager.getInstance();
+    DistanceManager distanceManager = DistanceManager.getInstance();
 
     Object preDrawNotify = new Object();
     Object postDrawNotify = new Object();
@@ -114,6 +116,7 @@ public class SimulationView extends SurfaceView {
         simulations.clear();
         drawings.clear();
         collisionManager.clear();
+        distanceManager.clear();
     }
 
     public void addRandomCar(XY launchPosition) throws Exception {
@@ -129,6 +132,10 @@ public class SimulationView extends SurfaceView {
 
         synchronized (collisionManager) {
             collisionManager.addCar(carSimulation.getMyCar());
+        }
+
+        synchronized (distanceManager) {
+            distanceManager.addCar(carSimulation.getMyCar());
         }
     }
 

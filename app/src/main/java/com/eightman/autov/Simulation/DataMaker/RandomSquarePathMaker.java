@@ -7,7 +7,6 @@ import com.eightman.autov.Objects.CarPath;
 import com.eightman.autov.Objects.CarPosition;
 import com.eightman.autov.Simulation.Drawings.DrawingUtils;
 import com.eightman.autov.Simulation.Interfaces.IRandomPathMaker;
-import com.eightman.autov.Utils.CollisionUtils;
 import com.eightman.autov.Utils.MathUtils;
 import com.eightman.autov.Utils.TrigUtils;
 import com.eightman.autov.Utils.XY;
@@ -58,25 +57,7 @@ public class RandomSquarePathMaker implements IRandomPathMaker {
             carPosition = CarPosition.getMovingPosition(
                     boundaries,
                     speed,
-                    timeOffset,
-                    CollisionUtils.getHeadingBoundaries(
-                            boundaries,
-                            speed,
-                            timeOffset,
-                            CollisionUtils.Zone.COLLISION_ZONE),
-                    CollisionUtils.getHeadingBoundaries(
-                            boundaries,
-                            speed,
-                            timeOffset,
-                            CollisionUtils.Zone.SAFE_ZONE));
-
-//            Collision collision = CollisionManager.getInstance().getFirstCollision(
-//                    carPosition, lastPosition.getCarUUID());
-//
-//            if (collision != null) {
-//                totalSeconds++;
-//                carPosition = CarPosition.copy(lastPosition);
-//            }
+                    timeOffset);
 
             if (!lastPosition.setNext(carPosition, true)) { // In case anyone altered the path
                 return false;
@@ -112,9 +93,7 @@ public class RandomSquarePathMaker implements IRandomPathMaker {
         return CarPosition.getMovingPosition(
                 toBoundaries,
                 speed,
-                timeOffset,
-                position.getCollisionZone(),
-                position.getSafeZone());
+                timeOffset);
     }
 
     private double getRandomEdge() {

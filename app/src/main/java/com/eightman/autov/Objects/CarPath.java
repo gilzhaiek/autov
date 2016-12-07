@@ -6,6 +6,7 @@ import android.os.Message;
 import android.support.annotation.NonNull;
 
 import com.eightman.autov.Interfaces.ICarPathListener;
+import com.eightman.autov.Managers.DistanceManager;
 import com.eightman.autov.Simulation.SimTime;
 import com.eightman.autov.Utils.MathUtils;
 
@@ -89,8 +90,8 @@ public class CarPath {
         return carUUID;
     }
 
-    public synchronized void removeCollisions() {
-
+    public synchronized void findDistances() {
+        DistanceManager.getInstance().populateDistances(getCurrentPosition());
     }
 
     public synchronized boolean needToMove() {

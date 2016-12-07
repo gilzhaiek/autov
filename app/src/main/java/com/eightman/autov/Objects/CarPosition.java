@@ -4,8 +4,9 @@ import android.support.annotation.NonNull;
 
 import com.eightman.autov.Configurations.Global;
 import com.eightman.autov.Hardware.Boundaries;
-import com.eightman.autov.Utils.CollisionUtils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -18,8 +19,7 @@ public class CarPosition {
     private final Boundaries boundaries;
     private final double speed;
     private final long timeToNextPosition;
-    private final Boundaries collisionZone;
-    private final Boundaries safeZone;
+    private final List<ObjectDistanceInfo> carDistancesInfo;
 
     private CarPosition next;
     private CarPosition previous;
@@ -37,24 +37,20 @@ public class CarPosition {
         this.boundaries = boundaries;
         this.speed = 0;
         this.timeToNextPosition = 0;
-        this.collisionZone = CollisionUtils.getParkingBoundaries(boundaries);
-        this.safeZone = this.collisionZone;
         this.last = this;
+        this.carDistancesInfo = new ArrayList<>();
     }
 
     private CarPosition(
             @NonNull Boundaries boundaries,
             double speed,
-            long timeToNextPosition,
-            @NonNull Boundaries collisionZone,
-            @NonNull Boundaries safeZone) {
+            long timeToNextPosition) {
         this.id = Global.generateId();
         this.boundaries = boundaries;
         this.speed = speed;
         this.timeToNextPosition = timeToNextPosition;
-        this.collisionZone = collisionZone;
-        this.safeZone = safeZone;
         this.last = this;
+        this.carDistancesInfo = new ArrayList<>();
     }
 
     public static CarPosition getRestedPosition(Boundaries boundaries) {
@@ -64,19 +60,15 @@ public class CarPosition {
     public static CarPosition getMovingPosition(
             Boundaries boundaries,
             double speed,
-            long timeToNextPosition,
-            Boundaries collisionZone,
-            Boundaries safeZone) {
-        return new CarPosition(boundaries, speed, timeToNextPosition, collisionZone, safeZone);
+            long timeToNextPosition) {
+        return new CarPosition(boundaries, speed, timeToNextPosition);
     }
 
     public static CarPosition copy(CarPosition carPosition) {
         return new CarPosition(
                 carPosition.getBoundaries(),
                 carPosition.getSpeed(),
-                carPosition.getTimeToNextPosition(),
-                carPosition.getCollisionZone(),
-                carPosition.getSafeZone());
+                carPosition.getTimeToNextPosition());
     }
 
     public synchronized int getLinkSize() {
@@ -238,14 +230,6 @@ public class CarPosition {
         return id;
     }
 
-    public Boundaries getCollisionZone() {
-        return collisionZone;
-    }
-
-    public Boundaries getSafeZone() {
-        return safeZone;
-    }
-
     public long getAbsTime() {
         return absTime;
     }
@@ -263,6 +247,10 @@ public class CarPosition {
         }
     }
 
+    public List<ObjectDistanceInfo> getCarDistancesInfo() {
+        return carDistancesInfo;
+    }
+
     @Override
     public String toString() {
         return "{id=" + id + "," +
@@ -272,8 +260,6 @@ public class CarPosition {
                 "timeToNextPosition=" + timeToNextPosition + "," +
                 "linkSize=" + linkSize + "," +
                 "absTime=" + absTime + "," +
-                "boundaries=" + boundaries.toString() + "," +
-                "collisionZone=" + collisionZone.toString() + "," +
-                "safeZone=" + safeZone.toString() + "}";
+                "boundaries=" + boundaries.toString() + "}";
     }
 }

@@ -1,28 +1,33 @@
-package com.eightman.autov.ai;
+package com.eightman.autov.Managers;
+
+import android.util.Pair;
 
 import com.eightman.autov.Objects.CarPosition;
 import com.eightman.autov.Objects.MyCar;
+import com.eightman.autov.Objects.ObjectDistanceInfo;
+import com.eightman.autov.Utils.LineSegment;
+import com.eightman.autov.Utils.TrigUtils;
 
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Created by gilzhaiek on 2016-11-11.
+ * Created by gilzhaiek on 2016-12-06.
  */
 
-public class CollisionManager {
-    static String TAG = CollisionManager.class.getSimpleName();
+public class DistanceManager {
+    static String TAG = DistanceManager.class.getSimpleName();
 
     long largestTimeResolution = MyCar.getTimeResolution(); // TODO: Change
 
     List<MyCar> cars = new LinkedList<>();
 
     private static class InternalSingleton {
-        private static CollisionManager singleton = new CollisionManager();
+        private static DistanceManager singleton = new DistanceManager();
     }
 
-    public static CollisionManager getInstance() {
-        return InternalSingleton.singleton;
+    public static DistanceManager getInstance() {
+        return DistanceManager.InternalSingleton.singleton;
     }
 
     public void addCar(MyCar car) {
@@ -63,42 +68,41 @@ public class CollisionManager {
         return retCarPositions;
     }
 
-    /* public Collision getFirstCollision(CarPosition myCarPosition) {
+    public void populateDistances(CarPosition myCarPosition) {
         List<CarPosition> otherCarPositions = new LinkedList<>();
 
-        for (MyCar car : cars) {
-            if (myCarPosition.getCarUUID().equals(car.getUuid())) {
-                continue;
-            }
+        synchronized (cars) {
+            for (MyCar car : cars) {
+                if (myCarPosition.getCarUUID().equals(car.getUuid())) {
+                    continue;
+                }
 
-            otherCarPositions.add(car.getCarPosition());
+                otherCarPositions.add(car.getCarPosition());
+            }
         }
 
         if(otherCarPositions.isEmpty()) {
-            return null;
+            return;
         }
 
         do {
             otherCarPositions = updateCarPositions(otherCarPositions, myCarPosition.getAbsTime());
             if(otherCarPositions.isEmpty()) {
-                return null;
+                return;
             }
 
-            Boundaries myCarBoundaries = myCarPosition.getCollisionZone();
+            List<ObjectDistanceInfo> carDistancesInfo = myCarPosition.getCarDistancesInfo();
+            carDistancesInfo.clear();
             for (int i = 0; i < otherCarPositions.size(); ) {
                 CarPosition otherCarPosition = otherCarPositions.get(i);
                 if (otherCarPosition.getAbsTime() - myCarPosition.getAbsTime() < largestTimeResolution) {
-                    Boundaries otherBoundaries = otherCarPosition.getCollisionZone();
-                    if (Math.abs(myCarBoundaries.getCenter().getX() - otherBoundaries.getCenter().getX())
-                            <= SimConfig.MAX_COLLISION_VALIDATION) {
-                        CollisionUtils.Side side = CollisionUtils.isColliding(myCarBoundaries, otherBoundaries);
-                        if (side != CollisionUtils.Side.NONE) {
-                            return new Collision(
-                                    myCarPosition, myCarPosition.getCarUUID(),
-                                    otherCarPosition, otherCarPosition.getCarUUID(),
-                                    side);
-                        }
-                    }
+                    Pair<Double, LineSegment> o2oLine = TrigUtils.getShortestDistance(
+                            myCarPosition.getBoundaries(), otherCarPosition.getBoundaries());
+                    carDistancesInfo.add(new ObjectDistanceInfo(
+                            o2oLine.first,
+                            o2oLine.second,
+                            myCarPosition.getCarUUID(),
+                            otherCarPosition.getCarUUID()));
                 }
 
                 if (!otherCarPosition.isLast() &&
@@ -114,8 +118,5 @@ public class CollisionManager {
             }
             myCarPosition = myCarPosition.getNext();
         } while(true);
-
-        return null;
-    }*/
-
+    }
 }

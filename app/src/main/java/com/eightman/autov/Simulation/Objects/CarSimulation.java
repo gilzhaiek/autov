@@ -98,7 +98,7 @@ public class CarSimulation extends AbstractSimulation {
                 e.printStackTrace();
             }
 
-            carPath.removeCollisions();
+            carPath.findDistances();
 
             return true;
         }

@@ -7,10 +7,12 @@ import android.graphics.Paint;
 import com.eightman.autov.Configurations.SimConfig;
 import com.eightman.autov.Hardware.Boundaries;
 import com.eightman.autov.Objects.CarPosition;
-import com.eightman.autov.Objects.Collision;
 import com.eightman.autov.Objects.MyCar;
+import com.eightman.autov.Objects.ObjectDistanceInfo;
 import com.eightman.autov.Simulation.SimulationView;
 import com.eightman.autov.ai.CollisionManager;
+
+import java.util.List;
 
 /**
  * Created by gilzhaiek on 2016-10-25.
@@ -24,9 +26,7 @@ public class CarDrawing extends AbstractDrawing {
     static Paint backWheelsPaint;
     Paint carPaint;
     Paint headingPaint;
-    Paint collisionPaint;
-    Paint safeZoneClearPaint;
-    Paint safeZoneDirtyPaint;
+    Paint distancePaint;
     Boundaries lastBoundaries;
     CollisionManager collisionManager;
 
@@ -43,9 +43,7 @@ public class CarDrawing extends AbstractDrawing {
 
         carPaint = DrawingUtils.getLinePaint(car.getCarCharacteristics().getColor());
         headingPaint = DrawingUtils.getFillPaint(Color.argb(0x77, 0xA1, 0x00, 0x1E));
-        collisionPaint = DrawingUtils.getFillPaint(Color.argb(0x77, 0xFF, 0xFF, 0x00));
-        safeZoneClearPaint = DrawingUtils.getFillPaint(Color.argb(0x33, 0xFF, 0xFF, 0xFF));
-        safeZoneDirtyPaint = DrawingUtils.getFillPaint(Color.argb(0x77, 0xFF, 0xFF, 0xFF));
+        distancePaint = DrawingUtils.getFillPaint(Color.argb(0x77, 0xFF, 0xFF, 0x00));
     }
 
     @Override
@@ -63,26 +61,14 @@ public class CarDrawing extends AbstractDrawing {
                         " time=" + SimTime.getInstance().getTime() +
                         " timeToNP=" + carPosition.getTimeToNextPosition());*/
 
+        List<ObjectDistanceInfo> distanceInfoList = carPosition.getCarDistancesInfo();
+        for(ObjectDistanceInfo objectDistanceInfo : distanceInfoList) {
+            DrawingUtils.drawLine(canvas, objectDistanceInfo.getLineSegment(), distancePaint);
+        }
+
         Boundaries boundaries = carPosition.getBoundaries();
 
-        boolean isInCollisions = collisionManager.isInCollision(car);
-        boolean isInSafeZone = collisionManager.isInSafeZone(car);
-
-        car.setInAccident(isInCollisions);
-
-        DrawingUtils.fillBoundaries(canvas, carPosition.getSafeZone(),
-                isInSafeZone ? safeZoneDirtyPaint : safeZoneClearPaint);
-
-        DrawingUtils.fillBoundaries(canvas, carPosition.getCollisionZone(),
-                isInCollisions ? collisionPaint : headingPaint);
-
-        Collision nextCollision = CollisionManager.getInstance().getFirstCollision(carPosition);
-        if(nextCollision != null) {
-            DrawingUtils.fillBoundaries(
-                    canvas,
-                    nextCollision.getCollisionPositionActive().getPosition().getBoundaries(),
-                    collisionPaint);
-        }
+        //car.setInAccident(isInCollisions);
 
         if (SimConfig.DRAW_WHEEL_PATH) {
             if (lastBoundaries != null && !lastBoundaries.equals(boundaries)) {

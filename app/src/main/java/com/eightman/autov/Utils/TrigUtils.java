@@ -1,5 +1,7 @@
 package com.eightman.autov.Utils;
 
+import android.util.Pair;
+
 import com.eightman.autov.Hardware.Boundaries;
 
 /**
@@ -95,7 +97,7 @@ public class TrigUtils {
         return xyA.getX() * xyB.getY() - xyA.getY() * xyB.getX();
     }
 
-    public static XY edgeIntersection(Edge edgeA, Edge edgeB) {
+    public static XY edgeIntersection(LineSegment edgeA, LineSegment edgeB) {
         double det = determinant(
                 MathUtils.getDelta(edgeA.getPointB(), edgeA.getPointA()),
                 MathUtils.getDelta(edgeB.getPointA(), edgeB.getPointB()));
@@ -113,5 +115,109 @@ public class TrigUtils {
                     edgeA.getPointA().getX() * (1 - t) + t * edgeA.getPointB().getX(),
                     edgeA.getPointA().getY() * (1 - t) + t * edgeA.getPointB().getY());
         }
+    }
+
+    private static Pair<Double, LineSegment> min(Pair<Double, LineSegment> pair1, Pair<Double, LineSegment> pair2) {
+        if (pair1.first < pair2.first) {
+            return pair1;
+        }
+        return pair2;
+    }
+
+    public static Pair<Double, LineSegment> getShortestDistance(Boundaries boundariesA, Boundaries boundariesB) {
+        Pair<Double, LineSegment> shortest = MathUtils.getShortestDistance(
+                boundariesA.getFrontSegment(), boundariesB.getFrontSegment());
+        if (shortest.first == 0) {
+            return shortest;
+        }
+
+        shortest = min(shortest, MathUtils.getShortestDistance(
+                boundariesA.getFrontSegment(), boundariesB.getRightSegment()));
+        if (shortest.first == 0) {
+            return shortest;
+        }
+
+        shortest = min(shortest, MathUtils.getShortestDistance(
+                boundariesA.getFrontSegment(), boundariesB.getBackSegment()));
+        if (shortest.first == 0) {
+            return shortest;
+        }
+
+        shortest = min(shortest, MathUtils.getShortestDistance(
+                boundariesA.getFrontSegment(), boundariesB.getLeftSegment()));
+        if (shortest.first == 0) {
+            return shortest;
+        }
+
+        shortest = min(shortest, MathUtils.getShortestDistance(
+                boundariesA.getRightSegment(), boundariesB.getFrontSegment()));
+        if (shortest.first == 0) {
+            return shortest;
+        }
+
+        shortest = min(shortest, MathUtils.getShortestDistance(
+                boundariesA.getRightSegment(), boundariesB.getRightSegment()));
+        if (shortest.first == 0) {
+            return shortest;
+        }
+
+        shortest = min(shortest, MathUtils.getShortestDistance(
+                boundariesA.getRightSegment(), boundariesB.getBackSegment()));
+        if (shortest.first == 0) {
+            return shortest;
+        }
+
+        shortest = min(shortest, MathUtils.getShortestDistance(
+                boundariesA.getRightSegment(), boundariesB.getLeftSegment()));
+        if (shortest.first == 0) {
+            return shortest;
+        }
+
+        shortest = min(shortest, MathUtils.getShortestDistance(
+                boundariesA.getBackSegment(), boundariesB.getFrontSegment()));
+        if (shortest.first == 0) {
+            return shortest;
+        }
+
+        shortest = min(shortest, MathUtils.getShortestDistance(
+                boundariesA.getBackSegment(), boundariesB.getRightSegment()));
+        if (shortest.first == 0) {
+            return shortest;
+        }
+
+        shortest = min(shortest, MathUtils.getShortestDistance(
+                boundariesA.getBackSegment(), boundariesB.getBackSegment()));
+        if (shortest.first == 0) {
+            return shortest;
+        }
+
+        shortest = min(shortest, MathUtils.getShortestDistance(
+                boundariesA.getBackSegment(), boundariesB.getLeftSegment()));
+        if (shortest.first == 0) {
+            return shortest;
+        }
+
+        shortest = min(shortest, MathUtils.getShortestDistance(
+                boundariesA.getLeftSegment(), boundariesB.getFrontSegment()));
+        if (shortest.first == 0) {
+            return shortest;
+        }
+
+        shortest = min(shortest, MathUtils.getShortestDistance(
+                boundariesA.getLeftSegment(), boundariesB.getRightSegment()));
+        if (shortest.first == 0) {
+            return shortest;
+        }
+
+        shortest = min(shortest, MathUtils.getShortestDistance(
+                boundariesA.getLeftSegment(), boundariesB.getBackSegment()));
+        if (shortest.first == 0) {
+            return shortest;
+        }
+
+        shortest = min(shortest, MathUtils.getShortestDistance(
+                boundariesA.getLeftSegment(), boundariesB.getLeftSegment()));
+
+        return shortest;
     }
 }
