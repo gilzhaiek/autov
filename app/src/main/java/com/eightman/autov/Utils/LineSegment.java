@@ -4,11 +4,11 @@ package com.eightman.autov.Utils;
  * Created by gilzhaiek on 2016-11-11.
  */
 
-public class Edge {
+public class LineSegment {
     XY pointA;
     XY pointB;
 
-    public Edge(XY pointA, XY pointB) {
+    public LineSegment(XY pointA, XY pointB) {
         this.pointA = pointA;
         this.pointB = pointB;
     }
@@ -20,4 +20,14 @@ public class Edge {
     public XY getPointB() {
         return pointB;
     }
+
+
+    public double slopeX() {
+        return pointB.getX() - pointA.getX();
+    }
+
+    public double slopeY() {
+        return pointB.getY() - pointA.getY();
+    }
+
 }

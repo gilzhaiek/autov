@@ -1,6 +1,6 @@
 package com.eightman.autov.Hardware;
 
-import com.eightman.autov.Utils.Edge;
+import com.eightman.autov.Utils.LineSegment;
 import com.eightman.autov.Utils.MathUtils;
 import com.eightman.autov.Utils.XY;
 
@@ -18,10 +18,10 @@ public class Boundaries {
     XY center = null;
     XY centerFront = null;
     XY centerBack = null;
-    Edge frontEdge = null;
-    Edge rightEdge = null;
-    Edge backEdge = null;
-    Edge leftEdge = null;
+    LineSegment frontSegment = null;
+    LineSegment rightSegment = null;
+    LineSegment backSegment = null;
+    LineSegment leftSegment = null;
 
     public Boundaries(double rFrontX, double rFrontY, double rBackX, double rBackY,
                       double lBackX, double lBackY, double lFrontX, double lFrontY) {
@@ -78,32 +78,32 @@ public class Boundaries {
         return centerBack;
     }
 
-    public Edge getFrontEdge() {
-        if (frontEdge == null) {
-            frontEdge = new Edge(leftFront, rightFront);
+    public LineSegment getFrontSegment() {
+        if (frontSegment == null) {
+            frontSegment = new LineSegment(leftFront, rightFront);
         }
-        return frontEdge;
+        return frontSegment;
     }
 
-    public Edge getRightEdge() {
-        if (rightEdge == null) {
-            rightEdge = new Edge(rightFront, rightBack);
+    public LineSegment getRightSegment() {
+        if (rightSegment == null) {
+            rightSegment = new LineSegment(rightFront, rightBack);
         }
-        return rightEdge;
+        return rightSegment;
     }
 
-    public Edge getBackEdge() {
-        if (backEdge == null) {
-            backEdge = new Edge(rightBack, leftBack);
+    public LineSegment getBackSegment() {
+        if (backSegment == null) {
+            backSegment = new LineSegment(rightBack, leftBack);
         }
-        return backEdge;
+        return backSegment;
     }
 
-    public Edge getLeftEdge() {
-        if (leftEdge == null) {
-            leftEdge = new Edge(leftBack, leftFront);
+    public LineSegment getLeftSegment() {
+        if (leftSegment == null) {
+            leftSegment = new LineSegment(leftBack, leftFront);
         }
-        return leftEdge;
+        return leftSegment;
     }
 
     /*
