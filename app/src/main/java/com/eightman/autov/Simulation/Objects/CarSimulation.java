@@ -34,6 +34,7 @@ public class CarSimulation extends AbstractSimulation {
                         carChars.getWidth(), carChars.getLength()));
 
         myCar = new MyCar(UUID.randomUUID(), carChars, carPosition);
+        carPosition.setAbsTime(SimTime.getInstance().getTime(), false);
         generatePath();
     }
 

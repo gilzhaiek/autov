@@ -1,5 +1,6 @@
 package com.eightman.autov.Managers;
 
+import android.util.Log;
 import android.util.Pair;
 
 import com.eightman.autov.Objects.CarPosition;
@@ -42,6 +43,13 @@ public class DistanceManager {
         }
     }
 
+    /**
+     * Move forward or backward if needed
+     *
+     * @param carPositions
+     * @param absTime
+     * @return
+     */
     private List<CarPosition> updateCarPositions(final List<CarPosition> carPositions, long absTime) {
         final List<CarPosition> retCarPositions = new LinkedList<>();
 
@@ -73,21 +81,20 @@ public class DistanceManager {
 
         synchronized (cars) {
             for (MyCar car : cars) {
-                if (myCarPosition.getCarUUID().equals(car.getUuid())) {
-                    continue;
+                if (!myCarPosition.getCarUUID().equals(car.getUuid())) {
+                    otherCarPositions.add(car.getCarPosition());
                 }
-
-                otherCarPositions.add(car.getCarPosition());
             }
         }
 
-        if(otherCarPositions.isEmpty()) {
+        if (otherCarPositions.isEmpty()) {
             return;
         }
 
         do {
             otherCarPositions = updateCarPositions(otherCarPositions, myCarPosition.getAbsTime());
-            if(otherCarPositions.isEmpty()) {
+
+            if (otherCarPositions.isEmpty()) {
                 return;
             }
 
@@ -112,11 +119,11 @@ public class DistanceManager {
                     i++;
                 }
             }
-
-            if(myCarPosition.isLast()) {
+            
+            if (myCarPosition.isLast()) {
                 break;
             }
             myCarPosition = myCarPosition.getNext();
-        } while(true);
+        } while (true);
     }
 }

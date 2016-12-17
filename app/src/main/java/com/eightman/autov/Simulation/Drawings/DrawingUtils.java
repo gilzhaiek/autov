@@ -132,5 +132,4 @@ public class DrawingUtils {
 
         canvas.drawPath(path, paint);
     }
-
 }

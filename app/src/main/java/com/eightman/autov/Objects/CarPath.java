@@ -74,9 +74,7 @@ public class CarPath {
         }
         oldPosition.makeIsland(false, false);
 
-        long absTime = SimTime.getInstance().getTime();
-
-        currentPosition.setAbsTime(absTime, false);
+        currentPosition.setAbsTime(SimTime.getInstance().getTime(), false);
 
         double adjustedSpeed = MathUtils.getSpeedToNextPosition(currentPosition, timeToNextPosition);
         return new PositionInfo(currentPosition, timeToNextPosition, adjustedSpeed);
