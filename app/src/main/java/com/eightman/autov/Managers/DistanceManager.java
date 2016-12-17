@@ -1,12 +1,12 @@
 package com.eightman.autov.Managers;
 
-import android.util.Log;
 import android.util.Pair;
 
 import com.eightman.autov.Objects.CarPosition;
 import com.eightman.autov.Objects.MyCar;
 import com.eightman.autov.Objects.ObjectDistanceInfo;
 import com.eightman.autov.Utils.LineSegment;
+import com.eightman.autov.Utils.MathUtils;
 import com.eightman.autov.Utils.TrigUtils;
 
 import java.util.LinkedList;
@@ -105,11 +105,52 @@ public class DistanceManager {
                 if (otherCarPosition.getAbsTime() - myCarPosition.getAbsTime() < largestTimeResolution) {
                     Pair<Double, LineSegment> o2oLine = TrigUtils.getShortestDistance(
                             myCarPosition.getBoundaries(), otherCarPosition.getBoundaries());
-                    carDistancesInfo.add(new ObjectDistanceInfo(
-                            o2oLine.first,
-                            o2oLine.second,
-                            myCarPosition.getCarUUID(),
-                            otherCarPosition.getCarUUID()));
+
+                    LineSegment fullSegment = o2oLine.second;
+
+                    if (fullSegment != null) { // crash
+                        double myCarCollisionDistance = myCarPosition.getCollisionDistance();
+                        double myCarDecisionDistance = myCarPosition.getDecisionDistance();
+                        double otherCarCollisionDistance = otherCarPosition.getCollisionDistance();
+                        double otherCarDecisionDistance = otherCarPosition.getDecisionDistance();
+                        
+                        LineSegment myCarCollisionSegment = MathUtils.getSlice(
+                                fullSegment.getPointA(), fullSegment.getPointB(), myCarCollisionDistance);
+                        LineSegment myCarDecisionSegment = MathUtils.getSlice(
+                                myCarCollisionSegment.getPointB(), fullSegment.getPointB(), myCarDecisionDistance);
+                        LineSegment otherCarCollisionSegment = MathUtils.getSlice(
+                                fullSegment.getPointB(), fullSegment.getPointA(), otherCarCollisionDistance);
+                        LineSegment otherCarDecisionSegment = MathUtils.getSlice(
+                                otherCarCollisionSegment.getPointB(), fullSegment.getPointA(), otherCarDecisionDistance);
+
+                        carDistancesInfo.add(new ObjectDistanceInfo(
+                                ObjectDistanceInfo.SegmentType.COLLISION_ZONE,
+                                myCarCollisionDistance,
+                                myCarCollisionSegment,
+                                myCarPosition.getCarUUID(),
+                                otherCarPosition.getCarUUID()));
+
+                        carDistancesInfo.add(new ObjectDistanceInfo(
+                                ObjectDistanceInfo.SegmentType.DECISION_ZONE_ACTIVE,
+                                myCarDecisionDistance,
+                                myCarDecisionSegment,
+                                myCarPosition.getCarUUID(),
+                                otherCarPosition.getCarUUID()));
+
+                        otherCarPosition.getCarDistancesInfo().add(new ObjectDistanceInfo(
+                                ObjectDistanceInfo.SegmentType.COLLISION_ZONE,
+                                otherCarCollisionDistance,
+                                otherCarCollisionSegment,
+                                otherCarPosition.getCarUUID(),
+                                myCarPosition.getCarUUID()));
+
+                        otherCarPosition.getCarDistancesInfo().add(new ObjectDistanceInfo(
+                                ObjectDistanceInfo.SegmentType.DECISION_ZONE_PASSIVE,
+                                otherCarDecisionDistance,
+                                otherCarDecisionSegment,
+                                otherCarPosition.getCarUUID(),
+                                myCarPosition.getCarUUID()));
+                    }
                 }
 
                 if (!otherCarPosition.isLast() &&
@@ -119,7 +160,7 @@ public class DistanceManager {
                     i++;
                 }
             }
-            
+
             if (myCarPosition.isLast()) {
                 break;
             }

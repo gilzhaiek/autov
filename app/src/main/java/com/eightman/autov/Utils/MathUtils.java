@@ -80,6 +80,22 @@ public class MathUtils {
         return Math.sqrt(Math.pow(xy1.getX() - xy2.getX(), 2) + Math.pow(xy1.getY() - xy2.getY(), 2));
     }
 
+    public static LineSegment getSlice(XY startPoint, XY endPoint, double distance) {
+        double origDistance = MathUtils.getDistance(startPoint, endPoint);
+        if (distance >= origDistance) { // Slice requested is bigger or equal to the original
+            return new LineSegment(startPoint, endPoint);
+        }
+        double scale = distance / origDistance;
+        double dx = endPoint.getX() - startPoint.getX();
+        double dy = endPoint.getY() - startPoint.getY();
+        return new LineSegment(startPoint, new XY(startPoint.getX() + dx * scale, startPoint.getY() + dy * scale));
+    }
+
+    public static LineSegment getSlice(XY startPoint, XY endPoint, double offset, double distance) {
+        startPoint = getSlice(startPoint, endPoint, offset).getPointB();
+        return getSlice(startPoint, endPoint, distance);
+    }
+
     public static Pair<Double, LineSegment> getShortestDistance(XY a1, XY a2, XY b1, XY b2) {
         LineSegment a = new LineSegment(a1, a2);
         LineSegment b = new LineSegment(b1, b2);

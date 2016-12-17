@@ -3,6 +3,7 @@ package com.eightman.autov.Objects;
 import android.support.annotation.NonNull;
 
 import com.eightman.autov.Configurations.Global;
+import com.eightman.autov.Configurations.SimConfig;
 import com.eightman.autov.Hardware.Boundaries;
 
 import java.util.ArrayList;
@@ -245,6 +246,14 @@ public class CarPosition {
         if (this.absTime == 0 || forceInit) {
             updateAbsTime(absTime);
         }
+    }
+
+    public double getCollisionDistance() {
+        return (speed * timeToNextPosition / 1000.0) * SimConfig.COLLISION_ZONE_ERROR_ADDITION;
+    }
+
+    public double getDecisionDistance() {
+        return (boundaries.getLength() * SimConfig.SAFE_ZONE_ERROR_ADDITION);
     }
 
     public List<ObjectDistanceInfo> getCarDistancesInfo() {

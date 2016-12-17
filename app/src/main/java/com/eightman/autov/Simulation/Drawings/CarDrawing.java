@@ -26,7 +26,9 @@ public class CarDrawing extends AbstractDrawing {
     static Paint backWheelsPaint;
     Paint carPaint;
     Paint headingPaint;
-    Paint distancePaint;
+    Paint collisionPaint;
+    Paint activeDistancePaint;
+    Paint passiveDistancePaint;
     Boundaries lastBoundaries;
     CollisionManager collisionManager;
 
@@ -43,7 +45,9 @@ public class CarDrawing extends AbstractDrawing {
 
         carPaint = DrawingUtils.getLinePaint(car.getCarCharacteristics().getColor());
         headingPaint = DrawingUtils.getFillPaint(Color.argb(0x77, 0xA1, 0x00, 0x1E));
-        distancePaint = DrawingUtils.getFillPaint(Color.argb(0x77, 0xFF, 0xFF, 0x00));
+        collisionPaint = DrawingUtils.getFillPaint(Color.YELLOW);
+        activeDistancePaint = DrawingUtils.getFillPaint(Color.GREEN);
+        passiveDistancePaint = DrawingUtils.getFillPaint(Color.BLUE);
     }
 
     @Override
@@ -62,8 +66,14 @@ public class CarDrawing extends AbstractDrawing {
                         " timeToNP=" + carPosition.getTimeToNextPosition());*/
 
         List<ObjectDistanceInfo> distanceInfoList = carPosition.getCarDistancesInfo();
-        for(ObjectDistanceInfo objectDistanceInfo : distanceInfoList) {
-            DrawingUtils.drawLine(canvas, objectDistanceInfo.getLineSegment(), distancePaint);
+        for (ObjectDistanceInfo objectDistanceInfo : distanceInfoList) {
+            if (objectDistanceInfo.getSegmentType() == ObjectDistanceInfo.SegmentType.COLLISION_ZONE) {
+                DrawingUtils.drawLine(canvas, objectDistanceInfo.getLineSegment(), collisionPaint);
+            } else if (objectDistanceInfo.getSegmentType() == ObjectDistanceInfo.SegmentType.DECISION_ZONE_ACTIVE) {
+                DrawingUtils.drawLine(canvas, objectDistanceInfo.getLineSegment(), activeDistancePaint);
+            } else {
+                DrawingUtils.drawLine(canvas, objectDistanceInfo.getLineSegment(), passiveDistancePaint);
+            }
         }
 
         Boundaries boundaries = carPosition.getBoundaries();

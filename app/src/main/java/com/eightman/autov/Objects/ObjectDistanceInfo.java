@@ -9,16 +9,28 @@ import java.util.UUID;
  */
 
 public class ObjectDistanceInfo {
+    public enum SegmentType {
+        COLLISION_ZONE,
+        DECISION_ZONE_ACTIVE,
+        DECISION_ZONE_PASSIVE
+    }
+
+    final private SegmentType segmentType;
     final private double distance;
     final private LineSegment lineSegment;
     final UUID firstObjUUID;
     final UUID secondObjAUUID;
 
-    public ObjectDistanceInfo(double distance, LineSegment lineSegment, UUID firstObjUUID, UUID secondObjAUUID) {
+    public ObjectDistanceInfo(SegmentType segmentType, double distance, LineSegment lineSegment, UUID firstObjUUID, UUID secondObjAUUID) {
+        this.segmentType = segmentType;
         this.distance = distance;
         this.lineSegment = lineSegment;
         this.firstObjUUID = firstObjUUID;
         this.secondObjAUUID = secondObjAUUID;
+    }
+
+    public SegmentType getSegmentType() {
+        return segmentType;
     }
 
     public double getDistance() {
