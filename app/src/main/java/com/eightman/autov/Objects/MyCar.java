@@ -16,8 +16,6 @@ public class MyCar {
     final CarPath carPath;
 
     CarPosition carPosition;
-    double currentSpeed;
-    double targetSpeed;
     boolean isInAccident = false;
     int numOfAccidents = 0;
     final static long timeResolution = Constants.ONE_SECOND;
@@ -69,28 +67,6 @@ public class MyCar {
 
     public UUID getUuid() {
         return uuid;
-    }
-
-    public double getCurrentSpeed() {
-        synchronized (lock) {
-            return currentSpeed;
-        }
-    }
-
-    public void setCurrentSpeed(double currentSpeed) {
-        synchronized (lock) {
-            this.currentSpeed = currentSpeed;
-        }
-    }
-
-    public double getTargetSpeed() {
-        return targetSpeed;
-    }
-
-    public void setTargetSpeed(double targetSpeed) {
-        synchronized (lock) {
-            this.targetSpeed = targetSpeed;
-        }
     }
 
     public static long getTimeResolution() {

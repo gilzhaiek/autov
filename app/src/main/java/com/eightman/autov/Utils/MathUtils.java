@@ -4,6 +4,8 @@ import android.util.Pair;
 
 import com.eightman.autov.Configurations.SimConfig;
 import com.eightman.autov.Objects.CarPosition;
+import com.eightman.autov.Objects.Geom.LineSegment;
+import com.eightman.autov.Objects.Geom.XY;
 
 import java.util.Random;
 
@@ -124,10 +126,10 @@ public class MathUtils {
      */
     public static Pair<Double, LineSegment> distanceSq(LineSegment segmentA, LineSegment segmentB) {
         // intersection of the two lines relative to A
-        double slopeAX = segmentA.slopeX();
-        double slopeAY = segmentA.slopeY();
-        double slopeBX = segmentB.slopeX();
-        double slopeBY = segmentB.slopeY();
+        double slopeAX = segmentA.getSlopeX();
+        double slopeAY = segmentA.getSlopeY();
+        double slopeBX = segmentB.getSlopeX();
+        double slopeBY = segmentB.getSlopeY();
 
         double ta = slopeBX * (segmentA.getPointA().getY() - segmentB.getPointA().getY()) -
                 slopeBY * (segmentA.getPointA().getX() - segmentB.getPointA().getX());

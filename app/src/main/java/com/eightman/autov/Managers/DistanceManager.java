@@ -5,7 +5,7 @@ import android.util.Pair;
 import com.eightman.autov.Objects.CarPosition;
 import com.eightman.autov.Objects.MyCar;
 import com.eightman.autov.Objects.ObjectDistanceInfo;
-import com.eightman.autov.Utils.LineSegment;
+import com.eightman.autov.Objects.Geom.LineSegment;
 import com.eightman.autov.Utils.MathUtils;
 import com.eightman.autov.Utils.TrigUtils;
 

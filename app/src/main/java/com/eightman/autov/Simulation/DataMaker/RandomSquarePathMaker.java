@@ -2,14 +2,15 @@ package com.eightman.autov.Simulation.DataMaker;
 
 import com.eightman.autov.Configurations.Constants;
 import com.eightman.autov.Configurations.SimConfig;
-import com.eightman.autov.Hardware.Boundaries;
 import com.eightman.autov.Objects.CarPath;
 import com.eightman.autov.Objects.CarPosition;
+import com.eightman.autov.Objects.Geom.Boundaries;
+import com.eightman.autov.Objects.Geom.LineSegment;
+import com.eightman.autov.Objects.Geom.XY;
 import com.eightman.autov.Simulation.Drawings.DrawingUtils;
 import com.eightman.autov.Simulation.Interfaces.IRandomPathMaker;
 import com.eightman.autov.Utils.MathUtils;
 import com.eightman.autov.Utils.TrigUtils;
-import com.eightman.autov.Utils.XY;
 
 import java.util.Random;
 
@@ -19,33 +20,62 @@ import java.util.Random;
 
 public class RandomSquarePathMaker implements IRandomPathMaker {
     static Random random = new Random();
-    private double speed;
 
     @Override
     public boolean generatePath(CarPath carPath) throws Exception {
-        int cnt = random.nextInt(
-                SimConfig.MAX_NUM_EDGES - SimConfig.MIN_NUM_EDGES + 1) +
-                SimConfig.MIN_NUM_EDGES;
+//        int cnt = random.nextInt(
+//                SimConfig.MAX_NUM_EDGES - SimConfig.MIN_NUM_EDGES + 1) +
+//                SimConfig.MIN_NUM_EDGES;
 
-        return generatePositions(carPath.getLastPosition(), cnt);
+        return generateHardPositions(carPath.getLastPosition(), 1);
     }
 
-    private boolean generatePositions(CarPosition lastPosition, int cnt) throws Exception {
-        XY from = lastPosition.getBoundaries().getCenterFront();
-        XY delta = null;
-        XY to = null;
+    private void genRandomPath(CarPosition lastPosition, LineSegment lineSegment) {
+        lineSegment.setPointA(lastPosition.getBoundaries().getCenterFront());
         do {
-            delta = new XY(getRandomEdge(), getRandomEdge());
-            to = from.add(delta);
-        } while ((!DrawingUtils.inOnScreen(to) && SimConfig.LIMIT_CARS_TO_SCREEN) ||
-                DrawingUtils.enteredLaunchArea(from, to));
-
-        if (delta.getX() == delta.getY() && delta.getX() == 0) {
-            return generatePositions(lastPosition, cnt);
+            lineSegment.setPointB(
+                    lineSegment.getPointA().add(new XY(getRandomEdge(), getRandomEdge())));
         }
+        while ((!DrawingUtils.inOnScreen(lineSegment.getPointB()) && SimConfig.LIMIT_CARS_TO_SCREEN));
 
-        double speed =  MathUtils.getRandomDouble(SimConfig.MIN_SPEED, SimConfig.MAX_SPEED);
-        CarPosition fromRotated = rotateCar(lastPosition, from, to, lastPosition.getTimeToNextPosition(), speed);
+        // Didn't go anywhere - generate again...
+        if (lineSegment.getSlopeX() == 0 && lineSegment.getSlopeY() == 0) {
+            genRandomPath(lastPosition, lineSegment);
+        }
+    }
+
+    private CarPosition headTowards(CarPosition fromPosition, Boundaries finalBoundaries,
+                                    double finalSpeed, long deltaSpeed) {
+        return fromPosition;// TODO: Finish
+    }
+
+    private boolean generateSoftPosition(CarPosition fromPosition, int cnt) throws Exception {
+        LineSegment lineSegment = new LineSegment();
+        genRandomPath(fromPosition, lineSegment);
+
+        Boundaries toBoundaries = TrigUtils.getHeadingBoundaries(
+                lineSegment.getPointA(), lineSegment.getPointB(),
+                fromPosition.getBoundaries().getWidth(), fromPosition.getBoundaries().getLength());
+        toBoundaries = toBoundaries.addOffset(lineSegment.getPointB());
+
+        CarPosition toPosition;
+        do {
+            toPosition = headTowards(fromPosition, toBoundaries, 0, Constants.ONE_SECOND);
+        } while (!toPosition.getBoundaries().equals(toBoundaries));
+
+        return true;
+    }
+
+    private boolean generateHardPositions(CarPosition lastPosition, int cnt) throws Exception {
+        LineSegment lineSegment = new LineSegment();
+        genRandomPath(lastPosition, lineSegment);
+        XY delta = new XY(lineSegment.getSlopeX(), lineSegment.getSlopeY());
+
+        double speed = MathUtils.getRandomDouble(SimConfig.MIN_SPEED, SimConfig.MAX_SPEED);
+        CarPosition fromRotated = rotateCar(lastPosition,
+                lineSegment.getPointA(), lineSegment.getPointB(),
+                lastPosition.getTimeToNextPosition(), speed);
+
         CarPosition carPosition = fromRotated;
         double totalSecondsDouble = delta.getVector() / speed;
         int totalSeconds = (int) totalSecondsDouble;
@@ -54,10 +84,7 @@ public class RandomSquarePathMaker implements IRandomPathMaker {
         for (int sec = 0; ; ++sec) {
             long timeOffset = (sec == totalSeconds) ? leftOver : Constants.ONE_SECOND;
             Boundaries boundaries = carPosition.getBoundaries().addOffset(deltaPerSecond);
-            carPosition = CarPosition.getMovingPosition(
-                    boundaries,
-                    speed,
-                    timeOffset);
+            carPosition = CarPosition.getMovingPosition(boundaries, speed, 0.0, 0.0, timeOffset);
 
             if (!lastPosition.setNext(carPosition, true)) { // In case anyone altered the path
                 return false;
@@ -68,7 +95,6 @@ public class RandomSquarePathMaker implements IRandomPathMaker {
                 break;
             }
         }
-
 
         if (leftOver > 0) {
             carPosition = CarPosition.getRestedPosition(fromRotated.getBoundaries().addOffset(delta));
@@ -83,17 +109,14 @@ public class RandomSquarePathMaker implements IRandomPathMaker {
             return true;
         }
 
-        return generatePositions(lastPosition, cnt);
+        return generateHardPositions(lastPosition, cnt);
     }
 
     private CarPosition rotateCar(CarPosition position, XY from, XY to, long timeOffset, double speed) {
-        Boundaries toBoundaries = TrigUtils.getBoundaries(
+        Boundaries toBoundaries = TrigUtils.getHeadingBoundaries(
                 from, to, position.getBoundaries().getWidth(), position.getBoundaries().getLength());
 
-        return CarPosition.getMovingPosition(
-                toBoundaries,
-                speed,
-                timeOffset);
+        return CarPosition.getMovingPosition(toBoundaries, speed, 0.0, 0.0, timeOffset);
     }
 
     private double getRandomEdge() {

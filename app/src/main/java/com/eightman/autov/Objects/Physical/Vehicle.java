@@ -1,4 +1,4 @@
-package com.eightman.autov.Hardware;
+package com.eightman.autov.Objects.Physical;
 
 /**
  * Created by gilzhaiek on 2016-10-29.

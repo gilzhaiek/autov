@@ -11,7 +11,7 @@ import com.eightman.autov.Objects.MyCar;
 import com.eightman.autov.Simulation.DataMaker.RandomSquarePathMaker;
 import com.eightman.autov.Simulation.SimTime;
 import com.eightman.autov.Utils.TrigUtils;
-import com.eightman.autov.Utils.XY;
+import com.eightman.autov.Objects.Geom.XY;
 
 import java.util.UUID;
 

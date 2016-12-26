@@ -1,7 +1,7 @@
 package com.eightman.autov.Utils;
 
 import com.eightman.autov.Configurations.SimConfig;
-import com.eightman.autov.Hardware.Boundaries;
+import com.eightman.autov.Objects.Geom.Boundaries;
 
 
 /**

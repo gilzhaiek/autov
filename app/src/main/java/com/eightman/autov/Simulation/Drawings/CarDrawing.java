@@ -5,7 +5,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 
 import com.eightman.autov.Configurations.SimConfig;
-import com.eightman.autov.Hardware.Boundaries;
+import com.eightman.autov.Objects.Geom.Boundaries;
 import com.eightman.autov.Objects.CarPosition;
 import com.eightman.autov.Objects.MyCar;
 import com.eightman.autov.Objects.ObjectDistanceInfo;
@@ -44,10 +44,10 @@ public class CarDrawing extends AbstractDrawing {
         }
 
         carPaint = DrawingUtils.getLinePaint(car.getCarCharacteristics().getColor());
-        headingPaint = DrawingUtils.getFillPaint(Color.argb(0x77, 0xA1, 0x00, 0x1E));
-        collisionPaint = DrawingUtils.getFillPaint(Color.YELLOW);
-        activeDistancePaint = DrawingUtils.getFillPaint(Color.GREEN);
-        passiveDistancePaint = DrawingUtils.getFillPaint(Color.BLUE);
+        headingPaint = DrawingUtils.getLinePaint(Color.argb(0x77, 0xA1, 0x00, 0x1E));
+        collisionPaint = DrawingUtils.getLinePaint(Color.YELLOW);
+        activeDistancePaint = DrawingUtils.getLinePaint(Color.rgb(0xa5,0x32,0xdb));
+        passiveDistancePaint = DrawingUtils.getLinePaint(Color.CYAN);
     }
 
     @Override

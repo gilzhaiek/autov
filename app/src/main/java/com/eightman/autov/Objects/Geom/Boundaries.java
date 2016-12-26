@@ -1,8 +1,6 @@
-package com.eightman.autov.Hardware;
+package com.eightman.autov.Objects.Geom;
 
-import com.eightman.autov.Utils.LineSegment;
 import com.eightman.autov.Utils.MathUtils;
-import com.eightman.autov.Utils.XY;
 
 /**
  * Created by gilzhaiek on 2016-10-29.

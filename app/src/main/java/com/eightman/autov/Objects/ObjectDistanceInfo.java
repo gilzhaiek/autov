@@ -1,6 +1,6 @@
 package com.eightman.autov.Objects;
 
-import com.eightman.autov.Utils.LineSegment;
+import com.eightman.autov.Objects.Geom.LineSegment;
 
 import java.util.UUID;
 

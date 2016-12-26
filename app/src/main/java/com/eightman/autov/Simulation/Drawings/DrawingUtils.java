@@ -6,9 +6,9 @@ import android.graphics.Path;
 
 import com.eightman.autov.Configurations.Global;
 import com.eightman.autov.Configurations.SimConfig;
-import com.eightman.autov.Hardware.Boundaries;
-import com.eightman.autov.Utils.LineSegment;
-import com.eightman.autov.Utils.XY;
+import com.eightman.autov.Objects.Geom.Boundaries;
+import com.eightman.autov.Objects.Geom.LineSegment;
+import com.eightman.autov.Objects.Geom.XY;
 
 /**
  * Created by gilzhaiek on 2016-11-03.

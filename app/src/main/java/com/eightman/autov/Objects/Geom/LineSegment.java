@@ -1,4 +1,4 @@
-package com.eightman.autov.Utils;
+package com.eightman.autov.Objects.Geom;
 
 /**
  * Created by gilzhaiek on 2016-11-11.
@@ -7,6 +7,9 @@ package com.eightman.autov.Utils;
 public class LineSegment {
     XY pointA;
     XY pointB;
+
+    public LineSegment() {
+    }
 
     public LineSegment(XY pointA, XY pointB) {
         this.pointA = pointA;
@@ -21,13 +24,19 @@ public class LineSegment {
         return pointB;
     }
 
+    public void setPointA(XY pointA) {
+        this.pointA = pointA;
+    }
 
-    public double slopeX() {
+    public void setPointB(XY pointB) {
+        this.pointB = pointB;
+    }
+
+    public double getSlopeX() {
         return pointB.getX() - pointA.getX();
     }
 
-    public double slopeY() {
+    public double getSlopeY() {
         return pointB.getY() - pointA.getY();
     }
-
 }

@@ -2,7 +2,9 @@ package com.eightman.autov.Utils;
 
 import android.util.Pair;
 
-import com.eightman.autov.Hardware.Boundaries;
+import com.eightman.autov.Objects.Geom.Boundaries;
+import com.eightman.autov.Objects.Geom.LineSegment;
+import com.eightman.autov.Objects.Geom.XY;
 
 /**
  * Created by gilzhaiek on 2016-11-03.
@@ -54,7 +56,7 @@ public class TrigUtils {
 
     }
 
-    public static Boundaries getBoundaries(XY yourXY, XY lookingAtXY, double width, double length) {
+    public static Boundaries getHeadingBoundaries(XY yourXY, XY lookingAtXY, double width, double length) {
         // https://goo.gl/photos/kT3nq51TM7fqiLjQ6
         double dx = lookingAtXY.getX() - yourXY.getX();
         double dy = lookingAtXY.getY() - yourXY.getY();

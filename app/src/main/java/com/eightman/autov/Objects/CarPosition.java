@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.eightman.autov.Configurations.Global;
 import com.eightman.autov.Configurations.SimConfig;
-import com.eightman.autov.Hardware.Boundaries;
+import com.eightman.autov.Objects.Geom.Boundaries;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +19,8 @@ public class CarPosition {
     private final long id;
     private final Boundaries boundaries;
     private final double speed;
+    private final double acceleration;
+    private final double wheelsAngle; // Positive: Facing Right, Negative: Facing Left
     private final long timeToNextPosition;
     private final List<ObjectDistanceInfo> carDistancesInfo;
 
@@ -37,6 +39,8 @@ public class CarPosition {
         this.id = Global.generateId();
         this.boundaries = boundaries;
         this.speed = 0;
+        this.acceleration = 0;
+        this.wheelsAngle = 0;
         this.timeToNextPosition = 0;
         this.last = this;
         this.carDistancesInfo = new ArrayList<>();
@@ -45,10 +49,14 @@ public class CarPosition {
     private CarPosition(
             @NonNull Boundaries boundaries,
             double speed,
+            double acceleration,
+            double wheelsAngle,
             long timeToNextPosition) {
         this.id = Global.generateId();
         this.boundaries = boundaries;
         this.speed = speed;
+        this.acceleration = acceleration;
+        this.wheelsAngle = wheelsAngle;
         this.timeToNextPosition = timeToNextPosition;
         this.last = this;
         this.carDistancesInfo = new ArrayList<>();
@@ -61,14 +69,18 @@ public class CarPosition {
     public static CarPosition getMovingPosition(
             Boundaries boundaries,
             double speed,
+            double acceleration,
+            double wheelsAngle,
             long timeToNextPosition) {
-        return new CarPosition(boundaries, speed, timeToNextPosition);
+        return new CarPosition(boundaries, speed, acceleration, wheelsAngle, timeToNextPosition);
     }
 
     public static CarPosition copy(CarPosition carPosition) {
         return new CarPosition(
                 carPosition.getBoundaries(),
                 carPosition.getSpeed(),
+                carPosition.getAcceleration(),
+                carPosition.getWheelsAngle(),
                 carPosition.getTimeToNextPosition());
     }
 
@@ -216,6 +228,14 @@ public class CarPosition {
 
     public double getSpeed() {
         return speed;
+    }
+
+    public double getAcceleration() {
+        return acceleration;
+    }
+
+    public double getWheelsAngle() {
+        return wheelsAngle;
     }
 
     /**

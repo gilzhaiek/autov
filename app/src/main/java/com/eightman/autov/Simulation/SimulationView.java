@@ -17,7 +17,7 @@ import com.eightman.autov.Simulation.Drawings.CarDrawing;
 import com.eightman.autov.Simulation.Objects.AbstractSimulation;
 import com.eightman.autov.Simulation.Objects.CarSimulation;
 import com.eightman.autov.StatsInterface;
-import com.eightman.autov.Utils.XY;
+import com.eightman.autov.Objects.Geom.XY;
 import com.eightman.autov.ai.CollisionManager;
 
 import java.util.LinkedList;

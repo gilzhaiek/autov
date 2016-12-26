@@ -10,7 +10,7 @@ import android.widget.Toast;
 import com.eightman.autov.Configurations.SimConfig;
 import com.eightman.autov.Simulation.SimTime;
 import com.eightman.autov.Simulation.SimulationView;
-import com.eightman.autov.Utils.XY;
+import com.eightman.autov.Objects.Geom.XY;
 
 public class SimulationActivity extends AppCompatActivity implements View.OnClickListener, StatsInterface {
     SimulationView simulationView;
