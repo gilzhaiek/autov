@@ -1,12 +1,13 @@
 package com.eightman.autov.Movement;
 
+import android.util.Pair;
+
 import com.eightman.autov.Configurations.SimConfig;
 import com.eightman.autov.Objects.CarPosition;
 import com.eightman.autov.Objects.MyCar;
-import com.eightman.autov.Objects.Physical.AccDec;
-import com.eightman.autov.Objects.Physical.Speed;
 import com.eightman.autov.Objects.Physical.Wheels;
 import com.eightman.autov.Utils.MathUtils;
+import com.eightman.autov.Utils.SpeedUtils;
 
 /**
  * Created by gilzhaiek on 2016-12-26.
@@ -37,22 +38,21 @@ public class SpeedManager {
         double currentSpeedMS = carPosition.getSpeed();
         double currentWheelAngle = carPosition.getWheelsAngle();
 
-        Speed speed = car.getCarCharacteristics().getSpeed();
-        AccDec accDec = car.getCarCharacteristics().getAccDec();
         Wheels wheels = car.getCarCharacteristics().getWheels();
-        double deltaWheelsAngle = targetWheelsAngle - carPosition.getWheelsAngle();
 
-        // Make sure you don't go over the max wheel angle
+        double deltaWheelsAngle = targetWheelsAngle - carPosition.getWheelsAngle();
+        // Make sure you don't go over the max wheels angle
         if (Math.abs(deltaWheelsAngle) > wheels.getMaxWheelsAngle()) {
-            deltaWheelsAngle = deltaWheelsAngle > 0 ? wheels.getMaxWheelsAngle() :
+            targetWheelsAngle = deltaWheelsAngle > 0 ? wheels.getMaxWheelsAngle() :
                     (-1 * wheels.getMaxWheelsAngle());
         }
 
-        double newWheelsAngle = currentWheelAngle + deltaWheelsAngle;
-        double targetSpeedMS = speed.getComfortableSpeed(newWheelsAngle);
-        double acceleration = getAccDec(currentSpeedMS, targetSpeedMS,
-                accDec.getAcceleration(targetSpeedMS), deltaTime);
+        Pair<Double, Double> accWheels = SpeedUtils.getAccWheelsAngle(car.getCarCharacteristics(),
+                currentSpeedMS,
+                car.getCarCharacteristics().getSpeed().getTopSpeed(), // Assume we want to go the fastest
+                currentWheelAngle, targetWheelsAngle, deltaTime);
+
         return CarPosition.getMovingPosition(carPosition.getBoundaries(), currentSpeedMS,
-                acceleration, newWheelsAngle, deltaTime);
+                accWheels.first, accWheels.second, deltaTime);
     }
 }

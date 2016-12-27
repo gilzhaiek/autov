@@ -4,6 +4,7 @@ import android.util.Pair;
 
 import com.eightman.autov.Configurations.SimConfig;
 import com.eightman.autov.Objects.CarCharacteristics;
+import com.eightman.autov.Objects.Physical.AccDec;
 import com.eightman.autov.Objects.Physical.Speed;
 
 /**
@@ -11,11 +12,12 @@ import com.eightman.autov.Objects.Physical.Speed;
  */
 
 public class SpeedUtils {
-    public static Pair<Double, Double> getAccWheelAngle(CarCharacteristics carCharacteristics,
-                                                        double currentSpeed, double targetSpeed,
-                                                        double currentWheelsAngle, double targetWheelsAngle,
-                                                        long deltaTime) {
+    public static Pair<Double, Double> getAccWheelsAngle(CarCharacteristics carCharacteristics,
+                                                         double currentSpeed, double targetSpeed,
+                                                         double currentWheelsAngle, double targetWheelsAngle,
+                                                         long deltaTime) {
         Speed speed = carCharacteristics.getSpeed();
+        AccDec accDec = carCharacteristics.getAccDec();
 
         double wheelsAngle = currentWheelsAngle;
         // If the wheels angle is going to decrease, we should decrease the wheels angle
@@ -29,21 +31,22 @@ public class SpeedUtils {
             }
         }
 
-        double targetDec = 0;
-        // If we are too fast, we should reduce speed for that wheels angle
+        double fastestSpeed = targetSpeed > currentSpeed ? targetSpeed : currentSpeed;
+        double targetAccDec = 0;
+        // If we are need to go fast, we should reduce speed for that wheels angle
         double comfortableSpeed = speed.getComfortableSpeed(wheelsAngle);
-        if (currentSpeed > comfortableSpeed) {  // We are too fast
+        if (fastestSpeed > comfortableSpeed) {  // We are too fast
             // 10 - 20 = -10 < -3
-            if (comfortableSpeed - currentSpeed < SimConfig.COMFORTABLE_DEC) {
-                targetDec = SimConfig.COMFORTABLE_DEC;
+            if (comfortableSpeed - fastestSpeed < SimConfig.COMFORTABLE_DEC) {
+                targetAccDec = SimConfig.COMFORTABLE_DEC;
             } else {
-                targetDec = comfortableSpeed - currentSpeed;
+                targetAccDec = comfortableSpeed - fastestSpeed;
             }
-            return new Pair<>(MathUtils.getFactorSec(targetDec, deltaTime), wheelsAngle);
+            return new Pair<>(MathUtils.getFactorSec(targetAccDec, deltaTime), wheelsAngle);
         }
 
         // We should increase our wheels angle till we are too fast or reached the wheels angle
-        while (currentSpeed <= comfortableSpeed && wheelsAngle != targetWheelsAngle) {
+        while ((fastestSpeed <= comfortableSpeed) && (wheelsAngle != targetWheelsAngle)) {
             // 45-35 -> 10  45-55 -> -10 45+35 (-35->45) -> 75
             // -45+35 -> -10 -45+55 -> 10  -45-35(35->-45) - -75>
             double deltaWheels = targetWheelsAngle - currentWheelsAngle;
@@ -55,12 +58,17 @@ public class SpeedUtils {
             comfortableSpeed = speed.getComfortableSpeed(wheelsAngle);
         }
 
-        if (comfortableSpeed - currentSpeed < SimConfig.COMFORTABLE_DEC) {
-            targetDec = SimConfig.COMFORTABLE_DEC;
-        } else {
-            targetDec = comfortableSpeed - currentSpeed;
+        // We should set our speed
+        if (targetSpeed > comfortableSpeed) {
+            targetSpeed = comfortableSpeed;
         }
-        return new Pair<>(MathUtils.getFactorSec(targetDec, deltaTime), wheelsAngle);
 
+        targetAccDec = targetSpeed - currentSpeed;
+        if (targetAccDec < SimConfig.COMFORTABLE_DEC) {
+            targetAccDec = SimConfig.COMFORTABLE_DEC;
+        } else if (targetAccDec > accDec.getAcceleration(currentSpeed)) { // Can't accelerate too quickly
+            targetAccDec = accDec.getAcceleration(currentSpeed);
+        }
+        return new Pair<>(MathUtils.getFactorSec(targetAccDec, deltaTime), wheelsAngle);
     }
 }
