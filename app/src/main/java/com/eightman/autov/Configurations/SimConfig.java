@@ -40,11 +40,10 @@ public class SimConfig {
     final public static double COMFORTABLE_DEC = -3.0; // m/s^2 http://journaldatabase.info/download/pdf/study_deceleration_behaviour_different
 
     // Wheels
-    final public static double MIN_MAX_WHEELS_ANGEL = 45.0; // DEGREES
+    final public static double MIN_MAX_WHEELS_ANGEL = 25.0; // DEGREES
     final public static double MAX_MAX_WHEELS_ANGLE = 65.0;  // DEGREES
     final public static double COMFORTABLE_SPEED_FOR_MAX_ANGLE = 0.5; // m/s
-    final public static double MIN_ANGLE_CHANGE_WHEEL_TURN = 3.0; // Per Second
-    final public static double MAX_ANGLE_CHANGE_WHEEL_TURN = 15.0; // Per Second
+    final public static double WHEELS_ANGLE_INCREASE = 5.0; // DEGREES
 
     // Random Square Path Maker
     final public static double EDGE_METERS = 20.0;

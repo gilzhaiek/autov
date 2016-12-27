@@ -8,18 +8,18 @@ import com.eightman.autov.Utils.MathUtils;
  */
 
 public class Wheels {
-    final double maxWheelsAngleChange;
+    final double maxWheelsAngle;
 
-    public Wheels(double maxWheelsAngleChange) {
-        this.maxWheelsAngleChange = maxWheelsAngleChange;
+    public Wheels(double maxWheelsAngle) {
+        this.maxWheelsAngle = maxWheelsAngle;
     }
 
     public static Wheels generateRandom() {
-        return new Wheels(MathUtils.getRandomDouble(SimConfig.MIN_ANGLE_CHANGE_WHEEL_TURN,
-                SimConfig.MAX_ANGLE_CHANGE_WHEEL_TURN));
+        return new Wheels(MathUtils.getRandomDouble(SimConfig.MIN_MAX_WHEELS_ANGEL,
+                SimConfig.MAX_MAX_WHEELS_ANGLE));
     }
 
-    public double getMaxWheelsAngleChange() {
-        return maxWheelsAngleChange;
+    public double getMaxWheelsAngle() {
+        return maxWheelsAngle;
     }
 }

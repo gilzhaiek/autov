@@ -1,35 +1,40 @@
 package com.eightman.autov.Movement;
 
-import com.eightman.autov.Configurations.Constants;
 import com.eightman.autov.Configurations.SimConfig;
 import com.eightman.autov.Objects.CarPosition;
 import com.eightman.autov.Objects.MyCar;
 import com.eightman.autov.Objects.Physical.AccDec;
 import com.eightman.autov.Objects.Physical.Speed;
 import com.eightman.autov.Objects.Physical.Wheels;
+import com.eightman.autov.Utils.MathUtils;
 
 /**
  * Created by gilzhaiek on 2016-12-26.
  */
 
 public class SpeedManager {
-    private static double getAccDec(double currentSpeed, double targetSpeed, double maxAcc, long deltaTime) {
-        double deltaSpeed = targetSpeed - currentSpeed;
-        if (deltaSpeed == 0) {
+    private static double getAccDec(double currentSpeedMS, double targetSpeedMS, double maxAccMSS,
+                                    long deltaTime) {
+        double accDecMS = targetSpeedMS - currentSpeedMS;
+        if (accDecMS == 0) {
             return 0.0;
         } else {
-            double accDec = deltaSpeed * (Constants.ONE_SECOND / deltaTime);
+            // If we need to increase in 20m/s - we break it to parts (100ms -> 10
+            // 2 m/100ms
+            double accDec = MathUtils.getFactorSec(accDecMS, deltaTime);
             if (accDec > 0) {
+                double maxAcc = MathUtils.getFactorSec(maxAccMSS, deltaTime);
                 return accDec > maxAcc ? maxAcc : accDec;
             } else {
-                return accDec < SimConfig.COMFORTABLE_DEC ? SimConfig.COMFORTABLE_DEC : accDec;
+                double comfortableDec = MathUtils.getFactorSec(SimConfig.COMFORTABLE_DEC, deltaTime);
+                return accDec < comfortableDec ? comfortableDec : accDec;
             }
         }
     }
 
     public static CarPosition adjustCarPosition(MyCar car, CarPosition carPosition,
                                                 double targetWheelsAngle, long deltaTime) {
-        double currentSpeed = carPosition.getSpeed();
+        double currentSpeedMS = carPosition.getSpeed();
         double currentWheelAngle = carPosition.getWheelsAngle();
 
         Speed speed = car.getCarCharacteristics().getSpeed();
@@ -37,16 +42,17 @@ public class SpeedManager {
         Wheels wheels = car.getCarCharacteristics().getWheels();
         double deltaWheelsAngle = targetWheelsAngle - carPosition.getWheelsAngle();
 
-        if(Math.abs(deltaWheelsAngle) > wheels.getMaxWheelsAngleChange()) {
-            deltaWheelsAngle = deltaWheelsAngle > 0 ? wheels.getMaxWheelsAngleChange() :
-                    (-1 * wheels.getMaxWheelsAngleChange());
+        // Make sure you don't go over the max wheel angle
+        if (Math.abs(deltaWheelsAngle) > wheels.getMaxWheelsAngle()) {
+            deltaWheelsAngle = deltaWheelsAngle > 0 ? wheels.getMaxWheelsAngle() :
+                    (-1 * wheels.getMaxWheelsAngle());
         }
 
         double newWheelsAngle = currentWheelAngle + deltaWheelsAngle;
-        double targetSpeed = speed.getComfortableSpeed(newWheelsAngle);
-        double acceleration = getAccDec(currentSpeed, targetSpeed,
-                accDec.getAcceleration(targetSpeed), deltaTime);
-        return CarPosition.getMovingPosition(carPosition.getBoundaries(), currentSpeed,
+        double targetSpeedMS = speed.getComfortableSpeed(newWheelsAngle);
+        double acceleration = getAccDec(currentSpeedMS, targetSpeedMS,
+                accDec.getAcceleration(targetSpeedMS), deltaTime);
+        return CarPosition.getMovingPosition(carPosition.getBoundaries(), currentSpeedMS,
                 acceleration, newWheelsAngle, deltaTime);
     }
 }

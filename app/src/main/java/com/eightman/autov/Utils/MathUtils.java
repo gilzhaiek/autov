@@ -2,6 +2,7 @@ package com.eightman.autov.Utils;
 
 import android.util.Pair;
 
+import com.eightman.autov.Configurations.Constants;
 import com.eightman.autov.Configurations.SimConfig;
 import com.eightman.autov.Objects.CarPosition;
 import com.eightman.autov.Objects.Geom.LineSegment;
@@ -15,6 +16,14 @@ import java.util.Random;
 
 public class MathUtils {
     static Random random = new Random(0);
+
+    public static double getFactorSec(double value, double fraction) {
+        return getFactor(value, Constants.ONE_SECOND, fraction);
+    }
+
+    public static double getFactor(double value, double valUnit, double fraction) {
+        return value * fraction / valUnit;
+    }
 
     public static XY getDelta(XY xyA, XY xyB) {
         return new XY(xyA.getX() - xyB.getX(), xyA.getY() - xyB.getY());

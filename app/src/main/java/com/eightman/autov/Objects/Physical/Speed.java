@@ -27,17 +27,13 @@ public class Speed {
         }
     }
 
-    public static Speed generateRandom() {
+    public static Speed generateRandom(Wheels wheels) {
         return new Speed(MathUtils.getRandomDouble(SimConfig.MIN_TOP_SPEED, SimConfig.MAX_TOP_SPEED),
-                MathUtils.getRandomDouble(SimConfig.MIN_MAX_WHEELS_ANGEL, SimConfig.MAX_MAX_WHEELS_ANGLE));
+                wheels.getMaxWheelsAngle());
     }
 
     public double getTopSpeed() {
         return topSpeed;
-    }
-
-    public double getMaxWheelsAngle() {
-        return maxWheelsAngle;
     }
 
     public double getComfortableSpeed(double wheelsAngle) {

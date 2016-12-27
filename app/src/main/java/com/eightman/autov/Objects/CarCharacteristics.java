@@ -24,25 +24,26 @@ public class CarCharacteristics {
     AccDec accDec;
     Wheels wheels;
 
-    public CarCharacteristics(double width, double length, int color, Speed speed, AccDec accDec,
-                              Wheels wheels) {
+    public CarCharacteristics(double width, double length, int color, Speed speed, Wheels wheels,
+                              AccDec accDec) {
         this.width = width;
         this.length = length;
         this.color = color;
         this.speed = speed;
-        this.accDec = accDec;
         this.wheels = wheels;
+        this.accDec = accDec;
     }
 
     public static CarCharacteristics generateRandom() {
-        Speed speed = Speed.generateRandom();
+        Wheels wheels = Wheels.generateRandom();
+        Speed speed = Speed.generateRandom(wheels);
         return new CarCharacteristics(
                 MathUtils.getRandomDouble(SimConfig.MIN_CAR_WIDTH, SimConfig.MAX_CAR_WIDTH),
                 MathUtils.getRandomDouble(SimConfig.MIN_CAR_LENGTH, SimConfig.MAX_CAR_LENGTH),
                 Color.argb(255, MathUtils.getRandomInt(256), MathUtils.getRandomInt(256), MathUtils.getRandomInt(256)),
                 speed,
-                AccDec.generateRandom(speed.getTopSpeed()),
-                Wheels.generateRandom());
+                wheels,
+                AccDec.generateRandom(speed.getTopSpeed()));
     }
 
     public double getWidth() {

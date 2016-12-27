@@ -11,6 +11,9 @@ import com.eightman.autov.Objects.Geom.XY;
  */
 
 public class TrigUtils {
+    // get circle
+    // see if a line intersects with a circle
+
     public static Boundaries getBoundariesLookingNorth(double x, double y, double width, double length) {
         double dx = width / 2;
         double dy = length / 2;
