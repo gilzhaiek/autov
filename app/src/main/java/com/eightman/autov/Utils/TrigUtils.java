@@ -11,9 +11,6 @@ import com.eightman.autov.Objects.Geom.XY;
  */
 
 public class TrigUtils {
-    // get circle
-    // see if a line intersects with a circle
-
     public static XY getPoint(XY from, XY pointOutsideLine, double addition) {
         double distance = MathUtils.getDistance(from, pointOutsideLine);
         double addX = from.getX() - addition * pointOutsideLine.getX() - from.getX() / distance;
@@ -21,88 +18,21 @@ public class TrigUtils {
         return new XY(addX, addY);
     }
 
-    public static Boundaries getBoundariesLookingNorth(double x, double y, double width, double length) {
-        double dx = width / 2;
-        double dy = length / 2;
-        return new Boundaries(x + dx, y + dy, x + dx, y - dy, x - dx, y - dy, x - dx, y + dy);
-    }
+    public static XY rotateAroundCenter(final XY center, XY xy, double theta) {
+        // cx, cy - center of square coordinates
+        // x, y - coordinates of a corner point of the square
+        // theta is the angle of rotation
 
-    public static Boundaries boundariesAddition(
-            Boundaries boundaries, double margin) {
-        return boundariesAddition(boundaries, margin, margin, margin);
-    }
+        // translate point to origin
+        double tempX = xy.getX() - center.getX();
+        double tempY = xy.getY() - center.getY();
 
-    public static Boundaries boundariesAddition(
-            Boundaries boundaries, double frontLength, double backLength, double width) {
-        double dxw = boundaries.getRightFront().getX() - boundaries.getLeftFront().getX();
-        double dyw = boundaries.getRightFront().getY() - boundaries.getLeftFront().getY();
+        // now apply rotation
+        double rotatedX = tempX * Math.cos(theta) - tempY * Math.sin(theta);
+        double rotatedY = tempX * Math.sin(theta) + tempY * Math.cos(theta);
 
-        double dxl = boundaries.getCenterFront().getX() - boundaries.getCenterBack().getX();
-        double dyl = boundaries.getCenterFront().getY() - boundaries.getCenterBack().getY();
-
-        double xw = (dxw / boundaries.getWidth()) * width;
-        double yw = (dyw / boundaries.getWidth()) * width;
-        double fyl = (dyl / boundaries.getLength()) * frontLength;
-        double byl = (dyl / boundaries.getLength()) * backLength;
-        double fxl = (dxl / boundaries.getLength()) * frontLength;
-        double bxl = (dxl / boundaries.getLength()) * backLength;
-
-        boolean lookingUp = boundaries.getCenterFront().getY() > boundaries.getCenterBack().getY();
-        boolean lookingRight = boundaries.getCenterFront().getX() > boundaries.getCenterBack().getX();
-
-        double rFrontX, rFrontY, lFrontX, lFrontY;
-        double rBackX, rBackY, lBackX, lBackY;
-
-        rFrontX = boundaries.getRightFront().getX() + fxl + xw;
-        rFrontY = boundaries.getRightFront().getY() + fyl + yw;
-        rBackX = boundaries.getRightBack().getX() - bxl + xw;
-        rBackY = boundaries.getRightBack().getY() - byl + yw;
-        lBackX = boundaries.getLeftBack().getX() - bxl - xw;
-        lBackY = boundaries.getLeftBack().getY() - byl - yw;
-        lFrontX = boundaries.getLeftFront().getX() + fxl - xw;
-        lFrontY = boundaries.getLeftFront().getY() + fyl - yw;
-
-        return new Boundaries(rFrontX, rFrontY, rBackX, rBackY, lBackX, lBackY, lFrontX, lFrontY);
-
-    }
-
-    public static Boundaries getHeadingBoundaries(XY yourXY, XY lookingAtXY, double width, double length) {
-        // https://goo.gl/photos/kT3nq51TM7fqiLjQ6
-        double dx = lookingAtXY.getX() - yourXY.getX();
-        double dy = lookingAtXY.getY() - yourXY.getY();
-        double alpha = Math.atan(dy / dx);
-        double beta = Math.PI - alpha;
-        double adjAlpha = (width / 2) * Math.sin(alpha);
-        double oppAlpha = (width / 2) * Math.cos(alpha);
-        double adjBeta = (length) * Math.sin(beta);
-        double oppBeta = (length) * Math.cos(beta);
-
-        double rFrontX, rFrontY, lFrontX, lFrontY;
-        double rBackX, rBackY, lBackX, lBackY;
-        boolean lookingUp = (lookingAtXY.getY() > yourXY.getY());
-        boolean lookingRight = (lookingAtXY.getX() > yourXY.getX());
-
-        if (lookingRight) {
-            rFrontX = yourXY.getX() + adjAlpha;
-            lFrontX = yourXY.getX() - adjAlpha;
-            rFrontY = yourXY.getY() - oppAlpha;
-            lFrontY = yourXY.getY() + oppAlpha;
-            rBackX = rFrontX + oppBeta;
-            lBackX = lFrontX + oppBeta;
-            rBackY = rFrontY - adjBeta;
-            lBackY = lFrontY - adjBeta;
-        } else {
-            rFrontX = yourXY.getX() - adjAlpha;
-            lFrontX = yourXY.getX() + adjAlpha;
-            rFrontY = yourXY.getY() + oppAlpha;
-            lFrontY = yourXY.getY() - oppAlpha;
-            rBackX = rFrontX - oppBeta;
-            lBackX = lFrontX - oppBeta;
-            rBackY = rFrontY + adjBeta;
-            lBackY = lFrontY + adjBeta;
-        }
-
-        return new Boundaries(rFrontX, rFrontY, rBackX, rBackY, lBackX, lBackY, lFrontX, lFrontY);
+        // translate back
+        return new XY(rotatedX + center.getX(), rotatedY + center.getY());
     }
 
     public static double determinant(XY xyA, XY xyB) {
@@ -129,7 +59,7 @@ public class TrigUtils {
         }
     }
 
-    private static Pair<Double, LineSegment> min(Pair<Double, LineSegment> pair1, Pair<Double, LineSegment> pair2) {
+    public static Pair<Double, LineSegment> min(Pair<Double, LineSegment> pair1, Pair<Double, LineSegment> pair2) {
         if (pair1.first < pair2.first) {
             return pair1;
         }

@@ -1,5 +1,6 @@
 package com.eightman.autov.Simulation.Interfaces;
 
+import com.eightman.autov.Objects.CarCharacteristics;
 import com.eightman.autov.Objects.CarPath;
 
 /**
@@ -7,5 +8,5 @@ import com.eightman.autov.Objects.CarPath;
  */
 
 public interface IRandomPathMaker {
-    boolean generatePath(CarPath carPath) throws Exception;
+    boolean generatePath(CarPath carPath, CarCharacteristics carCharacteristics) throws Exception;
 }

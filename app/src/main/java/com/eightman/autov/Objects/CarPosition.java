@@ -281,7 +281,7 @@ public class CarPosition {
             maxTurningCircles = Circle.getCircles(
                     boundaries.getLeftSegment(),
                     boundaries.getRightSegment(),
-                    wheelsAngle);
+                    XXRadius);
         }
         return maxTurningCircles;
     }

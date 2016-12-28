@@ -2,6 +2,7 @@ package com.eightman.autov.Simulation.DataMaker;
 
 import com.eightman.autov.Configurations.Constants;
 import com.eightman.autov.Configurations.SimConfig;
+import com.eightman.autov.Objects.CarCharacteristics;
 import com.eightman.autov.Objects.CarPath;
 import com.eightman.autov.Objects.CarPosition;
 import com.eightman.autov.Objects.Geom.Boundaries;
@@ -22,7 +23,7 @@ public class RandomSquarePathMaker implements IRandomPathMaker {
     static Random random = new Random();
 
     @Override
-    public boolean generatePath(CarPath carPath) throws Exception {
+    public boolean generatePath(CarPath carPath, CarCharacteristics carCharacteristics) throws Exception {
         int cnt = random.nextInt(
                 SimConfig.MAX_NUM_EDGES - SimConfig.MIN_NUM_EDGES + 1) +
                 SimConfig.MIN_NUM_EDGES;

@@ -4,6 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.util.Pair;
 
 import com.eightman.autov.Configurations.Global;
 import com.eightman.autov.Configurations.SimConfig;
@@ -19,6 +20,12 @@ import com.eightman.autov.Utils.MathUtils;
 public class DrawingUtils {
     public static int randomColor() {
         return Color.argb(255, MathUtils.getRandomInt(256), MathUtils.getRandomInt(256), MathUtils.getRandomInt(256));
+    }
+
+    public static Pair<XY, XY> getCarPlayground() {
+        double halfWidthMeters = Global.canvasWidth / 2.0 / SimConfig.PIXEL_PER_MOVE_UNIT;
+        double halfHeightMeters = Global.canvasHeight / 2.0 / SimConfig.PIXEL_PER_MOVE_UNIT;
+        return new Pair(new XY(-halfWidthMeters, -halfHeightMeters), new XY(halfWidthMeters, halfHeightMeters));
     }
 
     public static float getScreenPoint(float carPosition, Axis axis) {

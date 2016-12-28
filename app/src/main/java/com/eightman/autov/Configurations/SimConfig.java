@@ -10,12 +10,14 @@ public class SimConfig {
     final public static int SIM_NUM_OF_5_CAR_SETS = 10;
     final public static int SIM_DELAY_ADDITION = 100000;
 
+    final public static int PATH_RESOLUTION_MS = 1000;
+
     //final public static int DELAY_MS = 16; // 60fps
     final public static int DELAY_MS = 500; // Every frame is a second
     final public static boolean LIMIT_CARS_TO_SCREEN = true;
 
     // Our unit is 1 meter
-    final public static double PIXEL_PER_MOVE_UNIT = 7.0;
+    final public static double PIXEL_PER_MOVE_UNIT = 7.0; // 1 Meter is 7 pixels so 1 pixel is 1/7 meter
 
     // Other
     final public static double MIN_MOVING_SPEED = 0.01; // 1 cm per second
