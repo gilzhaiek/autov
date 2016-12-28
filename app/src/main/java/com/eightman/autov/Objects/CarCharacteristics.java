@@ -1,11 +1,10 @@
 package com.eightman.autov.Objects;
 
-import android.graphics.Color;
-
 import com.eightman.autov.Configurations.SimConfig;
 import com.eightman.autov.Objects.Physical.AccDec;
 import com.eightman.autov.Objects.Physical.Speed;
 import com.eightman.autov.Objects.Physical.Wheels;
+import com.eightman.autov.Simulation.Drawings.DrawingUtils;
 import com.eightman.autov.Utils.MathUtils;
 
 import java.util.Random;
@@ -17,15 +16,14 @@ import java.util.Random;
 public class CarCharacteristics {
     static Random random = new Random();
 
-    double width; // in meters
-    double length; // in meters
-    int color;
-    Speed speed;
-    AccDec accDec;
-    Wheels wheels;
+    final double width; // in meters
+    final double length; // in meters
+    final int color;
+    final Speed speed;
+    final AccDec accDec;
+    final Wheels wheels;
 
-    public CarCharacteristics(double width, double length, int color, Speed speed, Wheels wheels,
-                              AccDec accDec) {
+    public CarCharacteristics(double width, double length, int color, Speed speed, Wheels wheels, AccDec accDec) {
         this.width = width;
         this.length = length;
         this.color = color;
@@ -35,14 +33,11 @@ public class CarCharacteristics {
     }
 
     public static CarCharacteristics generateRandom() {
-        Wheels wheels = Wheels.generateRandom();
+        double length = MathUtils.getRandomDouble(SimConfig.MIN_CAR_LENGTH, SimConfig.MAX_CAR_LENGTH);
+        double width = MathUtils.getRandomDouble(SimConfig.MIN_CAR_WIDTH, SimConfig.MAX_CAR_WIDTH);
+        Wheels wheels = Wheels.generateRandom(length, width);
         Speed speed = Speed.generateRandom(wheels);
-        return new CarCharacteristics(
-                MathUtils.getRandomDouble(SimConfig.MIN_CAR_WIDTH, SimConfig.MAX_CAR_WIDTH),
-                MathUtils.getRandomDouble(SimConfig.MIN_CAR_LENGTH, SimConfig.MAX_CAR_LENGTH),
-                Color.argb(255, MathUtils.getRandomInt(256), MathUtils.getRandomInt(256), MathUtils.getRandomInt(256)),
-                speed,
-                wheels,
+        return new CarCharacteristics(length, width, DrawingUtils.randomColor(), speed, wheels,
                 AccDec.generateRandom(speed.getTopSpeed()));
     }
 

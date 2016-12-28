@@ -39,4 +39,8 @@ public class LineSegment {
     public double getSlopeY() {
         return pointB.getY() - pointA.getY();
     }
+
+    public XY getCenter() {
+        return new XY(pointA.getX() + getSlopeX() / 2.0, pointA.getY() + getSlopeY() / 2.0);
+    }
 }

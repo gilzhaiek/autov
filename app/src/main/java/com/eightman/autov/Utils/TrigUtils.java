@@ -14,6 +14,13 @@ public class TrigUtils {
     // get circle
     // see if a line intersects with a circle
 
+    public static XY getPoint(XY from, XY pointOutsideLine, double addition) {
+        double distance = MathUtils.getDistance(from, pointOutsideLine);
+        double addX = from.getX() - addition * pointOutsideLine.getX() - from.getX() / distance;
+        double addY = from.getY() - addition * pointOutsideLine.getY() - from.getY() / distance;
+        return new XY(addX, addY);
+    }
+
     public static Boundaries getBoundariesLookingNorth(double x, double y, double width, double length) {
         double dx = width / 2;
         double dy = length / 2;

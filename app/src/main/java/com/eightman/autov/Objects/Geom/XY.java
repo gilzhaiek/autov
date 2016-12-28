@@ -8,6 +8,11 @@ public final class XY {
     private final double x;
     private final double y;
 
+    public XY(XY xy) {
+        this.x = xy.getX();
+        this.y = xy.getY();
+    }
+
     public XY(final double x, final double y) {
         this.x = x;
         this.y = y;

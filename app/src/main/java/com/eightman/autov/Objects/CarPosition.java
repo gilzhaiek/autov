@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import com.eightman.autov.Configurations.Global;
 import com.eightman.autov.Configurations.SimConfig;
 import com.eightman.autov.Objects.Geom.Boundaries;
+import com.eightman.autov.Objects.Geom.Circle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,11 +31,10 @@ public class CarPosition {
     private int linkSize = 1;
     private CarPath parentCarPath;
     private long absTime = 0;
+    private Circle[] maxTurningCircles;
 
     // TODO: Add direction - front or back
-    // TODO: Add wheels angles
 
-    //
     private CarPosition(Boundaries boundaries) {
         this.id = Global.generateId();
         this.boundaries = boundaries;
@@ -274,6 +274,16 @@ public class CarPosition {
 
     public double getDecisionDistance() {
         return (boundaries.getLength() * SimConfig.SAFE_ZONE_ERROR_ADDITION);
+    }
+
+    public Circle[] getTurningCircles() {
+        if (maxTurningCircles == null) {
+            maxTurningCircles = Circle.getCircles(
+                    boundaries.getLeftSegment(),
+                    boundaries.getRightSegment(),
+                    wheelsAngle);
+        }
+        return maxTurningCircles;
     }
 
     public List<ObjectDistanceInfo> getCarDistancesInfo() {

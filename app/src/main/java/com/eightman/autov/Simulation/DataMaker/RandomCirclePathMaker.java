@@ -15,19 +15,19 @@ import com.eightman.autov.Utils.TrigUtils;
 import java.util.Random;
 
 /**
- * Created by gilzhaiek on 2016-10-27.
+ * Created by gilzhaiek on 2016-12-27.
  */
 
-public class RandomSquarePathMaker implements IRandomPathMaker {
+public class RandomCirclePathMaker implements IRandomPathMaker {
     static Random random = new Random();
 
     @Override
     public boolean generatePath(CarPath carPath) throws Exception {
-        int cnt = random.nextInt(
-                SimConfig.MAX_NUM_EDGES - SimConfig.MIN_NUM_EDGES + 1) +
-                SimConfig.MIN_NUM_EDGES;
+//        int cnt = random.nextInt(
+//                SimConfig.MAX_NUM_EDGES - SimConfig.MIN_NUM_EDGES + 1) +
+//                SimConfig.MIN_NUM_EDGES;
 
-        return generateHardPositions(carPath.getLastPosition(), cnt);
+        return generateHardPositions(carPath.getLastPosition(), 1);
     }
 
     private void genRandomPath(CarPosition lastPosition, LineSegment lineSegment) {
@@ -42,6 +42,28 @@ public class RandomSquarePathMaker implements IRandomPathMaker {
         if (lineSegment.getSlopeX() == 0 && lineSegment.getSlopeY() == 0) {
             genRandomPath(lastPosition, lineSegment);
         }
+    }
+
+    private CarPosition headTowards(CarPosition fromPosition, Boundaries finalBoundaries,
+                                    double finalSpeed, long deltaSpeed) {
+        return fromPosition;// TODO: Finish
+    }
+
+    private boolean generateSoftPosition(CarPosition fromPosition, int cnt) throws Exception {
+        LineSegment lineSegment = new LineSegment();
+        genRandomPath(fromPosition, lineSegment);
+
+        Boundaries toBoundaries = TrigUtils.getHeadingBoundaries(
+                lineSegment.getPointA(), lineSegment.getPointB(),
+                fromPosition.getBoundaries().getWidth(), fromPosition.getBoundaries().getLength());
+        toBoundaries = toBoundaries.addOffset(lineSegment.getPointB());
+
+        CarPosition toPosition;
+        do {
+            toPosition = headTowards(fromPosition, toBoundaries, 0, Constants.ONE_SECOND);
+        } while (!toPosition.getBoundaries().equals(toBoundaries));
+
+        return true;
     }
 
     private boolean generateHardPositions(CarPosition lastPosition, int cnt) throws Exception {

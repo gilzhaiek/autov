@@ -1,6 +1,7 @@
 package com.eightman.autov.Simulation.Drawings;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 
@@ -9,14 +10,15 @@ import com.eightman.autov.Configurations.SimConfig;
 import com.eightman.autov.Objects.Geom.Boundaries;
 import com.eightman.autov.Objects.Geom.LineSegment;
 import com.eightman.autov.Objects.Geom.XY;
+import com.eightman.autov.Utils.MathUtils;
 
 /**
  * Created by gilzhaiek on 2016-11-03.
  */
 
 public class DrawingUtils {
-    public enum Axis {
-        yAxis, xAxis
+    public static int randomColor() {
+        return Color.argb(255, MathUtils.getRandomInt(256), MathUtils.getRandomInt(256), MathUtils.getRandomInt(256));
     }
 
     public static float getScreenPoint(float carPosition, Axis axis) {
@@ -77,7 +79,7 @@ public class DrawingUtils {
     public static void drawLine(Canvas canvas,
                                 final LineSegment lineSegment,
                                 Paint paint) {
-        if(lineSegment != null) {
+        if (lineSegment != null) {
             drawLine(canvas, lineSegment.getPointA(), lineSegment.getPointB(), paint);
         }
     }
@@ -131,5 +133,9 @@ public class DrawingUtils {
                 getScreenPoint((float) boundaries.getRightFront().getY(), Axis.yAxis));
 
         canvas.drawPath(path, paint);
+    }
+
+    public enum Axis {
+        yAxis, xAxis
     }
 }
