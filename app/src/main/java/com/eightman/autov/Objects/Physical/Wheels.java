@@ -2,6 +2,7 @@ package com.eightman.autov.Objects.Physical;
 
 import com.eightman.autov.Configurations.SimConfig;
 import com.eightman.autov.Utils.MathUtils;
+import com.eightman.autov.Utils.TrigUtils;
 
 /**
  * Created by gilzhaiek on 2016-10-29.
@@ -33,12 +34,7 @@ public class Wheels {
         return wheelsLengthBase;
     }
 
-    // a/sin(A) = b/sin(B) = c/sin(C)
-    // For a triangle, B = maxWheelAngle, A=C=(180-maxWheelAngle)/2
-    // b is the wheelsLengthBase and a=c=equals
     public double getSmallestRadius() {
-        double A = (180 - maxWheelsAngle) / 2.0;
-        double a = wheelsLengthBase * Math.sin(A) / Math.sin(maxWheelsAngle);
-        return a;
+        return TrigUtils.getRadius(maxWheelsAngle, wheelsLengthBase);
     }
 }

@@ -2,6 +2,7 @@ package com.eightman.autov.Simulation.DataMaker;
 
 import com.eightman.autov.Configurations.Constants;
 import com.eightman.autov.Configurations.SimConfig;
+import com.eightman.autov.Managers.BoundariesManager;
 import com.eightman.autov.Objects.CarCharacteristics;
 import com.eightman.autov.Objects.CarPath;
 import com.eightman.autov.Objects.CarPosition;
@@ -11,7 +12,6 @@ import com.eightman.autov.Objects.Geom.XY;
 import com.eightman.autov.Simulation.Drawings.DrawingUtils;
 import com.eightman.autov.Simulation.Interfaces.IRandomPathMaker;
 import com.eightman.autov.Utils.MathUtils;
-import com.eightman.autov.Utils.TrigUtils;
 
 import java.util.Random;
 
@@ -92,7 +92,7 @@ public class RandomSquarePathMaker implements IRandomPathMaker {
     }
 
     private CarPosition rotateCar(CarPosition position, XY from, XY to, long timeOffset, double speed) {
-        Boundaries toBoundaries = TrigUtils.getHeadingBoundaries(
+        Boundaries toBoundaries = BoundariesManager.getHeadingBoundaries(
                 from, to, position.getBoundaries().getWidth(), position.getBoundaries().getLength());
 
         return CarPosition.getMovingPosition(toBoundaries, speed, 0.0, 0.0, timeOffset);

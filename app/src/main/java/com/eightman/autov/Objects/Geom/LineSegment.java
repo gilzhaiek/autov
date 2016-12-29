@@ -1,5 +1,7 @@
 package com.eightman.autov.Objects.Geom;
 
+import com.eightman.autov.Utils.MathUtils;
+
 /**
  * Created by gilzhaiek on 2016-11-11.
  */
@@ -42,5 +44,9 @@ public class LineSegment {
 
     public XY getCenter() {
         return new XY(pointA.getX() + getSlopeX() / 2.0, pointA.getY() + getSlopeY() / 2.0);
+    }
+
+    public double Length() {
+        return MathUtils.getDistance(pointA, pointB);
     }
 }

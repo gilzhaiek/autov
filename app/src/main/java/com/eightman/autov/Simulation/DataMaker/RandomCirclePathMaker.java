@@ -10,9 +10,11 @@ import com.eightman.autov.Objects.CarPosition;
 import com.eightman.autov.Objects.Geom.Boundaries;
 import com.eightman.autov.Objects.Geom.Circle;
 import com.eightman.autov.Objects.Geom.XY;
+import com.eightman.autov.Objects.Physical.Wheels;
 import com.eightman.autov.Simulation.Drawings.DrawingUtils;
 import com.eightman.autov.Simulation.Interfaces.IRandomPathMaker;
 import com.eightman.autov.Utils.MathUtils;
+import com.eightman.autov.Utils.TrigUtils;
 
 import java.util.Random;
 
@@ -21,8 +23,6 @@ import java.util.Random;
  */
 
 public class RandomCirclePathMaker implements IRandomPathMaker {
-    static Random random = new Random();
-
     @Override
     public boolean generatePath(CarPath carPath, CarCharacteristics carCharacteristics) throws Exception {
         XY center = getRandomPoint();
@@ -31,11 +31,11 @@ public class RandomCirclePathMaker implements IRandomPathMaker {
         Boundaries toBoundaries = BoundariesManager.getBoundariesRotated(center,
                 carCharacteristics.getWidth(), carCharacteristics.getWidth(), randomAngle);
 
-        Circle[] toCircles = Circle.getCircles(toBoundaries.getLeftSegment(), toBoundaries.getRightSegment(), 0);
+        Circle circles[] = TrigUtils.getMaxTurningCircles(toBoundaries, carCharacteristics.getWheels());
 
         CarPosition carPosition = carPath.getCurrentPosition();
         while (!carPosition.getBoundaries().equals(toBoundaries)) {
-            carPosition.setNext(moveCloser(carPosition, toBoundaries, toCircles), true);
+            carPosition.setNext(moveCloser(carPosition, toBoundaries, circles), true);
             carPosition = carPosition.getNext();
         }
 
@@ -57,7 +57,13 @@ public class RandomCirclePathMaker implements IRandomPathMaker {
         double acceleration = 0.0;
         double wheelsAngle = 0.0;
 
-        carPosition.getTurningCircles();
+        // Check if I am on the circle and on the same direction
+
+        // Check if my direction is intersecting with any of the two circles and reaching the same direction
+
+        // Get the distance between the two max circles (3 options)
+        // if the closer one is the same direction - use that
+        // if the closer one is the opposite direction but the circles overlap use the circles where the radius don't overlap
 
         Boundaries newBoundaries;
 

@@ -7,31 +7,32 @@ import com.eightman.autov.Utils.TrigUtils;
  */
 
 public class Circle {
-    XY center;
-    double radius;
+    public enum Direction {
+        CLOCK_WISE,
+        COUNTER_CLOCK_WISE
+    };
 
-    public Circle(XY center, double radius) {
-        center = new XY(center);
-        radius = radius;
+    final XY center;
+    final double radius;
+    final Direction direction;
+
+    public Circle(XY center, double radius, Direction direction) {
+        this.center = new XY(center);
+        this.radius = radius;
+        this.direction = direction;
     }
 
-    public Circle(double centerX, double centerY, double radius) {
-        center = new XY(centerX, centerY);
-        radius = radius;
+    public Circle(double centerX, double centerY, double radius, Direction direction) {
+        this.center = new XY(centerX, centerY);
+        this.radius = radius;
+        this.direction = direction;
     }
 
-    public static Circle[] getCircles(LineSegment leftSegment, LineSegment rightSegment, double radius) {
-        XY centerLeft = leftSegment.getCenter();
-        XY centerRight = rightSegment.getCenter();
-        Circle[] retCircles = new Circle[2];
-
-        XY center = TrigUtils.getPoint(centerLeft, centerRight, radius);
-        retCircles[0] = new Circle(center, radius);
-
-        center = TrigUtils.getPoint(centerRight, centerLeft, radius);
-        retCircles[1] = new Circle(center, radius);
-
-        return retCircles;
+    public static Circle getCircle(LineSegment segment, LineSegment outerSegment, double radius, Direction direction) {
+        XY segmentCenter = segment.getCenter();
+        XY segmentCenterOuter = outerSegment.getCenter();
+        XY center = TrigUtils.getPoint(segmentCenter, segmentCenterOuter, radius);
+        return new Circle(center, radius, direction);
     }
 
     public XY getCenter() {
@@ -40,5 +41,9 @@ public class Circle {
 
     public double getRadius() {
         return radius;
+    }
+
+    public Direction getDirection() {
+        return direction;
     }
 }

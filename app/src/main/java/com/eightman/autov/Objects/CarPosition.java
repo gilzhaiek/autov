@@ -6,6 +6,7 @@ import com.eightman.autov.Configurations.Global;
 import com.eightman.autov.Configurations.SimConfig;
 import com.eightman.autov.Objects.Geom.Boundaries;
 import com.eightman.autov.Objects.Geom.Circle;
+import com.eightman.autov.Utils.TrigUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +32,7 @@ public class CarPosition {
     private int linkSize = 1;
     private CarPath parentCarPath;
     private long absTime = 0;
-    private Circle[] maxTurningCircles;
+    private Circle turningCircle;
 
     // TODO: Add direction - front or back
 
@@ -276,14 +277,23 @@ public class CarPosition {
         return (boundaries.getLength() * SimConfig.SAFE_ZONE_ERROR_ADDITION);
     }
 
-    public Circle[] getTurningCircles() {
-        if (maxTurningCircles == null) {
-            maxTurningCircles = Circle.getCircles(
-                    boundaries.getLeftSegment(),
-                    boundaries.getRightSegment(),
-                    XXRadius);
+    public Circle getTurningCircle() {
+        if (turningCircle == null) {
+            if (wheelsAngle > 0) {
+                turningCircle = Circle.getCircle(
+                        boundaries.getRightSegment(),
+                        boundaries.getLeftSegment(),
+                        TrigUtils.getRadius(wheelsAngle, boundaries.getLeftSegment().Length()),
+                        Circle.Direction.CLOCK_WISE);
+            } else if (wheelsAngle < 0) {
+                turningCircle = Circle.getCircle(
+                        boundaries.getLeftSegment(),
+                        boundaries.getRightSegment(),
+                        TrigUtils.getRadius(wheelsAngle, boundaries.getRightSegment().Length()),
+                        Circle.Direction.COUNTER_CLOCK_WISE);
+            } // else null
         }
-        return maxTurningCircles;
+        return turningCircle;
     }
 
     public List<ObjectDistanceInfo> getCarDistancesInfo() {
