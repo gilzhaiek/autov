@@ -37,7 +37,7 @@ public class SimConfig {
     final public static double MAX_TOP_SPEED = 8.0; // Meters per second
     final public static double MIN_ACC = 1.0; // m/s^2:  5 m/s after 5 seconds and 10 m/s after 10 seconds.
     final public static double MAX_ACC = 10.0; // m/s^2
-    final public static double MIN_EMERGENCY_DEC = -5.0; // m/s^2 Deceleration
+    final public static double MIN_EMERGENCY_DEC = -2.0; // m/s^2 Deceleration
     final public static double MAX_EMERGENCY_DEC = -10.0; // m/s^2
     final public static double COMFORTABLE_DEC = -3.0; // m/s^2 http://journaldatabase.info/download/pdf/study_deceleration_behaviour_different
 

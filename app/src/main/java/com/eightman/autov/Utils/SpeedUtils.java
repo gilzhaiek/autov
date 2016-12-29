@@ -12,10 +12,19 @@ import com.eightman.autov.Objects.Physical.Speed;
  */
 
 public class SpeedUtils {
+    /**
+     * Return a Pair of the acc in m/s^2 and the wheels angle
+     *
+     * @param carCharacteristics
+     * @param currentSpeed
+     * @param targetSpeed
+     * @param currentWheelsAngle
+     * @param targetWheelsAngle
+     * @return
+     */
     public static Pair<Double, Double> getAccWheelsAngle(CarCharacteristics carCharacteristics,
                                                          double currentSpeed, double targetSpeed,
-                                                         double currentWheelsAngle, double targetWheelsAngle,
-                                                         long deltaTime) {
+                                                         double currentWheelsAngle, double targetWheelsAngle) {
         Speed speed = carCharacteristics.getSpeed();
         AccDec accDec = carCharacteristics.getAccDec();
 
@@ -32,17 +41,17 @@ public class SpeedUtils {
         }
 
         double fastestSpeed = targetSpeed > currentSpeed ? targetSpeed : currentSpeed;
-        double targetAccDec = 0;
+        double targetAccDec = 0; // in m/s^2
         // If we are need to go fast, we should reduce speed for that wheels angle
         double comfortableSpeed = speed.getComfortableSpeed(wheelsAngle);
         if (fastestSpeed > comfortableSpeed) {  // We are too fast
             // 10 - 20 = -10 < -3
-            if (comfortableSpeed - fastestSpeed < SimConfig.COMFORTABLE_DEC) {
-                targetAccDec = SimConfig.COMFORTABLE_DEC;
+            if (comfortableSpeed - fastestSpeed < accDec.getComfortableDec()) {
+                targetAccDec = accDec.getComfortableDec();
             } else {
                 targetAccDec = comfortableSpeed - fastestSpeed;
             }
-            return new Pair<>(MathUtils.getFactorSec(targetAccDec, deltaTime), wheelsAngle);
+            return new Pair<>(targetAccDec, wheelsAngle);
         }
 
         // We should increase our wheels angle till we are too fast or reached the wheels angle
@@ -64,11 +73,11 @@ public class SpeedUtils {
         }
 
         targetAccDec = targetSpeed - currentSpeed;
-        if (targetAccDec < SimConfig.COMFORTABLE_DEC) {
-            targetAccDec = SimConfig.COMFORTABLE_DEC;
+        if (targetAccDec < accDec.getComfortableDec()) {
+            targetAccDec = accDec.getComfortableDec();
         } else if (targetAccDec > accDec.getAcceleration(currentSpeed)) { // Can't accelerate too quickly
             targetAccDec = accDec.getAcceleration(currentSpeed);
         }
-        return new Pair<>(MathUtils.getFactorSec(targetAccDec, deltaTime), wheelsAngle);
+        return new Pair<>(targetAccDec, wheelsAngle);
     }
 }

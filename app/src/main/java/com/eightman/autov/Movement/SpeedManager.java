@@ -50,7 +50,7 @@ public class SpeedManager {
         Pair<Double, Double> accWheels = SpeedUtils.getAccWheelsAngle(car.getCarCharacteristics(),
                 currentSpeedMS,
                 car.getCarCharacteristics().getSpeed().getTopSpeed(), // Assume we want to go the fastest
-                currentWheelAngle, targetWheelsAngle, deltaTime);
+                currentWheelAngle, targetWheelsAngle);
 
         return CarPosition.getMovingPosition(carPosition.getBoundaries(), currentSpeedMS,
                 accWheels.first, accWheels.second, deltaTime);

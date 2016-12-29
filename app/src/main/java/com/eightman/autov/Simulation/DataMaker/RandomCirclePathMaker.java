@@ -10,13 +10,11 @@ import com.eightman.autov.Objects.CarPosition;
 import com.eightman.autov.Objects.Geom.Boundaries;
 import com.eightman.autov.Objects.Geom.Circle;
 import com.eightman.autov.Objects.Geom.XY;
-import com.eightman.autov.Objects.Physical.Wheels;
+import com.eightman.autov.Objects.Physical.AccDec;
 import com.eightman.autov.Simulation.Drawings.DrawingUtils;
 import com.eightman.autov.Simulation.Interfaces.IRandomPathMaker;
 import com.eightman.autov.Utils.MathUtils;
 import com.eightman.autov.Utils.TrigUtils;
-
-import java.util.Random;
 
 /**
  * Created by gilzhaiek on 2016-12-27.
@@ -35,8 +33,9 @@ public class RandomCirclePathMaker implements IRandomPathMaker {
 
         CarPosition carPosition = carPath.getCurrentPosition();
         while (!carPosition.getBoundaries().equals(toBoundaries)) {
-            carPosition.setNext(moveCloser(carPosition, toBoundaries, circles), true);
-            carPosition = carPosition.getNext();
+            CarPosition newCarPosition = moveCloser(carCharacteristics.getAccDec(), carPosition, toBoundaries, circles);
+            carPosition.setNext(newCarPosition, true);
+            carPosition = newCarPosition;
         }
 
         return true;
@@ -52,14 +51,27 @@ public class RandomCirclePathMaker implements IRandomPathMaker {
         return new XY(x, y);
     }
 
-    private CarPosition moveCloser(CarPosition carPosition, Boundaries toBoundaries, Circle[] toCircles) {
-        double speed = 0.0;
-        double acceleration = 0.0;
-        double wheelsAngle = 0.0;
+    private CarPosition moveCloser(AccDec accDec, CarPosition oldCarPosition, Boundaries toBoundaries,
+                                   Circle[] toCircles) {
+        Double acceleration = null;
+        Double wheelsAngle = null;
+
+        Boundaries newBoundaries = oldCarPosition.generateNextBoundaries();
+        double newSpeed = oldCarPosition.generateNextSpeed();
+
+        // Make sure we slow down in time
+        double distanceToStop = accDec.getStopDistance(oldCarPosition.getSpeed());
+        double shortestDistance = BoundariesManager.getShortestDistance(oldCarPosition.getBoundaries(), toBoundaries).first;
+        if (shortestDistance < distanceToStop) {
+            acceleration = accDec.getComfortableDec();
+        }
+
 
         // Check if I am on the circle and on the same direction
 
+
         // Check if my direction is intersecting with any of the two circles and reaching the same direction
+        // Make sure I slow down to be max wheels turn when I hit the circle
 
         // Get the distance between the two max circles (3 options)
         // if the closer one is the same direction - use that

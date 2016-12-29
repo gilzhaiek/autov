@@ -3,11 +3,10 @@ package com.eightman.autov.Managers;
 import android.util.Pair;
 
 import com.eightman.autov.Objects.CarPosition;
+import com.eightman.autov.Objects.Geom.LineSegment;
 import com.eightman.autov.Objects.MyCar;
 import com.eightman.autov.Objects.ObjectDistanceInfo;
-import com.eightman.autov.Objects.Geom.LineSegment;
 import com.eightman.autov.Utils.MathUtils;
-import com.eightman.autov.Utils.TrigUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -103,7 +102,7 @@ public class DistanceManager {
             for (int i = 0; i < otherCarPositions.size(); ) {
                 CarPosition otherCarPosition = otherCarPositions.get(i);
                 if (otherCarPosition.getAbsTime() - myCarPosition.getAbsTime() < largestTimeResolution) {
-                    Pair<Double, LineSegment> o2oLine = TrigUtils.getShortestDistance(
+                    Pair<Double, LineSegment> o2oLine = BoundariesManager.getShortestDistance(
                             myCarPosition.getBoundaries(), otherCarPosition.getBoundaries());
 
                     LineSegment fullSegment = o2oLine.second;

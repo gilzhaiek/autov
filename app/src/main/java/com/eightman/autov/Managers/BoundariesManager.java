@@ -1,7 +1,11 @@
 package com.eightman.autov.Managers;
 
+import android.util.Pair;
+
 import com.eightman.autov.Objects.Geom.Boundaries;
+import com.eightman.autov.Objects.Geom.LineSegment;
 import com.eightman.autov.Objects.Geom.XY;
+import com.eightman.autov.Utils.MathUtils;
 import com.eightman.autov.Utils.TrigUtils;
 
 /**
@@ -106,5 +110,102 @@ public class BoundariesManager {
         }
 
         return new Boundaries(rFrontX, rFrontY, rBackX, rBackY, lBackX, lBackY, lFrontX, lFrontY);
+    }
+
+    public static Pair<Double, LineSegment> getShortestDistance(Boundaries boundariesA, Boundaries boundariesB) {
+        Pair<Double, LineSegment> shortest = MathUtils.getShortestDistance(
+                boundariesA.getFrontSegment(), boundariesB.getFrontSegment());
+        if (shortest.first == 0) {
+            return shortest;
+        }
+
+        shortest = TrigUtils.min(shortest, MathUtils.getShortestDistance(
+                boundariesA.getFrontSegment(), boundariesB.getRightSegment()));
+        if (shortest.first == 0) {
+            return shortest;
+        }
+
+        shortest = TrigUtils.min(shortest, MathUtils.getShortestDistance(
+                boundariesA.getFrontSegment(), boundariesB.getBackSegment()));
+        if (shortest.first == 0) {
+            return shortest;
+        }
+
+        shortest = TrigUtils.min(shortest, MathUtils.getShortestDistance(
+                boundariesA.getFrontSegment(), boundariesB.getLeftSegment()));
+        if (shortest.first == 0) {
+            return shortest;
+        }
+
+        shortest = TrigUtils.min(shortest, MathUtils.getShortestDistance(
+                boundariesA.getRightSegment(), boundariesB.getFrontSegment()));
+        if (shortest.first == 0) {
+            return shortest;
+        }
+
+        shortest = TrigUtils.min(shortest, MathUtils.getShortestDistance(
+                boundariesA.getRightSegment(), boundariesB.getRightSegment()));
+        if (shortest.first == 0) {
+            return shortest;
+        }
+
+        shortest = TrigUtils.min(shortest, MathUtils.getShortestDistance(
+                boundariesA.getRightSegment(), boundariesB.getBackSegment()));
+        if (shortest.first == 0) {
+            return shortest;
+        }
+
+        shortest = TrigUtils.min(shortest, MathUtils.getShortestDistance(
+                boundariesA.getRightSegment(), boundariesB.getLeftSegment()));
+        if (shortest.first == 0) {
+            return shortest;
+        }
+
+        shortest = TrigUtils.min(shortest, MathUtils.getShortestDistance(
+                boundariesA.getBackSegment(), boundariesB.getFrontSegment()));
+        if (shortest.first == 0) {
+            return shortest;
+        }
+
+        shortest = TrigUtils.min(shortest, MathUtils.getShortestDistance(
+                boundariesA.getBackSegment(), boundariesB.getRightSegment()));
+        if (shortest.first == 0) {
+            return shortest;
+        }
+
+        shortest = TrigUtils.min(shortest, MathUtils.getShortestDistance(
+                boundariesA.getBackSegment(), boundariesB.getBackSegment()));
+        if (shortest.first == 0) {
+            return shortest;
+        }
+
+        shortest = TrigUtils.min(shortest, MathUtils.getShortestDistance(
+                boundariesA.getBackSegment(), boundariesB.getLeftSegment()));
+        if (shortest.first == 0) {
+            return shortest;
+        }
+
+        shortest = TrigUtils.min(shortest, MathUtils.getShortestDistance(
+                boundariesA.getLeftSegment(), boundariesB.getFrontSegment()));
+        if (shortest.first == 0) {
+            return shortest;
+        }
+
+        shortest = TrigUtils.min(shortest, MathUtils.getShortestDistance(
+                boundariesA.getLeftSegment(), boundariesB.getRightSegment()));
+        if (shortest.first == 0) {
+            return shortest;
+        }
+
+        shortest = TrigUtils.min(shortest, MathUtils.getShortestDistance(
+                boundariesA.getLeftSegment(), boundariesB.getBackSegment()));
+        if (shortest.first == 0) {
+            return shortest;
+        }
+
+        shortest = TrigUtils.min(shortest, MathUtils.getShortestDistance(
+                boundariesA.getLeftSegment(), boundariesB.getLeftSegment()));
+
+        return shortest;
     }
 }

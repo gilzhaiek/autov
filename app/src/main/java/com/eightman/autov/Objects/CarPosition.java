@@ -6,6 +6,7 @@ import com.eightman.autov.Configurations.Global;
 import com.eightman.autov.Configurations.SimConfig;
 import com.eightman.autov.Objects.Geom.Boundaries;
 import com.eightman.autov.Objects.Geom.Circle;
+import com.eightman.autov.Utils.MathUtils;
 import com.eightman.autov.Utils.TrigUtils;
 
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ public class CarPosition {
     private final long id;
     private final Boundaries boundaries;
     private final double speed;
-    private final double acceleration;
+    private final double acceleration;  // m/s^2
     private final double wheelsAngle; // Positive: Facing Right, Negative: Facing Left
     private final long timeToNextPosition;
     private final List<ObjectDistanceInfo> carDistancesInfo;
@@ -61,6 +62,16 @@ public class CarPosition {
         this.timeToNextPosition = timeToNextPosition;
         this.last = this;
         this.carDistancesInfo = new ArrayList<>();
+    }
+
+    public double generateNextSpeed() {
+        return this.speed + MathUtils.getFactorSec(this.acceleration, this.timeToNextPosition);
+    }
+
+    public Boundaries generateNextBoundaries() {
+        Circle turningCircle = getTurningCircle();
+        // move along the turning circle
+        boundaries.
     }
 
     public static CarPosition getRestedPosition(Boundaries boundaries) {
