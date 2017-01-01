@@ -16,6 +16,8 @@ public class Boundaries {
     XY center = null;
     XY centerFront = null;
     XY centerBack = null;
+    XY centerLeft = null;
+    XY centerRight = null;
     LineSegment frontSegment = null;
     LineSegment rightSegment = null;
     LineSegment backSegment = null;
@@ -36,6 +38,13 @@ public class Boundaries {
         this.leftFront = lFront;
     }
 
+    public Boundaries moveForward(double addition) {
+        double length = getLength();
+        double addX = rightFront.getX() + addition * (rightFront.getX() - rightBack.getX()) / length;
+        double addY = rightFront.getY() + addition * (rightFront.getY() - rightBack.getY()) / length;
+        return addOffset(new XY(addX, addY));
+    }
+
     public Boundaries addOffset(XY offset) {
         return new Boundaries(
                 this.rightFront.add(offset),
@@ -48,15 +57,6 @@ public class Boundaries {
         return left + (right - left) / 2.0;
     }
 
-    public XY getCenterFront() {
-        if (centerFront == null) {
-            double centerX = getMiddle(leftFront.getX(), rightFront.getX());
-            double centerY = getMiddle(leftFront.getY(), rightFront.getY());
-            centerFront = new XY(centerX, centerY);
-        }
-        return centerFront;
-    }
-
     public XY getCenter() {
         if (center == null) {
             double centerX = getMiddle(leftFront.getX(), rightBack.getX());
@@ -64,6 +64,15 @@ public class Boundaries {
             center = new XY(centerX, centerY);
         }
         return center;
+    }
+
+    public XY getCenterFront() {
+        if (centerFront == null) {
+            double centerX = getMiddle(leftFront.getX(), rightFront.getX());
+            double centerY = getMiddle(leftFront.getY(), rightFront.getY());
+            centerFront = new XY(centerX, centerY);
+        }
+        return centerFront;
     }
 
     public XY getCenterBack() {
@@ -74,6 +83,24 @@ public class Boundaries {
         }
 
         return centerBack;
+    }
+
+    public XY getCenterLeft() {
+        if (centerLeft == null) {
+            double centerX = getMiddle(leftFront.getX(), leftBack.getX());
+            double centerY = getMiddle(leftFront.getY(), leftBack.getY());
+            centerLeft = new XY(centerX, centerY);
+        }
+        return centerLeft;
+    }
+
+    public XY getCenterRight() {
+        if (centerRight == null) {
+            double centerX = getMiddle(rightFront.getX(), rightBack.getX());
+            double centerY = getMiddle(rightFront.getY(), rightBack.getY());
+            centerRight = new XY(centerX, centerY);
+        }
+        return centerRight;
     }
 
     public LineSegment getFrontSegment() {
@@ -103,6 +130,7 @@ public class Boundaries {
         }
         return leftSegment;
     }
+
 
     /*
         TODO: Shortest distance between two non parallel lines

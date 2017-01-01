@@ -29,10 +29,8 @@ public class Circle {
         this.direction = direction;
     }
 
-    public static Circle getCircle(LineSegment segment, LineSegment outerSegment, double radius, Direction direction) {
-        XY segmentCenter = segment.getCenter();
-        XY segmentCenterOuter = outerSegment.getCenter();
-        XY center = TrigUtils.getPoint(segmentCenter, segmentCenterOuter, radius);
+    public static Circle getCircle(XY pointOnCircumference, XY pointOutside, double radius, Direction direction) {
+        XY center = TrigUtils.getPoint(pointOnCircumference, pointOutside, radius);
         return new Circle(center, radius, direction);
     }
 

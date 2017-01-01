@@ -4,14 +4,14 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.eightman.autov.Configurations.SimConfig;
+import com.eightman.autov.Managers.BoundariesManager;
 import com.eightman.autov.Objects.CarCharacteristics;
 import com.eightman.autov.Objects.CarPath;
 import com.eightman.autov.Objects.CarPosition;
+import com.eightman.autov.Objects.Geom.XY;
 import com.eightman.autov.Objects.MyCar;
 import com.eightman.autov.Simulation.DataMaker.RandomSquarePathMaker;
 import com.eightman.autov.Simulation.SimTime;
-import com.eightman.autov.Utils.TrigUtils;
-import com.eightman.autov.Objects.Geom.XY;
 
 import java.util.UUID;
 
@@ -29,9 +29,7 @@ public class CarSimulation extends AbstractSimulation {
 
     public CarSimulation(final CarCharacteristics carChars, final XY position) {
         final CarPosition carPosition = CarPosition.getRestedPosition(
-                TrigUtils.getBoundariesLookingNorth(
-                        position.getX(), position.getY(),
-                        carChars.getWidth(), carChars.getLength()));
+                BoundariesManager.getBoundariesLookingNorth(position, carChars.getWidth(), carChars.getLength()));
 
         myCar = new MyCar(UUID.randomUUID(), carChars, carPosition);
         carPosition.setAbsTime(SimTime.getInstance().getTime(), false);
@@ -65,7 +63,6 @@ public class CarSimulation extends AbstractSimulation {
         }
 
         myCar.setCarPosition(positionInfo.getPosition());
-        myCar.setTargetSpeed(positionInfo.getAdjustedSpeed());
     }
 
     @Override
@@ -93,7 +90,7 @@ public class CarSimulation extends AbstractSimulation {
         protected Boolean doInBackground(CarPath... carPaths) {
             CarPath carPath = carPaths[0];
             try {
-                while (!randomSquarePathMaker.generatePath(carPath)) {
+                while (!randomSquarePathMaker.generatePath(carPath, myCar.getCarCharacteristics())) {
                 }
             } catch (Exception e) {
                 e.printStackTrace();

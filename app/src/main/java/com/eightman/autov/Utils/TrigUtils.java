@@ -13,18 +13,43 @@ import com.eightman.autov.Objects.Physical.Wheels;
  */
 
 public class TrigUtils {
+    public static double getCircumference(double radius) {
+        return 2 * Math.PI * radius;
+    }
+
+    public static double getAnglesInRadians(XY center, XY point) {
+        return Math.atan2(point.getY() - center.getY(), point.getX() - center.getX());
+    }
+
+    public static double getAnglesInRadians(double radius, double arcLength) {
+        return arcLength / getCircumference(radius);
+    }
+
+    public static double getAnglesInRadians(double angleInDegrees) {
+        return angleInDegrees * Math.PI / 180.0;
+    }
+
+    public static XY pointOnCircle(double radius, double angleInDegrees, XY center) {
+        // Convert from degrees to radians via multiplication by PI/180
+        double anglesInRadians = getAnglesInRadians(angleInDegrees);
+        double x = radius * Math.cos(anglesInRadians) + center.getX();
+        double y = radius * Math.sin(anglesInRadians) + center.getY();
+
+        return new XY(x, y);
+    }
+
     // a/sin(A) = b/sin(B) = c/sin(C)
     // For a triangle, B = wheelsAngle, A=C=(180-wheelsAngle)/2
     // b is the wheelsLengthBase and a=c=equals
     public static double getRadius(double wheelsAngle, double wheelsLengthBase) {
         double A = (180 - Math.abs(wheelsAngle)) / 2.0;
-        return wheelsLengthBase * Math.sin(A) / Math.sin(Math.abs(wheelsAngle));
+        return Math.abs(wheelsLengthBase * Math.sin(A) / Math.sin(Math.abs(wheelsAngle)));
     }
 
     public static XY getPoint(XY from, XY pointOutsideLine, double addition) {
         double distance = MathUtils.getDistance(from, pointOutsideLine);
-        double addX = from.getX() - addition * pointOutsideLine.getX() - from.getX() / distance;
-        double addY = from.getY() - addition * pointOutsideLine.getY() - from.getY() / distance;
+        double addX = from.getX() + addition * (from.getX() - pointOutsideLine.getX()) / distance;
+        double addY = from.getY() + addition * (from.getY() - pointOutsideLine.getY()) / distance;
         return new XY(addX, addY);
     }
 
@@ -37,9 +62,10 @@ public class TrigUtils {
         double tempX = xy.getX() - center.getX();
         double tempY = xy.getY() - center.getY();
 
+        double thetaInRadians = getAnglesInRadians(theta);
         // now apply rotation
-        double rotatedX = tempX * Math.cos(theta) - tempY * Math.sin(theta);
-        double rotatedY = tempX * Math.sin(theta) + tempY * Math.cos(theta);
+        double rotatedX = tempX * Math.cos(thetaInRadians) - tempY * Math.sin(thetaInRadians);
+        double rotatedY = tempX * Math.sin(thetaInRadians) + tempY * Math.cos(thetaInRadians);
 
         // translate back
         return new XY(rotatedX + center.getX(), rotatedY + center.getY());
@@ -79,10 +105,8 @@ public class TrigUtils {
     public static Circle[] getMaxTurningCircles(Boundaries boundaries, Wheels wheels) {
         double radius = TrigUtils.getRadius(wheels.getMaxWheelsAngle(), boundaries.getLeftSegment().Length());
         Circle circles[] = new Circle[2];
-        circles[0] = Circle.getCircle(boundaries.getLeftSegment(), boundaries.getRightSegment(),
-                radius, Circle.Direction.COUNTER_CLOCK_WISE);
-        circles[1] = Circle.getCircle(boundaries.getRightSegment(), boundaries.getLeftSegment(),
-                radius, Circle.Direction.CLOCK_WISE);
+        circles[0] = Circle.getCircle(boundaries.getCenterFront(), boundaries.getRightFront(), radius, Circle.Direction.COUNTER_CLOCK_WISE);
+        circles[1] = Circle.getCircle(boundaries.getCenterFront(), boundaries.getLeftFront(), radius, Circle.Direction.CLOCK_WISE);
         return circles;
     }
 }

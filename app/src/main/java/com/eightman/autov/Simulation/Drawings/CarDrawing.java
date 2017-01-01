@@ -5,11 +5,13 @@ import android.graphics.Color;
 import android.graphics.Paint;
 
 import com.eightman.autov.Configurations.SimConfig;
-import com.eightman.autov.Objects.Geom.Boundaries;
 import com.eightman.autov.Objects.CarPosition;
+import com.eightman.autov.Objects.Geom.Boundaries;
+import com.eightman.autov.Objects.Geom.Circle;
 import com.eightman.autov.Objects.MyCar;
 import com.eightman.autov.Objects.ObjectDistanceInfo;
 import com.eightman.autov.Simulation.SimulationView;
+import com.eightman.autov.Utils.TrigUtils;
 import com.eightman.autov.ai.CollisionManager;
 
 import java.util.List;
@@ -26,6 +28,7 @@ public class CarDrawing extends AbstractDrawing {
     static Paint backWheelsPaint;
     Paint carPaint;
     Paint headingPaint;
+    Paint circlePaint;
     Paint collisionPaint;
     Paint activeDistancePaint;
     Paint passiveDistancePaint;
@@ -45,8 +48,9 @@ public class CarDrawing extends AbstractDrawing {
 
         carPaint = DrawingUtils.getLinePaint(car.getCarCharacteristics().getColor());
         headingPaint = DrawingUtils.getLinePaint(Color.argb(0x77, 0xA1, 0x00, 0x1E));
+        circlePaint = DrawingUtils.getLinePaint(Color.rgb(0xE3, 0xFC, 0x7E));
         collisionPaint = DrawingUtils.getLinePaint(Color.YELLOW);
-        activeDistancePaint = DrawingUtils.getLinePaint(Color.rgb(0xa5,0x32,0xdb));
+        activeDistancePaint = DrawingUtils.getLinePaint(Color.rgb(0xa5, 0x32, 0xdb));
         passiveDistancePaint = DrawingUtils.getLinePaint(Color.CYAN);
     }
 
@@ -64,6 +68,10 @@ public class CarDrawing extends AbstractDrawing {
                         " speed=" + carPosition.getSpeed() +
                         " time=" + SimTime.getInstance().getTime() +
                         " timeToNP=" + carPosition.getTimeToNextPosition());*/
+
+        Circle[] circles = TrigUtils.getMaxTurningCircles(carPosition.getBoundaries(), car.getCarCharacteristics().getWheels());
+        DrawingUtils.drawCircle(canvas, circles[0], circlePaint);
+        DrawingUtils.drawCircle(canvas, circles[1], circlePaint);
 
         List<ObjectDistanceInfo> distanceInfoList = carPosition.getCarDistancesInfo();
         for (ObjectDistanceInfo objectDistanceInfo : distanceInfoList) {

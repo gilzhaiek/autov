@@ -1,6 +1,7 @@
 package com.eightman.autov.Utils;
 
 import com.eightman.autov.Configurations.SimConfig;
+import com.eightman.autov.Managers.BoundariesManager;
 import com.eightman.autov.Objects.Geom.Boundaries;
 
 
@@ -18,7 +19,7 @@ public class CollisionUtils {
     }
 
     public static Boundaries getParkingBoundaries(Boundaries carBoundaries) {
-        return TrigUtils.boundariesAddition(carBoundaries, SimConfig.PARKING_SAFE_DISTANCE);
+        return BoundariesManager.boundariesAddition(carBoundaries, SimConfig.PARKING_SAFE_DISTANCE);
     }
 
     public static Boundaries getHeadingBoundaries(
@@ -35,7 +36,7 @@ public class CollisionUtils {
         frontDistanceMeters += (carBoundaries.getLength() * SimConfig.SAFE_ZONE_ERROR_ADDITION);
         backDistanceMeters = (carBoundaries.getLength() * SimConfig.SAFE_ZONE_ERROR_ADDITION);
 
-        return TrigUtils.boundariesAddition(
+        return BoundariesManager.boundariesAddition(
                 carBoundaries,
                 frontDistanceMeters,
                 backDistanceMeters,

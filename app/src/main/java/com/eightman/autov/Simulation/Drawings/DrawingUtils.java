@@ -9,6 +9,7 @@ import android.util.Pair;
 import com.eightman.autov.Configurations.Global;
 import com.eightman.autov.Configurations.SimConfig;
 import com.eightman.autov.Objects.Geom.Boundaries;
+import com.eightman.autov.Objects.Geom.Circle;
 import com.eightman.autov.Objects.Geom.LineSegment;
 import com.eightman.autov.Objects.Geom.XY;
 import com.eightman.autov.Utils.MathUtils;
@@ -83,9 +84,18 @@ public class DrawingUtils {
         return paint;
     }
 
-    public static void drawLine(Canvas canvas,
-                                final LineSegment lineSegment,
-                                Paint paint) {
+    public static void drawCircle(Canvas canvas, Circle circle, Paint paint) {
+        if (circle != null) {
+            XY center = circle.getCenter();
+            canvas.drawCircle(
+                    getScreenPoint((float) center.getX(), Axis.xAxis),
+                    getScreenPoint((float) center.getY(), Axis.yAxis),
+                    (float) (circle.getRadius() * SimConfig.PIXEL_PER_MOVE_UNIT),
+                    paint);
+        }
+    }
+
+    public static void drawLine(Canvas canvas, final LineSegment lineSegment, Paint paint) {
         if (lineSegment != null) {
             drawLine(canvas, lineSegment.getPointA(), lineSegment.getPointB(), paint);
         }

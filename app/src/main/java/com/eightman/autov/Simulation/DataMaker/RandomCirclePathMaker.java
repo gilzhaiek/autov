@@ -32,7 +32,8 @@ public class RandomCirclePathMaker implements IRandomPathMaker {
         Circle circles[] = TrigUtils.getMaxTurningCircles(toBoundaries, carCharacteristics.getWheels());
 
         CarPosition carPosition = carPath.getCurrentPosition();
-        while (!carPosition.getBoundaries().equals(toBoundaries)) {
+        //while (!carPosition.getBoundaries().equals(toBoundaries)) {
+        for (int i = 0; i < 10; i++) {
             CarPosition newCarPosition = moveCloser(carCharacteristics.getAccDec(), carPosition, toBoundaries, circles);
             carPosition.setNext(newCarPosition, true);
             carPosition = newCarPosition;
@@ -55,6 +56,7 @@ public class RandomCirclePathMaker implements IRandomPathMaker {
                                    Circle[] toCircles) {
         Double acceleration = null;
         Double wheelsAngle = null;
+        double speed = 0.0;
 
         Boundaries newBoundaries = oldCarPosition.generateNextBoundaries();
         double newSpeed = oldCarPosition.generateNextSpeed();
@@ -77,12 +79,10 @@ public class RandomCirclePathMaker implements IRandomPathMaker {
         // if the closer one is the same direction - use that
         // if the closer one is the opposite direction but the circles overlap use the circles where the radius don't overlap
 
-        Boundaries newBoundaries;
-
         if (newBoundaries.equals(toBoundaries) && speed == 0.0 && acceleration == 0.0) {
             return CarPosition.getRestedPosition(newBoundaries);
         } else {
-            return carPosition.getMovingPosition(newBoundaries, speed, acceleration, wheelsAngle, SimConfig.PATH_RESOLUTION_MS);
+            return CarPosition.getMovingPosition(newBoundaries, speed, acceleration, wheelsAngle, SimConfig.PATH_RESOLUTION_MS);
         }
     }
 }

@@ -19,6 +19,7 @@ import java.util.UUID;
 
 public class CarPosition {
     private final static String TAG = CarPosition.class.getSimpleName();
+
     private final long id;
     private final Boundaries boundaries;
     private final double speed;
@@ -68,10 +69,19 @@ public class CarPosition {
         return this.speed + MathUtils.getFactorSec(this.acceleration, this.timeToNextPosition);
     }
 
+    public double generateNextMoveDistance() {
+        return MathUtils.getFactorSec(generateNextSpeed(), timeToNextPosition);
+    }
+
     public Boundaries generateNextBoundaries() {
         Circle turningCircle = getTurningCircle();
         // move along the turning circle
-        boundaries.
+
+        double moveDistance = generateNextMoveDistance();
+
+        //if(turningCircle == null) {
+            return boundaries.moveForward(moveDistance);
+        //}
     }
 
     public static CarPosition getRestedPosition(Boundaries boundaries) {
@@ -292,15 +302,15 @@ public class CarPosition {
         if (turningCircle == null) {
             if (wheelsAngle > 0) {
                 turningCircle = Circle.getCircle(
-                        boundaries.getRightSegment(),
-                        boundaries.getLeftSegment(),
-                        TrigUtils.getRadius(wheelsAngle, boundaries.getLeftSegment().Length()),
+                        boundaries.getCenterFront(),
+                        boundaries.getLeftFront(),
+                        TrigUtils.getRadius(wheelsAngle, boundaries.getLength()),
                         Circle.Direction.CLOCK_WISE);
             } else if (wheelsAngle < 0) {
                 turningCircle = Circle.getCircle(
-                        boundaries.getLeftSegment(),
-                        boundaries.getRightSegment(),
-                        TrigUtils.getRadius(wheelsAngle, boundaries.getRightSegment().Length()),
+                        boundaries.getCenterFront(),
+                        boundaries.getRightFront(),
+                        TrigUtils.getRadius(wheelsAngle, boundaries.getLength()),
                         Circle.Direction.COUNTER_CLOCK_WISE);
             } // else null
         }
