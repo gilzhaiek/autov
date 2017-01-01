@@ -40,8 +40,8 @@ public class Boundaries {
 
     public Boundaries moveForward(double addition) {
         double length = getLength();
-        double addX = rightFront.getX() + addition * (rightFront.getX() - rightBack.getX()) / length;
-        double addY = rightFront.getY() + addition * (rightFront.getY() - rightBack.getY()) / length;
+        double addX = addition * (rightFront.getX() - rightBack.getX()) / length;
+        double addY = addition * (rightFront.getY() - rightBack.getY()) / length;
         return addOffset(new XY(addX, addY));
     }
 

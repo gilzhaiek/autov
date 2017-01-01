@@ -73,6 +73,14 @@ public class MathUtils {
         return from + random.nextInt(to - from + 1);
     }
 
+    public static double setRandomSign(double value) {
+        if (getRandomInt(0, 1) > 0) {
+            return value;
+        } else {
+            return value * -1.0;
+        }
+    }
+
     public static double getRandomDouble(double from, double to) {
         if (from == to) {
             return from;

@@ -10,10 +10,10 @@ public class SimConfig {
     final public static int SIM_NUM_OF_5_CAR_SETS = 10;
     final public static int SIM_DELAY_ADDITION = 100000;
 
-    final public static int PATH_RESOLUTION_MS = 1000;
+    final public static int PATH_RESOLUTION_MS = 20;
 
-    //final public static int DELAY_MS = 16; // 60fps
-    final public static int DELAY_MS = 500; // Every frame is a second
+    final public static int DELAY_MS = 16; // 60fps
+    //final public static int DELAY_MS = 1000; // Every frame is a second
     final public static boolean LIMIT_CARS_TO_SCREEN = true;
 
     // Our unit is 1 meter
@@ -34,9 +34,9 @@ public class SimConfig {
 
     // Speed
     final public static double MIN_TOP_SPEED = 2.0; // Meters per second
-    final public static double MAX_TOP_SPEED = 8.0; // Meters per second
-    final public static double MIN_ACC = 1.0; // m/s^2:  5 m/s after 5 seconds and 10 m/s after 10 seconds.
-    final public static double MAX_ACC = 10.0; // m/s^2
+    final public static double MAX_TOP_SPEED = 5.0; // Meters per second
+    final public static double MIN_ACC = 0.5; // m/s^2:  5 m/s after 5 seconds and 10 m/s after 10 seconds.
+    final public static double MAX_ACC = 3.5; // m/s^2
     final public static double MIN_EMERGENCY_DEC = -2.0; // m/s^2 Deceleration
     final public static double MAX_EMERGENCY_DEC = -10.0; // m/s^2
     final public static double COMFORTABLE_DEC = -3.0; // m/s^2 http://journaldatabase.info/download/pdf/study_deceleration_behaviour_different

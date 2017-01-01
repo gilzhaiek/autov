@@ -84,6 +84,12 @@ public class DrawingUtils {
         return paint;
     }
 
+    public static void drawCircles(Canvas canvas, Circle[] circles, Paint paint) {
+        for(Circle circle : circles) {
+            drawCircle(canvas, circle, paint);
+        }
+    }
+
     public static void drawCircle(Canvas canvas, Circle circle, Paint paint) {
         if (circle != null) {
             XY center = circle.getCenter();

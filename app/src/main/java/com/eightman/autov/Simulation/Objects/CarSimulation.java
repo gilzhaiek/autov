@@ -10,7 +10,8 @@ import com.eightman.autov.Objects.CarPath;
 import com.eightman.autov.Objects.CarPosition;
 import com.eightman.autov.Objects.Geom.XY;
 import com.eightman.autov.Objects.MyCar;
-import com.eightman.autov.Simulation.DataMaker.RandomSquarePathMaker;
+import com.eightman.autov.Simulation.DataMaker.RandomCirclePathMaker;
+import com.eightman.autov.Simulation.Interfaces.IRandomPathMaker;
 import com.eightman.autov.Simulation.SimTime;
 
 import java.util.UUID;
@@ -24,7 +25,7 @@ public class CarSimulation extends AbstractSimulation {
 
     boolean stopped = false;
     MyCar myCar;
-    static RandomSquarePathMaker randomSquarePathMaker = new RandomSquarePathMaker();
+    static IRandomPathMaker randomPathMaker = new RandomCirclePathMaker();
     GeneratePathTask generatePathTask = null;
 
     public CarSimulation(final CarCharacteristics carChars, final XY position) {
@@ -90,7 +91,7 @@ public class CarSimulation extends AbstractSimulation {
         protected Boolean doInBackground(CarPath... carPaths) {
             CarPath carPath = carPaths[0];
             try {
-                while (!randomSquarePathMaker.generatePath(carPath, myCar.getCarCharacteristics())) {
+                while (!randomPathMaker.generatePath(carPath, myCar.getCarCharacteristics())) {
                 }
             } catch (Exception e) {
                 e.printStackTrace();

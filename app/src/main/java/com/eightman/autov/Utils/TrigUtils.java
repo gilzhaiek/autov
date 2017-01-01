@@ -42,8 +42,16 @@ public class TrigUtils {
     // For a triangle, B = wheelsAngle, A=C=(180-wheelsAngle)/2
     // b is the wheelsLengthBase and a=c=equals
     public static double getRadius(double wheelsAngle, double wheelsLengthBase) {
-        double A = (180 - Math.abs(wheelsAngle)) / 2.0;
-        return Math.abs(wheelsLengthBase * Math.sin(A) / Math.sin(Math.abs(wheelsAngle)));
+        if (wheelsAngle == 0) {
+            throw new IllegalArgumentException("wheelsAngle can't be 0");
+        }
+        if (wheelsAngle >= 90.0) {
+            throw new IllegalArgumentException("wheelsAngle can't be greater or equal to 90");
+        }
+        wheelsAngle = Math.abs(wheelsAngle);
+        double A = (180 - wheelsAngle * 2.0);
+        return Math.abs(wheelsLengthBase *
+                Math.sin(getAnglesInRadians(A)) / Math.sin(getAnglesInRadians(wheelsAngle)));
     }
 
     public static XY getPoint(XY from, XY pointOutsideLine, double addition) {
@@ -103,7 +111,7 @@ public class TrigUtils {
     }
 
     public static Circle[] getMaxTurningCircles(Boundaries boundaries, Wheels wheels) {
-        double radius = TrigUtils.getRadius(wheels.getMaxWheelsAngle(), boundaries.getLeftSegment().Length());
+        double radius = TrigUtils.getRadius(wheels.getMaxWheelsAngle(), boundaries.getLength());
         Circle circles[] = new Circle[2];
         circles[0] = Circle.getCircle(boundaries.getCenterFront(), boundaries.getRightFront(), radius, Circle.Direction.COUNTER_CLOCK_WISE);
         circles[1] = Circle.getCircle(boundaries.getCenterFront(), boundaries.getLeftFront(), radius, Circle.Direction.CLOCK_WISE);

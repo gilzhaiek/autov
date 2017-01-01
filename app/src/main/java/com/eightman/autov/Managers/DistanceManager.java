@@ -8,6 +8,7 @@ import com.eightman.autov.Objects.MyCar;
 import com.eightman.autov.Objects.ObjectDistanceInfo;
 import com.eightman.autov.Utils.MathUtils;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -97,8 +98,7 @@ public class DistanceManager {
                 return;
             }
 
-            List<ObjectDistanceInfo> carDistancesInfo = myCarPosition.getCarDistancesInfo();
-            carDistancesInfo.clear();
+            List<ObjectDistanceInfo> carDistancesInfo = new ArrayList<>();
             for (int i = 0; i < otherCarPositions.size(); ) {
                 CarPosition otherCarPosition = otherCarPositions.get(i);
                 if (otherCarPosition.getAbsTime() - myCarPosition.getAbsTime() < largestTimeResolution) {
@@ -136,14 +136,14 @@ public class DistanceManager {
                                 myCarPosition.getCarUUID(),
                                 otherCarPosition.getCarUUID()));
 
-                        otherCarPosition.getCarDistancesInfo().add(new ObjectDistanceInfo(
+                        carDistancesInfo.add(new ObjectDistanceInfo(
                                 ObjectDistanceInfo.SegmentType.COLLISION_ZONE,
                                 otherCarCollisionDistance,
                                 otherCarCollisionSegment,
                                 otherCarPosition.getCarUUID(),
                                 myCarPosition.getCarUUID()));
 
-                        otherCarPosition.getCarDistancesInfo().add(new ObjectDistanceInfo(
+                        carDistancesInfo.add(new ObjectDistanceInfo(
                                 ObjectDistanceInfo.SegmentType.DECISION_ZONE_PASSIVE,
                                 otherCarDecisionDistance,
                                 otherCarDecisionSegment,
@@ -159,6 +159,8 @@ public class DistanceManager {
                     i++;
                 }
             }
+
+            myCarPosition.setCarDistancesInfo(carDistancesInfo);
 
             if (myCarPosition.isLast()) {
                 break;

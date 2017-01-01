@@ -11,6 +11,7 @@ import com.eightman.autov.Objects.Geom.Boundaries;
 import com.eightman.autov.Objects.Geom.Circle;
 import com.eightman.autov.Objects.Geom.XY;
 import com.eightman.autov.Objects.Physical.AccDec;
+import com.eightman.autov.Objects.Physical.Wheels;
 import com.eightman.autov.Simulation.Drawings.DrawingUtils;
 import com.eightman.autov.Simulation.Interfaces.IRandomPathMaker;
 import com.eightman.autov.Utils.MathUtils;
@@ -34,7 +35,8 @@ public class RandomCirclePathMaker implements IRandomPathMaker {
         CarPosition carPosition = carPath.getCurrentPosition();
         //while (!carPosition.getBoundaries().equals(toBoundaries)) {
         for (int i = 0; i < 10; i++) {
-            CarPosition newCarPosition = moveCloser(carCharacteristics.getAccDec(), carPosition, toBoundaries, circles);
+            CarPosition newCarPosition = moveCloser(carCharacteristics.getAccDec(),
+                    carCharacteristics.getWheels(), carPosition, toBoundaries, circles);
             carPosition.setNext(newCarPosition, true);
             carPosition = newCarPosition;
         }
@@ -52,11 +54,10 @@ public class RandomCirclePathMaker implements IRandomPathMaker {
         return new XY(x, y);
     }
 
-    private CarPosition moveCloser(AccDec accDec, CarPosition oldCarPosition, Boundaries toBoundaries,
+    private CarPosition moveCloser(AccDec accDec, Wheels wheels, CarPosition oldCarPosition, Boundaries toBoundaries,
                                    Circle[] toCircles) {
         Double acceleration = null;
         Double wheelsAngle = null;
-        double speed = 0.0;
 
         Boundaries newBoundaries = oldCarPosition.generateNextBoundaries();
         double newSpeed = oldCarPosition.generateNextSpeed();
@@ -66,8 +67,11 @@ public class RandomCirclePathMaker implements IRandomPathMaker {
         double shortestDistance = BoundariesManager.getShortestDistance(oldCarPosition.getBoundaries(), toBoundaries).first;
         if (shortestDistance < distanceToStop) {
             acceleration = accDec.getComfortableDec();
+        } else {
+            acceleration = accDec.getAcceleration(newSpeed);
         }
 
+        wheelsAngle = MathUtils.setRandomSign(MathUtils.getRandomDouble(0, wheels.getMaxWheelsAngle()));
 
         // Check if I am on the circle and on the same direction
 
@@ -79,10 +83,10 @@ public class RandomCirclePathMaker implements IRandomPathMaker {
         // if the closer one is the same direction - use that
         // if the closer one is the opposite direction but the circles overlap use the circles where the radius don't overlap
 
-        if (newBoundaries.equals(toBoundaries) && speed == 0.0 && acceleration == 0.0) {
+        if (newBoundaries.equals(toBoundaries) && newSpeed == 0.0 && acceleration == 0.0) {
             return CarPosition.getRestedPosition(newBoundaries);
         } else {
-            return CarPosition.getMovingPosition(newBoundaries, speed, acceleration, wheelsAngle, SimConfig.PATH_RESOLUTION_MS);
+            return CarPosition.getMovingPosition(newBoundaries, newSpeed, acceleration, wheelsAngle, SimConfig.PATH_RESOLUTION_MS);
         }
     }
 }

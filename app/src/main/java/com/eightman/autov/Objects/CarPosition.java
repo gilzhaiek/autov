@@ -26,7 +26,7 @@ public class CarPosition {
     private final double acceleration;  // m/s^2
     private final double wheelsAngle; // Positive: Facing Right, Negative: Facing Left
     private final long timeToNextPosition;
-    private final List<ObjectDistanceInfo> carDistancesInfo;
+    private List<ObjectDistanceInfo> carDistancesInfo;
 
     private CarPosition next;
     private CarPosition previous;
@@ -80,7 +80,7 @@ public class CarPosition {
         double moveDistance = generateNextMoveDistance();
 
         //if(turningCircle == null) {
-            return boundaries.moveForward(moveDistance);
+        return boundaries.moveForward(moveDistance);
         //}
     }
 
@@ -317,7 +317,11 @@ public class CarPosition {
         return turningCircle;
     }
 
-    public List<ObjectDistanceInfo> getCarDistancesInfo() {
+    public synchronized void setCarDistancesInfo(List<ObjectDistanceInfo> carDistancesInfo) {
+        this.carDistancesInfo = carDistancesInfo;
+    }
+
+    public synchronized List<ObjectDistanceInfo> getCarDistancesInfo() {
         return carDistancesInfo;
     }
 

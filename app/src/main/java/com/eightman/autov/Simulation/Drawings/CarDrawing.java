@@ -3,6 +3,7 @@ package com.eightman.autov.Simulation.Drawings;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.util.Log;
 
 import com.eightman.autov.Configurations.SimConfig;
 import com.eightman.autov.Objects.CarPosition;
@@ -28,7 +29,8 @@ public class CarDrawing extends AbstractDrawing {
     static Paint backWheelsPaint;
     Paint carPaint;
     Paint headingPaint;
-    Paint circlePaint;
+    Paint maxCirclePaint;
+    Paint turningCirclePaint;
     Paint collisionPaint;
     Paint activeDistancePaint;
     Paint passiveDistancePaint;
@@ -48,7 +50,8 @@ public class CarDrawing extends AbstractDrawing {
 
         carPaint = DrawingUtils.getLinePaint(car.getCarCharacteristics().getColor());
         headingPaint = DrawingUtils.getLinePaint(Color.argb(0x77, 0xA1, 0x00, 0x1E));
-        circlePaint = DrawingUtils.getLinePaint(Color.rgb(0xE3, 0xFC, 0x7E));
+        maxCirclePaint = DrawingUtils.getLinePaint(Color.argb(0x44, 0xE3, 0xFC, 0x7E));
+        turningCirclePaint = DrawingUtils.getLinePaint(Color.argb(0x99, 0xE3, 0xFC, 0x7E));
         collisionPaint = DrawingUtils.getLinePaint(Color.YELLOW);
         activeDistancePaint = DrawingUtils.getLinePaint(Color.rgb(0xa5, 0x32, 0xdb));
         passiveDistancePaint = DrawingUtils.getLinePaint(Color.CYAN);
@@ -70,8 +73,8 @@ public class CarDrawing extends AbstractDrawing {
                         " timeToNP=" + carPosition.getTimeToNextPosition());*/
 
         Circle[] circles = TrigUtils.getMaxTurningCircles(carPosition.getBoundaries(), car.getCarCharacteristics().getWheels());
-        DrawingUtils.drawCircle(canvas, circles[0], circlePaint);
-        DrawingUtils.drawCircle(canvas, circles[1], circlePaint);
+        DrawingUtils.drawCircles(canvas, circles, maxCirclePaint);
+        DrawingUtils.drawCircle(canvas, carPosition.getTurningCircle(), turningCirclePaint);
 
         List<ObjectDistanceInfo> distanceInfoList = carPosition.getCarDistancesInfo();
         for (ObjectDistanceInfo objectDistanceInfo : distanceInfoList) {
