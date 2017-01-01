@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.eightman.autov.Configurations.Global;
 import com.eightman.autov.Configurations.SimConfig;
+import com.eightman.autov.Managers.BoundariesManager;
 import com.eightman.autov.Objects.Geom.Boundaries;
 import com.eightman.autov.Objects.Geom.Circle;
 import com.eightman.autov.Utils.MathUtils;
@@ -74,13 +75,15 @@ public class CarPosition {
     }
 
     public Boundaries generateNextBoundaries() {
-        Circle turningCircle = getTurningCircle();
+        //Circle turningCircle = getTurningCircle();
         // move along the turning circle
 
         double moveDistance = generateNextMoveDistance();
 
+        return BoundariesManager.rotateBoundaries(boundaries, getWheelsAngle()).moveForward(moveDistance);
+
         //if(turningCircle == null) {
-        return boundaries.moveForward(moveDistance);
+        //return boundaries.moveForward(moveDistance);
         //}
     }
 

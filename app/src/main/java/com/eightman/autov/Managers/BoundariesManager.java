@@ -13,6 +13,18 @@ import com.eightman.autov.Utils.TrigUtils;
  */
 
 public class BoundariesManager {
+    public static Boundaries rotateBoundaries(Boundaries boundaries, double theta) {
+        while (theta >= 360.0) {
+            theta -= 360.0;
+        }
+        XY center = boundaries.getCenter();
+        XY rightFront = TrigUtils.rotateAroundCenter(center, boundaries.getRightFront(), theta);
+        XY rightBack = TrigUtils.rotateAroundCenter(center, boundaries.getRightBack(), theta);
+        XY leftBack = TrigUtils.rotateAroundCenter(center, boundaries.getLeftBack(), theta);
+        XY leftFront = TrigUtils.rotateAroundCenter(center, boundaries.getLeftFront(), theta);
+        return new Boundaries(rightFront, rightBack, leftBack, leftFront);
+    }
+
     public static Boundaries getBoundariesRotated(final XY center, double width, double length, double theta) {
         while (theta >= 360.0) {
             theta -= 360.0;

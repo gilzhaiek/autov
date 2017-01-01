@@ -70,7 +70,7 @@ public class TrigUtils {
         double tempX = xy.getX() - center.getX();
         double tempY = xy.getY() - center.getY();
 
-        double thetaInRadians = getAnglesInRadians(theta);
+        double thetaInRadians = getAnglesInRadians(-theta);
         // now apply rotation
         double rotatedX = tempX * Math.cos(thetaInRadians) - tempY * Math.sin(thetaInRadians);
         double rotatedY = tempX * Math.sin(thetaInRadians) + tempY * Math.cos(thetaInRadians);
