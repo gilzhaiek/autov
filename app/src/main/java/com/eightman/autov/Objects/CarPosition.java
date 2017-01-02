@@ -7,6 +7,7 @@ import com.eightman.autov.Configurations.SimConfig;
 import com.eightman.autov.Managers.BoundariesManager;
 import com.eightman.autov.Objects.Geom.Boundaries;
 import com.eightman.autov.Objects.Geom.Circle;
+import com.eightman.autov.Objects.Geom.XY;
 import com.eightman.autov.Utils.MathUtils;
 import com.eightman.autov.Utils.TrigUtils;
 
@@ -75,16 +76,23 @@ public class CarPosition {
     }
 
     public Boundaries generateNextBoundaries() {
-        //Circle turningCircle = getTurningCircle();
-        // move along the turning circle
+        Circle turningCircle = getTurningCircle();
 
         double moveDistance = generateNextMoveDistance();
 
-        return BoundariesManager.rotateBoundaries(boundaries, getWheelsAngle()).moveForward(moveDistance);
+        if (turningCircle == null) {
+            return boundaries.moveForward(moveDistance);
+        }
 
-        //if(turningCircle == null) {
-        //return boundaries.moveForward(moveDistance);
-        //}
+        double alpha = TrigUtils.getAngleRad(turningCircle.getCenter(), boundaries.getCenterFront());
+        double beta = TrigUtils.getAngleRad(turningCircle.getRadius(), moveDistance);
+        XY newCenterFront = TrigUtils.getPointOnCircleCircumference(turningCircle.getRadius(),
+                beta + alpha, turningCircle.getCenter());
+        alpha = TrigUtils.getAngleRad(turningCircle.getCenter(), boundaries.getCenterBack());
+        XY newCenterBack = TrigUtils.getPointOnCircleCircumference(turningCircle.getRadius(),
+                beta + alpha, turningCircle.getCenter());
+
+        return BoundariesManager.genBoundaries(newCenterFront, newCenterBack, boundaries.getWidth(), boundaries.getLength());
     }
 
     public static CarPosition getRestedPosition(Boundaries boundaries) {

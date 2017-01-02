@@ -56,7 +56,7 @@ public class RandomCirclePathMaker implements IRandomPathMaker {
 
     private CarPosition moveCloser(AccDec accDec, Wheels wheels, CarPosition oldCarPosition, Boundaries toBoundaries,
                                    Circle[] toCircles) {
-        Double acceleration = null;
+        Double acceleration;
         Double wheelsAngle = null;
 
         Boundaries newBoundaries = oldCarPosition.generateNextBoundaries();
@@ -71,18 +71,18 @@ public class RandomCirclePathMaker implements IRandomPathMaker {
             acceleration = accDec.getAcceleration(newSpeed);
         }
 
-        wheelsAngle = MathUtils.setRandomSign(MathUtils.getRandomDouble(0, wheels.getMaxWheelsAngle()));
-
         // Check if I am on the circle and on the same direction
+        Circle turningCircle = oldCarPosition.getTurningCircle();
+        if(!turningCircle.equals(toCircles[0]) && !turningCircle.equals(toCircles[1])) {
 
+            // Check if my direction is intersecting with any of the two circles and reaching the same direction
+            // Make sure I slow down to be max wheels turn when I hit the circle
 
-        // Check if my direction is intersecting with any of the two circles and reaching the same direction
-        // Make sure I slow down to be max wheels turn when I hit the circle
+            // Get the distance between the two max circles (3 options)
+            // if the closer one is the same direction - use that
+            // if the closer one is the opposite direction but the circles overlap use the circles where the radius don't overlap
 
-        // Get the distance between the two max circles (3 options)
-        // if the closer one is the same direction - use that
-        // if the closer one is the opposite direction but the circles overlap use the circles where the radius don't overlap
-
+        }
         if (newBoundaries.equals(toBoundaries) && newSpeed == 0.0 && acceleration == 0.0) {
             return CarPosition.getRestedPosition(newBoundaries);
         } else {

@@ -85,10 +85,10 @@ public class BoundariesManager {
         return new Boundaries(rFrontX, rFrontY, rBackX, rBackY, lBackX, lBackY, lFrontX, lFrontY);
     }
 
-    public static Boundaries getHeadingBoundaries(XY yourXY, XY lookingAtXY, double width, double length) {
+    public static Boundaries genBoundaries(XY frontCenter, XY backCenter, double width, double length) {
         // https://goo.gl/photos/kT3nq51TM7fqiLjQ6
-        double dx = lookingAtXY.getX() - yourXY.getX();
-        double dy = lookingAtXY.getY() - yourXY.getY();
+        double dx = frontCenter.getX() - backCenter.getX();
+        double dy = frontCenter.getY() - backCenter.getY();
         double alpha = Math.atan(dy / dx);
         double beta = Math.PI - alpha;
         double adjAlpha = (width / 2) * Math.sin(alpha);
@@ -98,23 +98,62 @@ public class BoundariesManager {
 
         double rFrontX, rFrontY, lFrontX, lFrontY;
         double rBackX, rBackY, lBackX, lBackY;
-        boolean lookingUp = (lookingAtXY.getY() > yourXY.getY());
-        boolean lookingRight = (lookingAtXY.getX() > yourXY.getX());
+        boolean lookingRight = (frontCenter.getX() > backCenter.getX());
 
         if (lookingRight) {
-            rFrontX = yourXY.getX() + adjAlpha;
-            lFrontX = yourXY.getX() - adjAlpha;
-            rFrontY = yourXY.getY() - oppAlpha;
-            lFrontY = yourXY.getY() + oppAlpha;
+            rFrontX = frontCenter.getX() + adjAlpha;
+            lFrontX = frontCenter.getX() - adjAlpha;
+            rFrontY = frontCenter.getY() - oppAlpha;
+            lFrontY = frontCenter.getY() + oppAlpha;
             rBackX = rFrontX + oppBeta;
             lBackX = lFrontX + oppBeta;
             rBackY = rFrontY - adjBeta;
             lBackY = lFrontY - adjBeta;
         } else {
-            rFrontX = yourXY.getX() - adjAlpha;
-            lFrontX = yourXY.getX() + adjAlpha;
-            rFrontY = yourXY.getY() + oppAlpha;
-            lFrontY = yourXY.getY() - oppAlpha;
+            rFrontX = frontCenter.getX() - adjAlpha;
+            lFrontX = frontCenter.getX() + adjAlpha;
+            rFrontY = frontCenter.getY() + oppAlpha;
+            lFrontY = frontCenter.getY() - oppAlpha;
+            rBackX = rFrontX - oppBeta;
+            lBackX = lFrontX - oppBeta;
+            rBackY = rFrontY + adjBeta;
+            lBackY = lFrontY + adjBeta;
+        }
+
+        return new Boundaries(rFrontX, rFrontY, rBackX, rBackY, lBackX, lBackY, lFrontX, lFrontY);
+    }
+
+
+    public static Boundaries getHeadingBoundaries(XY frontCenter, XY lookingAtXY, double width, double length) {
+        // https://goo.gl/photos/kT3nq51TM7fqiLjQ6
+        double dx = lookingAtXY.getX() - frontCenter.getX();
+        double dy = lookingAtXY.getY() - frontCenter.getY();
+        double alpha = Math.atan(dy / dx);
+        double beta = Math.PI - alpha;
+        double adjAlpha = (width / 2) * Math.sin(alpha);
+        double oppAlpha = (width / 2) * Math.cos(alpha);
+        double adjBeta = (length) * Math.sin(beta);
+        double oppBeta = (length) * Math.cos(beta);
+
+        double rFrontX, rFrontY, lFrontX, lFrontY;
+        double rBackX, rBackY, lBackX, lBackY;
+        boolean lookingUp = (lookingAtXY.getY() > frontCenter.getY());
+        boolean lookingRight = (lookingAtXY.getX() > frontCenter.getX());
+
+        if (lookingRight) {
+            rFrontX = frontCenter.getX() + adjAlpha;
+            lFrontX = frontCenter.getX() - adjAlpha;
+            rFrontY = frontCenter.getY() - oppAlpha;
+            lFrontY = frontCenter.getY() + oppAlpha;
+            rBackX = rFrontX + oppBeta;
+            lBackX = lFrontX + oppBeta;
+            rBackY = rFrontY - adjBeta;
+            lBackY = lFrontY - adjBeta;
+        } else {
+            rFrontX = frontCenter.getX() - adjAlpha;
+            lFrontX = frontCenter.getX() + adjAlpha;
+            rFrontY = frontCenter.getY() + oppAlpha;
+            lFrontY = frontCenter.getY() - oppAlpha;
             rBackX = rFrontX - oppBeta;
             lBackX = lFrontX - oppBeta;
             rBackY = rFrontY + adjBeta;

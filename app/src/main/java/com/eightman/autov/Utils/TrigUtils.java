@@ -17,21 +17,20 @@ public class TrigUtils {
         return 2 * Math.PI * radius;
     }
 
-    public static double getAnglesInRadians(XY center, XY point) {
+    public static double getAngleRad(XY center, XY point) {
         return Math.atan2(point.getY() - center.getY(), point.getX() - center.getX());
     }
 
-    public static double getAnglesInRadians(double radius, double arcLength) {
+    public static double getAngleRad(double radius, double arcLength) {
         return arcLength / getCircumference(radius);
     }
 
-    public static double getAnglesInRadians(double angleInDegrees) {
+    public static double convertAnglesToRadians(double angleInDegrees) {
         return angleInDegrees * Math.PI / 180.0;
     }
 
-    public static XY pointOnCircle(double radius, double angleInDegrees, XY center) {
+    public static XY getPointOnCircleCircumference(double radius, double anglesInRadians, XY center) {
         // Convert from degrees to radians via multiplication by PI/180
-        double anglesInRadians = getAnglesInRadians(angleInDegrees);
         double x = radius * Math.cos(anglesInRadians) + center.getX();
         double y = radius * Math.sin(anglesInRadians) + center.getY();
 
@@ -51,7 +50,7 @@ public class TrigUtils {
         wheelsAngle = Math.abs(wheelsAngle);
         double A = (180 - wheelsAngle * 2.0);
         return Math.abs(wheelsLengthBase *
-                Math.sin(getAnglesInRadians(A)) / Math.sin(getAnglesInRadians(wheelsAngle)));
+                Math.sin(convertAnglesToRadians(A)) / Math.sin(convertAnglesToRadians(wheelsAngle)));
     }
 
     public static XY getPoint(XY from, XY pointOutsideLine, double addition) {
@@ -70,7 +69,7 @@ public class TrigUtils {
         double tempX = xy.getX() - center.getX();
         double tempY = xy.getY() - center.getY();
 
-        double thetaInRadians = getAnglesInRadians(-theta);
+        double thetaInRadians = convertAnglesToRadians(-theta);
         // now apply rotation
         double rotatedX = tempX * Math.cos(thetaInRadians) - tempY * Math.sin(thetaInRadians);
         double rotatedY = tempX * Math.sin(thetaInRadians) + tempY * Math.cos(thetaInRadians);
