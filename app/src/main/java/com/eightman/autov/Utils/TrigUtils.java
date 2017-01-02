@@ -2,17 +2,107 @@ package com.eightman.autov.Utils;
 
 import android.util.Pair;
 
-import com.eightman.autov.Objects.Geom.Boundaries;
 import com.eightman.autov.Objects.Geom.Circle;
 import com.eightman.autov.Objects.Geom.LineSegment;
 import com.eightman.autov.Objects.Geom.XY;
-import com.eightman.autov.Objects.Physical.Wheels;
 
 /**
  * Created by gilzhaiek on 2016-11-03.
  */
 
 public class TrigUtils {
+    public static XY findTangent(Circle circle, double alphaRadians) {
+        double r = circle.getRadius();
+        double cx = circle.getCenter().getX();
+        double cy = circle.getCenter().getY();
+        double x = cx + r * Math.cos(Math.PI / 2.0 - alphaRadians);
+        double y = cy + r * Math.sin(Math.PI / 2.0 - alphaRadians);
+        return new XY(x, y);
+    }
+
+    // http://www.ambrsoft.com/TrigoCalc/Circles2/Circles2Tangent_.htm
+    private static LineSegment _findOuterTangents(Circle bigCircle,
+                                                  Circle smallCircle,
+                                                  boolean oppositeSegment) {
+        double a = bigCircle.getCenter().getX();
+        double b = bigCircle.getCenter().getY();
+        double c = smallCircle.getCenter().getX();
+        double d = smallCircle.getCenter().getY();
+        double r0 = bigCircle.getRadius();
+        double r1 = smallCircle.getRadius();
+
+        double xp = (c * r0 - a * r1) / (r0 - r1);
+        double yp = (d * r0 - b * r1) / (r0 - r1);
+
+        XY xy1 = null, xy2 = null;
+        double rSqr = r0 * r0;
+        double denominator = Math.pow(xp - a, 2) + Math.pow(yp - b, 2);
+        double part = Math.sqrt(Math.pow(xp - a, 2) + Math.pow(yp - b, 2) - rSqr);
+        if ((bigCircle.getDirection() == Circle.Direction.CLOCK_WISE) == !oppositeSegment) {
+            double xt1 = ((rSqr * (xp - a) + r0 * (yp - b) * part) / (denominator)) + a;
+            double yt1 = ((rSqr * (yp - b) - r0 * (xp - a) * part) / (denominator)) + b;
+            xy1 = new XY(xt1, yt1);
+        } else {
+            double xt2 = ((rSqr * (xp - a) - r0 * (yp - b) * part) / (denominator)) + a;
+            double yt2 = ((rSqr * (yp - b) + r0 * (xp - a) * part) / (denominator)) + b;
+            xy2 = new XY(xt2, yt2);
+        }
+
+        rSqr = r1 * r1;
+        denominator = Math.pow(xp - c, 2) + Math.pow(yp - d, 2);
+        part = Math.sqrt(Math.pow(xp - c, 2) + Math.pow(yp - d, 2) - rSqr);
+        if (xy1 != null) {
+            double xt3 = ((rSqr * (xp - c) + r1 * (yp - d) * part) / (denominator)) + c;
+            double yt3 = ((rSqr * (yp - d) - r1 * (xp - c) * part) / (denominator)) + d;
+            return new LineSegment(xy1, new XY(xt3, yt3));
+        } else {
+            double xt4 = ((rSqr * (xp - c) - r1 * (yp - d) * part) / (denominator)) + c;
+            double yt4 = ((rSqr * (yp - d) + r1 * (xp - c) * part) / (denominator)) + d;
+            return new LineSegment(xy2, new XY(xt4, yt4));
+        }
+    }
+
+    // http://www.ambrsoft.com/TrigoCalc/Circles2/Circles2Tangent_.htm
+
+    public static LineSegment findOuterTangents(Circle fromCircle, Circle toCircle) {
+        if (fromCircle == null || toCircle == null) {
+            return null;
+        }
+
+        // Outer tangents only make sense for same direction
+        if (fromCircle.getDirection() != toCircle.getDirection()) {
+            return null;
+        }
+
+        if (fromCircle.getRadius() > toCircle.getRadius()) {
+            return _findOuterTangents(fromCircle, toCircle, false);
+        } else if (fromCircle.getRadius() < toCircle.getRadius()) {
+            return _findOuterTangents(toCircle, fromCircle, true).getSwapped();
+        } else {
+            double halfToRadius = toCircle.getRadius() / 2.0;
+            Circle smallerToCircle = new Circle(toCircle.getCenter(), halfToRadius, toCircle.getDirection());
+            LineSegment toSmallerSegment = _findOuterTangents(fromCircle, smallerToCircle, false);
+            LineSegment centerToSmaller = new LineSegment(smallerToCircle.getCenter(), toSmallerSegment.getPointB());
+            return new LineSegment(toSmallerSegment.getPointA(), centerToSmaller.addToB(halfToRadius).getPointB());
+        }
+    }
+
+    // https://en.wikipedia.org/wiki/Tangent_lines_to_circles
+    /*public static LineSegment findOuterTangents(Circle circle1, Circle circle2) {
+        if (circle1 == null || circle2 == null) {
+            return null;
+        }
+
+        double lambda = Math.atan(
+                (circle1.getCenter().getY() - circle2.getCenter().getY()) /
+                        (circle2.getCenter().getX() - circle1.getCenter().getX()));
+        double beta = Math.asin((circle2.getRadius() - circle1.getRadius()) /
+                (Math.sqrt(Math.pow(circle2.getCenter().getX() - circle1.getCenter().getX(), 2) +
+                        Math.pow(circle2.getCenter().getY() - circle1.getCenter().getY(), 2))));
+        double alpha = lambda - beta;
+        return new LineSegment(findTangent(circle1, alpha), findTangent(circle2, alpha));
+    }*/
+
     public static double getCircumference(double radius) {
         return 2 * Math.PI * radius;
     }
@@ -107,13 +197,5 @@ public class TrigUtils {
             return pair1;
         }
         return pair2;
-    }
-
-    public static Circle[] getMaxTurningCircles(Boundaries boundaries, Wheels wheels) {
-        double radius = TrigUtils.getRadius(wheels.getMaxWheelsAngle(), boundaries.getLength());
-        Circle circles[] = new Circle[2];
-        circles[0] = Circle.getCircle(boundaries.getCenterFront(), boundaries.getRightFront(), radius, Circle.Direction.COUNTER_CLOCK_WISE);
-        circles[1] = Circle.getCircle(boundaries.getCenterFront(), boundaries.getLeftFront(), radius, Circle.Direction.CLOCK_WISE);
-        return circles;
     }
 }

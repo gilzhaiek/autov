@@ -26,7 +26,6 @@ public class CarPosition {
     private final Boundaries boundaries;
     private final double speed;
     private final double acceleration;  // m/s^2
-    private final double wheelsAngle; // Positive: Facing Right, Negative: Facing Left
     private final long timeToNextPosition;
     private List<ObjectDistanceInfo> carDistancesInfo;
 
@@ -36,7 +35,6 @@ public class CarPosition {
     private int linkSize = 1;
     private CarPath parentCarPath;
     private long absTime = 0;
-    private Circle turningCircle;
 
     // TODO: Add direction - front or back
 
@@ -45,7 +43,6 @@ public class CarPosition {
         this.boundaries = boundaries;
         this.speed = 0;
         this.acceleration = 0;
-        this.wheelsAngle = 0;
         this.timeToNextPosition = 0;
         this.last = this;
         this.carDistancesInfo = new ArrayList<>();
@@ -55,13 +52,11 @@ public class CarPosition {
             @NonNull Boundaries boundaries,
             double speed,
             double acceleration,
-            double wheelsAngle,
             long timeToNextPosition) {
         this.id = Global.generateId();
         this.boundaries = boundaries;
         this.speed = speed;
         this.acceleration = acceleration;
-        this.wheelsAngle = wheelsAngle;
         this.timeToNextPosition = timeToNextPosition;
         this.last = this;
         this.carDistancesInfo = new ArrayList<>();
@@ -75,8 +70,8 @@ public class CarPosition {
         return MathUtils.getFactorSec(generateNextSpeed(), timeToNextPosition);
     }
 
-    public Boundaries generateNextBoundaries() {
-        Circle turningCircle = getTurningCircle();
+    public Boundaries generateNextBoundaries(double wheelsAngle) {
+        Circle turningCircle = boundaries.getTurningCircle();
 
         double moveDistance = generateNextMoveDistance();
 
@@ -92,7 +87,8 @@ public class CarPosition {
         XY newCenterBack = TrigUtils.getPointOnCircleCircumference(turningCircle.getRadius(),
                 beta + alpha, turningCircle.getCenter());
 
-        return BoundariesManager.genBoundaries(newCenterFront, newCenterBack, boundaries.getWidth(), boundaries.getLength());
+        return BoundariesManager.genBoundaries(newCenterFront, newCenterBack,
+                boundaries.getWidth(), boundaries.getLength(), wheelsAngle, boundaries.getMaxWheelsAngle());
     }
 
     public static CarPosition getRestedPosition(Boundaries boundaries) {
@@ -105,7 +101,7 @@ public class CarPosition {
             double acceleration,
             double wheelsAngle,
             long timeToNextPosition) {
-        return new CarPosition(boundaries, speed, acceleration, wheelsAngle, timeToNextPosition);
+        return new CarPosition(boundaries, speed, acceleration, timeToNextPosition);
     }
 
     public static CarPosition copy(CarPosition carPosition) {
@@ -113,7 +109,6 @@ public class CarPosition {
                 carPosition.getBoundaries(),
                 carPosition.getSpeed(),
                 carPosition.getAcceleration(),
-                carPosition.getWheelsAngle(),
                 carPosition.getTimeToNextPosition());
     }
 
@@ -267,10 +262,6 @@ public class CarPosition {
         return acceleration;
     }
 
-    public double getWheelsAngle() {
-        return wheelsAngle;
-    }
-
     /**
      * 0 for rested
      *
@@ -309,31 +300,16 @@ public class CarPosition {
         return (boundaries.getLength() * SimConfig.SAFE_ZONE_ERROR_ADDITION);
     }
 
-    public Circle getTurningCircle() {
-        if (turningCircle == null) {
-            if (wheelsAngle > 0) {
-                turningCircle = Circle.getCircle(
-                        boundaries.getCenterFront(),
-                        boundaries.getLeftFront(),
-                        TrigUtils.getRadius(wheelsAngle, boundaries.getLength()),
-                        Circle.Direction.CLOCK_WISE);
-            } else if (wheelsAngle < 0) {
-                turningCircle = Circle.getCircle(
-                        boundaries.getCenterFront(),
-                        boundaries.getRightFront(),
-                        TrigUtils.getRadius(wheelsAngle, boundaries.getLength()),
-                        Circle.Direction.COUNTER_CLOCK_WISE);
-            } // else null
-        }
-        return turningCircle;
-    }
-
     public synchronized void setCarDistancesInfo(List<ObjectDistanceInfo> carDistancesInfo) {
         this.carDistancesInfo = carDistancesInfo;
     }
 
     public synchronized List<ObjectDistanceInfo> getCarDistancesInfo() {
         return carDistancesInfo;
+    }
+
+    public double getWheelsAngle() {
+        return boundaries.getWheelsAngle();
     }
 
     @Override

@@ -3,7 +3,6 @@ package com.eightman.autov.Simulation.Drawings;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.util.Log;
 
 import com.eightman.autov.Configurations.SimConfig;
 import com.eightman.autov.Objects.CarPosition;
@@ -12,7 +11,6 @@ import com.eightman.autov.Objects.Geom.Circle;
 import com.eightman.autov.Objects.MyCar;
 import com.eightman.autov.Objects.ObjectDistanceInfo;
 import com.eightman.autov.Simulation.SimulationView;
-import com.eightman.autov.Utils.TrigUtils;
 import com.eightman.autov.ai.CollisionManager;
 
 import java.util.List;
@@ -72,9 +70,9 @@ public class CarDrawing extends AbstractDrawing {
                         " time=" + SimTime.getInstance().getTime() +
                         " timeToNP=" + carPosition.getTimeToNextPosition());*/
 
-        Circle[] circles = TrigUtils.getMaxTurningCircles(carPosition.getBoundaries(), car.getCarCharacteristics().getWheels());
+        Circle[] circles = carPosition.getBoundaries().getMaxTurningCircles();
         DrawingUtils.drawCircles(canvas, circles, maxCirclePaint);
-        DrawingUtils.drawCircle(canvas, carPosition.getTurningCircle(), turningCirclePaint);
+        DrawingUtils.drawCircle(canvas, carPosition.getBoundaries().getTurningCircle(), turningCirclePaint);
 
         List<ObjectDistanceInfo> distanceInfoList = carPosition.getCarDistancesInfo();
         for (ObjectDistanceInfo objectDistanceInfo : distanceInfoList) {

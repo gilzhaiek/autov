@@ -10,6 +10,7 @@ import com.eightman.autov.Objects.CarPath;
 import com.eightman.autov.Objects.CarPosition;
 import com.eightman.autov.Objects.Geom.XY;
 import com.eightman.autov.Objects.MyCar;
+import com.eightman.autov.Objects.Physical.Wheels;
 import com.eightman.autov.Simulation.DataMaker.RandomCirclePathMaker;
 import com.eightman.autov.Simulation.Interfaces.IRandomPathMaker;
 import com.eightman.autov.Simulation.SimTime;
@@ -30,7 +31,8 @@ public class CarSimulation extends AbstractSimulation {
 
     public CarSimulation(final CarCharacteristics carChars, final XY position) {
         final CarPosition carPosition = CarPosition.getRestedPosition(
-                BoundariesManager.getBoundariesLookingNorth(position, carChars.getWidth(), carChars.getLength()));
+                BoundariesManager.getBoundariesLookingNorth(position, carChars.getWidth(), carChars.getLength(),
+                        Wheels.STRAIGHT_WHEELS, carChars.getWheels().getMaxWheelsAngle()));
 
         myCar = new MyCar(UUID.randomUUID(), carChars, carPosition);
         carPosition.setAbsTime(SimTime.getInstance().getTime(), false);

@@ -13,7 +13,7 @@ import com.eightman.autov.Utils.TrigUtils;
  */
 
 public class BoundariesManager {
-    public static Boundaries rotateBoundaries(Boundaries boundaries, double theta) {
+    public static Boundaries rotateBoundaries(Boundaries boundaries, double theta, double newWheelsAngle) {
         while (theta >= 360.0) {
             theta -= 360.0;
         }
@@ -22,29 +22,32 @@ public class BoundariesManager {
         XY rightBack = TrigUtils.rotateAroundCenter(center, boundaries.getRightBack(), theta);
         XY leftBack = TrigUtils.rotateAroundCenter(center, boundaries.getLeftBack(), theta);
         XY leftFront = TrigUtils.rotateAroundCenter(center, boundaries.getLeftFront(), theta);
-        return new Boundaries(rightFront, rightBack, leftBack, leftFront);
+        return new Boundaries(rightFront, rightBack, leftBack, leftFront, newWheelsAngle, boundaries.getMaxWheelsAngle());
     }
 
-    public static Boundaries getBoundariesRotated(final XY center, double width, double length, double theta) {
+    public static Boundaries getBoundariesRotated(final XY center, double width, double length,
+                                                  double theta, double wheelsAngle, double maxWheelsAngle) {
         while (theta >= 360.0) {
             theta -= 360.0;
         }
-        Boundaries boundaries = getBoundariesLookingNorth(center, width, length);
+        Boundaries boundaries = getBoundariesLookingNorth(center, width, length, wheelsAngle, maxWheelsAngle);
         XY rightFront = TrigUtils.rotateAroundCenter(center, boundaries.getRightFront(), theta);
         XY rightBack = TrigUtils.rotateAroundCenter(center, boundaries.getRightBack(), theta);
         XY leftBack = TrigUtils.rotateAroundCenter(center, boundaries.getLeftBack(), theta);
         XY leftFront = TrigUtils.rotateAroundCenter(center, boundaries.getLeftFront(), theta);
-        return new Boundaries(rightFront, rightBack, leftBack, leftFront);
+        return new Boundaries(rightFront, rightBack, leftBack, leftFront, wheelsAngle, maxWheelsAngle);
     }
 
-    public static Boundaries getBoundariesLookingNorth(final XY center, double width, double length) {
+    public static Boundaries getBoundariesLookingNorth(final XY center, double width, double length,
+                                                       double wheelsAngle, double maxWheelsAngle) {
         double dx = width / 2;
         double dy = length / 2;
         return new Boundaries(
                 center.getX() + dx, center.getY() + dy,
                 center.getX() + dx, center.getY() - dy,
                 center.getX() - dx, center.getY() - dy,
-                center.getX() - dx, center.getY() + dy);
+                center.getX() - dx, center.getY() + dy,
+                wheelsAngle, maxWheelsAngle);
     }
 
     public static Boundaries boundariesAddition(
@@ -67,9 +70,6 @@ public class BoundariesManager {
         double fxl = (dxl / boundaries.getLength()) * frontLength;
         double bxl = (dxl / boundaries.getLength()) * backLength;
 
-        boolean lookingUp = boundaries.getCenterFront().getY() > boundaries.getCenterBack().getY();
-        boolean lookingRight = boundaries.getCenterFront().getX() > boundaries.getCenterBack().getX();
-
         double rFrontX, rFrontY, lFrontX, lFrontY;
         double rBackX, rBackY, lBackX, lBackY;
 
@@ -82,10 +82,12 @@ public class BoundariesManager {
         lFrontX = boundaries.getLeftFront().getX() + fxl - xw;
         lFrontY = boundaries.getLeftFront().getY() + fyl - yw;
 
-        return new Boundaries(rFrontX, rFrontY, rBackX, rBackY, lBackX, lBackY, lFrontX, lFrontY);
+        return new Boundaries(rFrontX, rFrontY, rBackX, rBackY, lBackX, lBackY, lFrontX, lFrontY,
+                boundaries.getWheelsAngle(), boundaries.getMaxWheelsAngle());
     }
 
-    public static Boundaries genBoundaries(XY frontCenter, XY backCenter, double width, double length) {
+    public static Boundaries genBoundaries(XY frontCenter, XY backCenter, double width, double length,
+                                           double wheelsAngle, double maxWheelsAngle) {
         // https://goo.gl/photos/kT3nq51TM7fqiLjQ6
         double dx = frontCenter.getX() - backCenter.getX();
         double dy = frontCenter.getY() - backCenter.getY();
@@ -120,11 +122,13 @@ public class BoundariesManager {
             lBackY = lFrontY + adjBeta;
         }
 
-        return new Boundaries(rFrontX, rFrontY, rBackX, rBackY, lBackX, lBackY, lFrontX, lFrontY);
+        return new Boundaries(rFrontX, rFrontY, rBackX, rBackY, lBackX, lBackY, lFrontX, lFrontY,
+                wheelsAngle, maxWheelsAngle);
     }
 
 
-    public static Boundaries getHeadingBoundaries(XY frontCenter, XY lookingAtXY, double width, double length) {
+    public static Boundaries getHeadingBoundaries(XY frontCenter, XY lookingAtXY, double width, double length,
+                                                  double wheelsAngle, double maxWheelsAngle) {
         // https://goo.gl/photos/kT3nq51TM7fqiLjQ6
         double dx = lookingAtXY.getX() - frontCenter.getX();
         double dy = lookingAtXY.getY() - frontCenter.getY();
@@ -137,7 +141,6 @@ public class BoundariesManager {
 
         double rFrontX, rFrontY, lFrontX, lFrontY;
         double rBackX, rBackY, lBackX, lBackY;
-        boolean lookingUp = (lookingAtXY.getY() > frontCenter.getY());
         boolean lookingRight = (lookingAtXY.getX() > frontCenter.getX());
 
         if (lookingRight) {
@@ -160,7 +163,8 @@ public class BoundariesManager {
             lBackY = lFrontY + adjBeta;
         }
 
-        return new Boundaries(rFrontX, rFrontY, rBackX, rBackY, lBackX, lBackY, lFrontX, lFrontY);
+        return new Boundaries(rFrontX, rFrontY, rBackX, rBackY, lBackX, lBackY, lFrontX, lFrontY,
+                wheelsAngle, maxWheelsAngle);
     }
 
     public static Pair<Double, LineSegment> getShortestDistance(Boundaries boundariesA, Boundaries boundariesB) {

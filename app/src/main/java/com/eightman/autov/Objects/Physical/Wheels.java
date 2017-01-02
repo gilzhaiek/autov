@@ -9,6 +9,7 @@ import com.eightman.autov.Utils.TrigUtils;
  */
 
 public class Wheels {
+    public static final double STRAIGHT_WHEELS = 0.0;
     final double maxWheelsAngle;
     final double wheelsLengthBase;
     final double wheelsWidthBase;
