@@ -52,7 +52,7 @@ public class SpeedManager {
                 car.getCarCharacteristics().getSpeed().getTopSpeed(), // Assume we want to go the fastest
                 currentWheelAngle, targetWheelsAngle);
 
-        return CarPosition.getMovingPosition(carPosition.getBoundaries(), currentSpeedMS,
-                accWheels.first, accWheels.second, deltaTime);
+        carPosition.getBoundaries().setWheelsAngle(accWheels.second);
+        return CarPosition.getMovingPosition(carPosition.getBoundaries(), currentSpeedMS, accWheels.first, deltaTime);
     }
 }

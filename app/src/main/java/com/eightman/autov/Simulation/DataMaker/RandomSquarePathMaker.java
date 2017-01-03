@@ -64,7 +64,7 @@ public class RandomSquarePathMaker implements IRandomPathMaker {
         for (int sec = 0; ; ++sec) {
             long timeOffset = (sec == totalSeconds) ? leftOver : Constants.ONE_SECOND;
             Boundaries boundaries = carPosition.getBoundaries().addOffset(deltaPerSecond);
-            carPosition = CarPosition.getMovingPosition(boundaries, speed, 0.0, 0.0, timeOffset);
+            carPosition = CarPosition.getMovingPosition(boundaries, speed, 0.0, timeOffset);
 
             if (!lastPosition.setNext(carPosition, true)) { // In case anyone altered the path
                 return false;
@@ -97,7 +97,7 @@ public class RandomSquarePathMaker implements IRandomPathMaker {
                 from, to, position.getBoundaries().getWidth(), position.getBoundaries().getLength(),
                 Wheels.STRAIGHT_WHEELS, position.getBoundaries().getMaxWheelsAngleAbs());
 
-        return CarPosition.getMovingPosition(toBoundaries, speed, 0.0, 0.0, timeOffset);
+        return CarPosition.getMovingPosition(toBoundaries, speed, 0.0, timeOffset);
     }
 
     private double getRandomEdge() {

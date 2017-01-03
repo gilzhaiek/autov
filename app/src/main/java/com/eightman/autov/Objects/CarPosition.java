@@ -1,6 +1,7 @@
 package com.eightman.autov.Objects;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.eightman.autov.Configurations.Global;
 import com.eightman.autov.Configurations.SimConfig;
@@ -67,7 +68,8 @@ public class CarPosition {
     }
 
     public double generateNextMoveDistance() {
-        return MathUtils.getFactorSec(generateNextSpeed(), timeToNextPosition);
+        double speed = generateNextSpeed();
+        return MathUtils.getFactorSec(speed, timeToNextPosition);
     }
 
     public Boundaries generateNextBoundaries(double wheelsAngle) {
@@ -79,6 +81,8 @@ public class CarPosition {
             return boundaries.moveForward(moveDistance);
         }
 
+        Log.d("SHIT", "TC=" + turningCircle.toString());
+
         double alpha = TrigUtils.getAngleRad(turningCircle.getCenter(), boundaries.getCenterFront());
         double beta = TrigUtils.getAngleRad(turningCircle.getRadius(), moveDistance);
         XY newCenterFront = TrigUtils.getPointOnCircleCircumference(turningCircle.getRadius(),
@@ -86,6 +90,12 @@ public class CarPosition {
         alpha = TrigUtils.getAngleRad(turningCircle.getCenter(), boundaries.getCenterBack());
         XY newCenterBack = TrigUtils.getPointOnCircleCircumference(turningCircle.getRadius(),
                 beta + alpha, turningCircle.getCenter());
+
+        Log.d("SHIT", "A=" + alpha + " B=" + beta +
+                " CF=" + boundaries.getCenterFront() + "->" + newCenterFront.toString() +
+                " CB=" + boundaries.getCenterBack() + "->" + newCenterBack.toString());
+
+        Log.d("SHIT", "WA=" + wheelsAngle + " D=" + moveDistance);
 
         return BoundariesManager.genBoundaries(newCenterFront, newCenterBack,
                 boundaries.getWidth(), boundaries.getLength(), wheelsAngle, boundaries.getMaxWheelsAngleAbs());
@@ -99,7 +109,6 @@ public class CarPosition {
             Boundaries boundaries,
             double speed,
             double acceleration,
-            double wheelsAngle,
             long timeToNextPosition) {
         return new CarPosition(boundaries, speed, acceleration, timeToNextPosition);
     }

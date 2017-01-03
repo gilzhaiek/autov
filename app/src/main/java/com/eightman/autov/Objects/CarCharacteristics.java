@@ -35,9 +35,9 @@ public class CarCharacteristics {
     public static CarCharacteristics generateRandom() {
         double length = MathUtils.getRandomDouble(SimConfig.MIN_CAR_LENGTH, SimConfig.MAX_CAR_LENGTH);
         double width = MathUtils.getRandomDouble(SimConfig.MIN_CAR_WIDTH, SimConfig.MAX_CAR_WIDTH);
-        Wheels wheels = Wheels.generateRandom(length, width);
+        Wheels wheels = Wheels.generateRandom(width, length);
         Speed speed = Speed.generateRandom(wheels);
-        return new CarCharacteristics(length, width, DrawingUtils.randomColor(), speed, wheels,
+        return new CarCharacteristics(width, length, DrawingUtils.randomColor(), speed, wheels,
                 AccDec.generateRandom(speed.getTopSpeed()));
     }
 

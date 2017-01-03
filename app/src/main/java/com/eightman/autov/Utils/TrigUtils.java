@@ -120,9 +120,8 @@ public class TrigUtils {
     }
 
     public static XY getPointOnCircleCircumference(double radius, double anglesInRadians, XY center) {
-        // Convert from degrees to radians via multiplication by PI/180
-        double x = radius * Math.cos(anglesInRadians) + center.getX();
-        double y = radius * Math.sin(anglesInRadians) + center.getY();
+        double x = center.getX() + radius * Math.cos(anglesInRadians);
+        double y = center.getY() + radius * Math.sin(anglesInRadians);
 
         return new XY(x, y);
     }

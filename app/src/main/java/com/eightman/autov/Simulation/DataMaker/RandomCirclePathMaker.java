@@ -19,6 +19,8 @@ import com.eightman.autov.Simulation.Interfaces.IRandomPathMaker;
 import com.eightman.autov.Utils.MathUtils;
 import com.eightman.autov.Utils.TrigUtils;
 
+import static com.eightman.autov.Objects.Physical.Wheels.STRAIGHT_WHEELS;
+
 /**
  * Created by gilzhaiek on 2016-12-27.
  */
@@ -33,7 +35,7 @@ public class RandomCirclePathMaker implements IRandomPathMaker {
 
         Boundaries toBoundaries = BoundariesManager.getBoundariesRotated(center,
                 carCharacteristics.getWidth(), carCharacteristics.getWidth(), randomAngle,
-                Wheels.STRAIGHT_WHEELS, carPosition.getBoundaries().getMaxWheelsAngleAbs());
+                STRAIGHT_WHEELS, carPosition.getBoundaries().getMaxWheelsAngleAbs());
         toBoundaries = toBoundaries.addOffset(new XY(
                 MathUtils.getRandomDouble(SimConfig.MIN_EDGE_METERS, SimConfig.MAX_EDGE_METERS),
                 MathUtils.getRandomDouble(SimConfig.MIN_EDGE_METERS, SimConfig.MAX_EDGE_METERS)));
@@ -60,10 +62,9 @@ public class RandomCirclePathMaker implements IRandomPathMaker {
 
     private CarPosition moveCloser(AccDec accDec, Speed speed, CarPosition oldCarPosition, Boundaries toBoundaries) {
         double newAcc;
-        double wheelsAngle = oldCarPosition.getWheelsAngle();
         double maxWheelsAngleSpeed = speed.getComfortableSpeed(toBoundaries.getMaxWheelsAngleAbs());
 
-        Boundaries newBoundaries = oldCarPosition.generateNextBoundaries(wheelsAngle);
+        Boundaries newBoundaries = oldCarPosition.generateNextBoundaries(oldCarPosition.getWheelsAngle());
         double newSpeed = oldCarPosition.generateNextSpeed();
 
         // Make sure we slow down in time
@@ -80,7 +81,7 @@ public class RandomCirclePathMaker implements IRandomPathMaker {
             if (newSpeed == 0.0 && newAcc == 0.0) {
                 return CarPosition.getRestedPosition(newBoundaries);
             } else {
-                return CarPosition.getMovingPosition(newBoundaries, newSpeed, newAcc, wheelsAngle, SimConfig.PATH_RESOLUTION_MS);
+                return CarPosition.getMovingPosition(newBoundaries, newSpeed, newAcc, SimConfig.PATH_RESOLUTION_MS);
             }
         }
 
@@ -94,7 +95,7 @@ public class RandomCirclePathMaker implements IRandomPathMaker {
                 // We need to slow down
                 newAcc = accDec.getComfortableDec();
             }
-            return CarPosition.getMovingPosition(newBoundaries, newSpeed, newAcc, wheelsAngle, SimConfig.PATH_RESOLUTION_MS);
+            return CarPosition.getMovingPosition(newBoundaries, newSpeed, newAcc, SimConfig.PATH_RESOLUTION_MS);
         }
 
         Circle[] myMaxCircles = newBoundaries.getMaxTurningCircles();
@@ -118,7 +119,7 @@ public class RandomCirclePathMaker implements IRandomPathMaker {
         }
 
         if (segment != null) {
-            wheelsAngle = Wheels.STRAIGHT_WHEELS;
+            newBoundaries.setWheelsAngle(Wheels.STRAIGHT_WHEELS);
             // Make sure I slow down to be max wheels turn when I hit the circle
             double distanceToTargetCircle = segment.getLength();
             double distanceToTargetSpeed = accDec.getDistanceToTargetSpeed(newSpeed, maxWheelsAngleSpeed);
@@ -128,23 +129,23 @@ public class RandomCirclePathMaker implements IRandomPathMaker {
                 newAcc = accDec.getAcceleration(newSpeed);
             }
 
-            return CarPosition.getMovingPosition(newBoundaries, newSpeed, newAcc, wheelsAngle, SimConfig.PATH_RESOLUTION_MS);
+            return CarPosition.getMovingPosition(newBoundaries, newSpeed, newAcc, SimConfig.PATH_RESOLUTION_MS);
         }
 
         if (myMaxCircles[0].getDirection() == toCircles[0].getDirection()) {
-            wheelsAngle = newBoundaries.getMaxWheelsAngle(myMaxCircles[0].getDirection());
+            newBoundaries.setWheelsAngle(newBoundaries.getMaxWheelsAngle(myMaxCircles[0].getDirection()));
         } else {
-            wheelsAngle = newBoundaries.getMaxWheelsAngle(myMaxCircles[1].getDirection());
+            newBoundaries.setWheelsAngle(newBoundaries.getMaxWheelsAngle(myMaxCircles[1].getDirection()));
         }
 
-        double comfortableSpeed = speed.getComfortableSpeed(wheelsAngle);
+        double comfortableSpeed = speed.getComfortableSpeed(newBoundaries.getWheelsAngle());
         if (newSpeed > comfortableSpeed) {
             newAcc = accDec.getComfortableDec();
         } else {
             newAcc = Math.min(accDec.getAcceleration(newSpeed), comfortableSpeed - newSpeed);
         }
 
-        return CarPosition.getMovingPosition(newBoundaries, newSpeed, newAcc, wheelsAngle, SimConfig.PATH_RESOLUTION_MS);
+        return CarPosition.getMovingPosition(newBoundaries, newSpeed, newAcc, SimConfig.PATH_RESOLUTION_MS);
 
         // Get the distance between the two max circles (3 options)
         // if the closer one is the same direction - use that

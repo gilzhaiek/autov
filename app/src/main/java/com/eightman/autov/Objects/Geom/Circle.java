@@ -63,4 +63,9 @@ public class Circle {
                 other.getRadius() == radius &&
                 other.getDirection() == direction;
     }
+
+    @Override
+    public String toString() {
+        return "(cx=" + center.getX() + ",cy=" + center.getY() + ",r=" + radius + ",dir=" + direction + ")";
+    }
 }

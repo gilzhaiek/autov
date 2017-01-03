@@ -20,7 +20,7 @@ public class Wheels {
         this.wheelsWidthBase = carWidth;
     }
 
-    public static Wheels generateRandom(double carLength, double carWidth) {
+    public static Wheels generateRandom(double carWidth, double carLength) {
         return new Wheels(
                 carLength * MathUtils.getRandomDouble(10, 20),
                 carWidth,
