@@ -21,7 +21,7 @@ public class Speed {
         if (maxAngleMaxSpeed > this.topSpeed) {
             maxAngleMaxSpeed = this.topSpeed;
         }
-        for (int i = 0; i < comfortableSpeedWheelsAngle.length - 1; i++) {
+        for (int i = 0; i < comfortableSpeedWheelsAngle.length; i++) {
             comfortableSpeedWheelsAngle[i] = this.topSpeed -
                     (this.topSpeed - maxAngleMaxSpeed) * ((double) i) / SimConfig.MAX_MAX_WHEELS_ANGLE;
         }

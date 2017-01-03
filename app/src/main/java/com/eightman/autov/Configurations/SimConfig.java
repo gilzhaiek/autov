@@ -54,6 +54,10 @@ public class SimConfig {
     final public static double MIN_SPEED = 1.5;
     final public static double MAX_SPEED = 4;
 
+    // Circle Path Maker
+    final public static double MIN_EDGE_METERS = 20.0;
+    final public static double MAX_EDGE_METERS = 80.0;
+
     final public static double MAX_COLLISION_VALIDATION = MAX_CAR_LENGTH * 2;
 
     // Stroke Width

@@ -88,7 +88,7 @@ public class CarPosition {
                 beta + alpha, turningCircle.getCenter());
 
         return BoundariesManager.genBoundaries(newCenterFront, newCenterBack,
-                boundaries.getWidth(), boundaries.getLength(), wheelsAngle, boundaries.getMaxWheelsAngle());
+                boundaries.getWidth(), boundaries.getLength(), wheelsAngle, boundaries.getMaxWheelsAngleAbs());
     }
 
     public static CarPosition getRestedPosition(Boundaries boundaries) {

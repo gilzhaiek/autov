@@ -156,8 +156,16 @@ public class Boundaries {
         return wheelsAngle;
     }
 
-    public double getMaxWheelsAngle() {
+    public double getMaxWheelsAngleAbs() {
         return maxWheelsAngle;
+    }
+
+    public double getMaxWheelsAngle(Circle.Direction direction) {
+        if(direction == Circle.Direction.CLOCK_WISE) {
+            return maxWheelsAngle;
+        } else {
+            return -maxWheelsAngle;
+        }
     }
 
     public synchronized Circle getTurningCircle() {
@@ -185,8 +193,9 @@ public class Boundaries {
 
             double radius = TrigUtils.getRadius(maxWheelsAngle, getLength());
 
-            maxTurningCircles[0] = Circle.getCircle(getCenterFront(), getRightFront(), radius, Circle.Direction.COUNTER_CLOCK_WISE);
-            maxTurningCircles[1] = Circle.getCircle(getCenterFront(), getLeftFront(), radius, Circle.Direction.CLOCK_WISE);
+            maxTurningCircles[0] = Circle.getCircle(getCenterFront(), getLeftFront(), radius, Circle.Direction.CLOCK_WISE);
+            maxTurningCircles[1] = Circle.getCircle(getCenterFront(), getRightFront(), radius, Circle.Direction.COUNTER_CLOCK_WISE);
+
         }
         return maxTurningCircles;
     }

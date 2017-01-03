@@ -24,7 +24,7 @@ public class AccDec {
         acceleration[i] = 0;
 
         emergencyBreak = emergencyDec;
-        if(emergencyDec > SimConfig.COMFORTABLE_DEC) {
+        if (emergencyDec > SimConfig.COMFORTABLE_DEC) {
             comfortableDec = emergencyDec;
         } else {
             comfortableDec = SimConfig.COMFORTABLE_DEC;
@@ -45,18 +45,35 @@ public class AccDec {
         return acceleration[(int) speed];
     }
 
+    public double getDistanceToTargetSpeed(double currentSpeed, double targetSpeed) {
+        if (currentSpeed == targetSpeed) {
+            return 0;
+        }
+
+        if (targetSpeed > maxSpeed) {
+            targetSpeed = maxSpeed;
+        }
+
+        double distance = currentSpeed;
+        while (currentSpeed != targetSpeed) {
+            if (currentSpeed > targetSpeed) {
+                currentSpeed += Math.max(targetSpeed - currentSpeed, comfortableDec);
+            } else {
+                currentSpeed += Math.min(targetSpeed - currentSpeed, acceleration[(int) currentSpeed]);
+            }
+
+            distance += currentSpeed;
+        }
+
+        return distance;
+    }
+
     public double getStopDistance(double currentSpeed) {
         if (currentSpeed == 0) {
             return 0;
         }
 
-        double distance = currentSpeed;
-        while (currentSpeed > 0) {
-            currentSpeed += comfortableDec;
-            distance += currentSpeed;
-        }
-
-        return distance;
+        return getDistanceToTargetSpeed(currentSpeed, 0);
     }
 
     public double getEmergencyBreak() {

@@ -27,6 +27,7 @@ public class CarSimulation extends AbstractSimulation {
     boolean stopped = false;
     MyCar myCar;
     static IRandomPathMaker randomPathMaker = new RandomCirclePathMaker();
+    //static IRandomPathMaker randomPathMaker = new RandomSquarePathMaker();
     GeneratePathTask generatePathTask = null;
 
     public CarSimulation(final CarCharacteristics carChars, final XY position) {

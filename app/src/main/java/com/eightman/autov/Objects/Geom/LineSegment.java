@@ -73,4 +73,8 @@ public class LineSegment {
     public synchronized LineSegment getSwapped() {
         return new LineSegment(pointB, pointA);
     }
+
+    public double getLength() {
+        return length;
+    }
 }

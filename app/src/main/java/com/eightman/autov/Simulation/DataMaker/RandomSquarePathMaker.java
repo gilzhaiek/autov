@@ -95,7 +95,7 @@ public class RandomSquarePathMaker implements IRandomPathMaker {
     private CarPosition rotateCar(CarPosition position, XY from, XY to, long timeOffset, double speed) {
         Boundaries toBoundaries = BoundariesManager.getHeadingBoundaries(
                 from, to, position.getBoundaries().getWidth(), position.getBoundaries().getLength(),
-                Wheels.STRAIGHT_WHEELS, position.getBoundaries().getMaxWheelsAngle());
+                Wheels.STRAIGHT_WHEELS, position.getBoundaries().getMaxWheelsAngleAbs());
 
         return CarPosition.getMovingPosition(toBoundaries, speed, 0.0, 0.0, timeOffset);
     }

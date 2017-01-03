@@ -22,7 +22,7 @@ public class BoundariesManager {
         XY rightBack = TrigUtils.rotateAroundCenter(center, boundaries.getRightBack(), theta);
         XY leftBack = TrigUtils.rotateAroundCenter(center, boundaries.getLeftBack(), theta);
         XY leftFront = TrigUtils.rotateAroundCenter(center, boundaries.getLeftFront(), theta);
-        return new Boundaries(rightFront, rightBack, leftBack, leftFront, newWheelsAngle, boundaries.getMaxWheelsAngle());
+        return new Boundaries(rightFront, rightBack, leftBack, leftFront, newWheelsAngle, boundaries.getMaxWheelsAngleAbs());
     }
 
     public static Boundaries getBoundariesRotated(final XY center, double width, double length,
@@ -83,7 +83,7 @@ public class BoundariesManager {
         lFrontY = boundaries.getLeftFront().getY() + fyl - yw;
 
         return new Boundaries(rFrontX, rFrontY, rBackX, rBackY, lBackX, lBackY, lFrontX, lFrontY,
-                boundaries.getWheelsAngle(), boundaries.getMaxWheelsAngle());
+                boundaries.getWheelsAngle(), boundaries.getMaxWheelsAngleAbs());
     }
 
     public static Boundaries genBoundaries(XY frontCenter, XY backCenter, double width, double length,
