@@ -6,18 +6,22 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import com.eightman.autov.Configurations.Global;
 import com.eightman.autov.Managers.DistanceManager;
 import com.eightman.autov.Objects.CarCharacteristics;
+import com.eightman.autov.Objects.Geom.XY;
 import com.eightman.autov.Simulation.Drawings.AbstractDrawing;
 import com.eightman.autov.Simulation.Drawings.CarDrawing;
 import com.eightman.autov.Simulation.Objects.AbstractSimulation;
 import com.eightman.autov.Simulation.Objects.CarSimulation;
 import com.eightman.autov.StatsInterface;
-import com.eightman.autov.Objects.Geom.XY;
+import com.eightman.autov.Utils.MathUtils;
 import com.eightman.autov.ai.CollisionManager;
 
 import java.util.LinkedList;
@@ -38,31 +42,37 @@ public class SimulationView extends SurfaceView {
     CollisionManager collisionManager = CollisionManager.getInstance();
     DistanceManager distanceManager = DistanceManager.getInstance();
 
+    private ScaleGestureDetector scaleGestureDetector;
+    private GestureDetector gestureDetector;
+
     Object preDrawNotify = new Object();
     Object postDrawNotify = new Object();
 
     public SimulationView(Context context) {
         super(context);
-        init();
+        init(context);
     }
 
     public SimulationView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init();
+        init(context);
     }
 
     public SimulationView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init();
+        init(context);
     }
 
     @SuppressLint("NewApi")
     public SimulationView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        init();
+        init(context);
     }
 
-    private void init() {
+    private void init(Context context) {
+        scaleGestureDetector = new ScaleGestureDetector(context, scaleGestureListener);
+        gestureDetector = new GestureDetector(context, gestureListener);
+
         drawingThread = new DrawingThread(this);
         surfaceHolder = getHolder();
         surfaceHolder.addCallback(new SurfaceHolder.Callback() {
@@ -202,4 +212,51 @@ public class SimulationView extends SurfaceView {
             postDrawNotify.notifyAll();
         }
     }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        boolean retVal = scaleGestureDetector.onTouchEvent(event);
+        retVal = gestureDetector.onTouchEvent(event) || retVal;
+        return retVal || super.onTouchEvent(event);
+    }
+
+    private final ScaleGestureDetector.OnScaleGestureListener scaleGestureListener
+            = new ScaleGestureDetector.SimpleOnScaleGestureListener() {
+        private float lastSpanX;
+        private float lastSpanY;
+        private float lastSpan;
+
+        private void setSpan(float x, float y) {
+            lastSpanX = x;
+            lastSpanY = y;
+            lastSpan = (float) MathUtils.getVector(lastSpanX, lastSpanY);
+        }
+
+        @Override
+        public boolean onScaleBegin(ScaleGestureDetector scaleGestureDetector) {
+            setSpan(scaleGestureDetector.getCurrentSpanX(), scaleGestureDetector.getCurrentSpanY());
+            return true;
+        }
+
+        @Override
+        public boolean onScale(ScaleGestureDetector scaleGestureDetector) {
+            float spanX = scaleGestureDetector.getCurrentSpanX();
+            float spanY = scaleGestureDetector.getCurrentSpanY();
+            float span = (float) MathUtils.getVector(spanX, spanY);
+            float newScale = span / lastSpan * (float) Global.pixelPerMoveUnit;
+            Global.pixelPerMoveUnit = newScale;
+            setSpan(spanX, spanY);
+            return true;
+        }
+    };
+
+    private final GestureDetector.SimpleOnGestureListener gestureListener
+            = new GestureDetector.SimpleOnGestureListener() {
+        @Override
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+            Global.offsetX += -distanceX;
+            Global.offsetY += -distanceY;
+            return true;
+        }
+    };
 }

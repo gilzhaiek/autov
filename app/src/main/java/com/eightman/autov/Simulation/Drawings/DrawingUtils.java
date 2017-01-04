@@ -24,18 +24,20 @@ public class DrawingUtils {
     }
 
     public static Pair<XY, XY> getCarPlayground() {
-        double halfWidthMeters = Global.canvasWidth / 2.0 / SimConfig.PIXEL_PER_MOVE_UNIT;
-        double halfHeightMeters = Global.canvasHeight / 2.0 / SimConfig.PIXEL_PER_MOVE_UNIT;
+        double halfWidthMeters = Global.canvasWidth / 2.0 / Global.pixelPerMoveUnit;
+        double halfHeightMeters = Global.canvasHeight / 2.0 / Global.pixelPerMoveUnit;
         return new Pair(new XY(-halfWidthMeters, -halfHeightMeters), new XY(halfWidthMeters, halfHeightMeters));
     }
 
     public static float getScreenPoint(float carPosition, Axis axis) {
-        float moveUnitPerPixel = (float) SimConfig.PIXEL_PER_MOVE_UNIT;
+        float moveUnitPerPixel = (float) Global.pixelPerMoveUnit;
 
         if (axis == Axis.xAxis) {
-            return moveUnitPerPixel * (carPosition + (float) Global.canvasWidth / 2.0f / moveUnitPerPixel);
+            return moveUnitPerPixel * (carPosition + (float) Global.canvasWidth / 2.0f / moveUnitPerPixel) +
+                    (float) Global.offsetX;
         } else {
-            return moveUnitPerPixel * (-1 * carPosition + (float) Global.canvasHeight / 2.0f / moveUnitPerPixel);
+            return moveUnitPerPixel * (-1 * carPosition + (float) Global.canvasHeight / 2.0f / moveUnitPerPixel) +
+                    (float) Global.offsetY;
         }
     }
 
@@ -96,7 +98,7 @@ public class DrawingUtils {
             canvas.drawCircle(
                     getScreenPoint((float) center.getX(), Axis.xAxis),
                     getScreenPoint((float) center.getY(), Axis.yAxis),
-                    (float) (circle.getRadius() * SimConfig.PIXEL_PER_MOVE_UNIT),
+                    (float) (circle.getRadius() * Global.pixelPerMoveUnit),
                     paint);
         }
     }

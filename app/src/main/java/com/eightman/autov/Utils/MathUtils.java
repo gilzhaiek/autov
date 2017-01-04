@@ -95,6 +95,10 @@ public class MathUtils {
         return from + random.nextDouble() * (to - from);
     }
 
+    public static double getVector(double x, double y) {
+        return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+    }
+
     public static double getDistance(XY xy1, XY xy2) {
         return Math.sqrt(Math.pow(xy1.getX() - xy2.getX(), 2) + Math.pow(xy1.getY() - xy2.getY(), 2));
     }
