@@ -112,18 +112,7 @@ public class TrigUtils {
     }
 
     public static double getAngleRad(double radius, double arcLength) {
-        return arcLength / getCircumference(radius);
-    }
-
-    public static double convertAnglesToRadians(double angleInDegrees) {
-        return angleInDegrees * Math.PI / 180.0;
-    }
-
-    public static XY getPointOnCircleCircumference(double radius, double anglesInRadians, XY center) {
-        double x = center.getX() + radius * Math.cos(anglesInRadians);
-        double y = center.getY() + radius * Math.sin(anglesInRadians);
-
-        return new XY(x, y);
+        return Math.toRadians(360 * arcLength / getCircumference(radius));
     }
 
     // a/sin(A) = b/sin(B) = c/sin(C)
@@ -139,7 +128,7 @@ public class TrigUtils {
         wheelsAngle = Math.abs(wheelsAngle);
         double A = (180 - wheelsAngle * 2.0);
         return Math.abs(wheelsLengthBase *
-                Math.sin(convertAnglesToRadians(A)) / Math.sin(convertAnglesToRadians(wheelsAngle)));
+                Math.sin(Math.toRadians(A)) / Math.sin(Math.toRadians(wheelsAngle)));
     }
 
     public static XY getPoint(XY from, XY pointOutsideLine, double addition) {
@@ -149,7 +138,8 @@ public class TrigUtils {
         return new XY(addX, addY);
     }
 
-    public static XY rotateAroundCenter(final XY center, XY xy, double theta) {
+    // http://math.stackexchange.com/questions/814950/how-can-i-rotate-a-coordinate-around-a-circle
+    public static XY rotateAroundCenterRadians(final XY center, XY xy, double thetaInRadians) {
         // cx, cy - center of square coordinates
         // x, y - coordinates of a corner point of the square
         // theta is the angle of rotation
@@ -158,13 +148,17 @@ public class TrigUtils {
         double tempX = xy.getX() - center.getX();
         double tempY = xy.getY() - center.getY();
 
-        double thetaInRadians = convertAnglesToRadians(-theta);
         // now apply rotation
-        double rotatedX = tempX * Math.cos(thetaInRadians) - tempY * Math.sin(thetaInRadians);
-        double rotatedY = tempX * Math.sin(thetaInRadians) + tempY * Math.cos(thetaInRadians);
+        double rotatedX = tempX * Math.cos(-thetaInRadians) - tempY * Math.sin(-thetaInRadians);
+        double rotatedY = tempX * Math.sin(-thetaInRadians) + tempY * Math.cos(-thetaInRadians);
 
         // translate back
         return new XY(rotatedX + center.getX(), rotatedY + center.getY());
+    }
+
+
+    public static XY rotateAroundCenter(final XY center, final XY xy, double angDeg) {
+        return rotateAroundCenterRadians(center, xy, Math.toRadians(angDeg));
     }
 
     public static double determinant(XY xyA, XY xyB) {

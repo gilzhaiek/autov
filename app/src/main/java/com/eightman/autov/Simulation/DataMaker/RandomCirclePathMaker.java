@@ -41,7 +41,7 @@ public class RandomCirclePathMaker implements IRandomPathMaker {
                 MathUtils.getRandomDouble(SimConfig.MIN_EDGE_METERS, SimConfig.MAX_EDGE_METERS)));
 
         //while (!carPosition.getBoundaries().equals(toBoundaries)) {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 100; i++) {
             CarPosition newCarPosition = moveCloser(carCharacteristics.getAccDec(), carCharacteristics.getSpeed(), carPosition, toBoundaries);
             carPosition.setNext(newCarPosition, true);
             carPosition = newCarPosition;
@@ -75,6 +75,8 @@ public class RandomCirclePathMaker implements IRandomPathMaker {
         } else {
             newAcc = accDec.getAcceleration(newSpeed);
         }
+
+        //Log.d("SHIT", "S=" + newSpeed + " A=" + newAcc);
 
         // Did we hit the place?
         if (newBoundaries.equals(toBoundaries)) {

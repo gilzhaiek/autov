@@ -85,7 +85,7 @@ public class DrawingUtils {
     }
 
     public static void drawCircles(Canvas canvas, Circle[] circles, Paint paint) {
-        for(Circle circle : circles) {
+        for (Circle circle : circles) {
             drawCircle(canvas, circle, paint);
         }
     }
@@ -127,32 +127,20 @@ public class DrawingUtils {
     }
 
     public static void drawBoundaries(Canvas canvas, Boundaries boundaries, Paint paint) {
-        drawLine(canvas, boundaries.getRightFront(), boundaries.getRightBack(), paint);
-        drawLine(canvas, boundaries.getRightBack(), boundaries.getLeftBack(), paint);
-        drawLine(canvas, boundaries.getLeftBack(), boundaries.getLeftFront(), paint);
-        drawLine(canvas, boundaries.getLeftFront(), boundaries.getRightFront(), paint);
-    }
-
-    public static void fillBoundaries(Canvas canvas, Boundaries boundaries, Paint paint) {
         if (boundaries == null) {
             return;
         }
-        Path path = new Path();
 
-        path.moveTo(
-                getScreenPoint((float) boundaries.getRightFront().getX(), Axis.xAxis),
+        Path path = new Path();
+        path.moveTo(getScreenPoint((float) boundaries.getRightFront().getX(), Axis.xAxis),
                 getScreenPoint((float) boundaries.getRightFront().getY(), Axis.yAxis));
-        path.lineTo(
-                getScreenPoint((float) boundaries.getRightBack().getX(), Axis.xAxis),
+        path.lineTo(getScreenPoint((float) boundaries.getRightBack().getX(), Axis.xAxis),
                 getScreenPoint((float) boundaries.getRightBack().getY(), Axis.yAxis));
-        path.lineTo(
-                getScreenPoint((float) boundaries.getLeftBack().getX(), Axis.xAxis),
+        path.lineTo(getScreenPoint((float) boundaries.getLeftBack().getX(), Axis.xAxis),
                 getScreenPoint((float) boundaries.getLeftBack().getY(), Axis.yAxis));
-        path.lineTo(
-                getScreenPoint((float) boundaries.getLeftFront().getX(), Axis.xAxis),
+        path.lineTo(getScreenPoint((float) boundaries.getLeftFront().getX(), Axis.xAxis),
                 getScreenPoint((float) boundaries.getLeftFront().getY(), Axis.yAxis));
-        path.lineTo(
-                getScreenPoint((float) boundaries.getRightFront().getX(), Axis.xAxis),
+        path.lineTo(getScreenPoint((float) boundaries.getRightFront().getX(), Axis.xAxis),
                 getScreenPoint((float) boundaries.getRightFront().getY(), Axis.yAxis));
 
         canvas.drawPath(path, paint);

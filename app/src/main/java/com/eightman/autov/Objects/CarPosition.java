@@ -1,7 +1,6 @@
 package com.eightman.autov.Objects;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.eightman.autov.Configurations.Global;
 import com.eightman.autov.Configurations.SimConfig;
@@ -81,21 +80,21 @@ public class CarPosition {
             return boundaries.moveForward(moveDistance);
         }
 
-        Log.d("SHIT", "TC=" + turningCircle.toString());
+//        Log.d("SHIT", "TC=" + turningCircle.toString());
 
-        double alpha = TrigUtils.getAngleRad(turningCircle.getCenter(), boundaries.getCenterFront());
-        double beta = TrigUtils.getAngleRad(turningCircle.getRadius(), moveDistance);
-        XY newCenterFront = TrigUtils.getPointOnCircleCircumference(turningCircle.getRadius(),
-                beta + alpha, turningCircle.getCenter());
-        alpha = TrigUtils.getAngleRad(turningCircle.getCenter(), boundaries.getCenterBack());
-        XY newCenterBack = TrigUtils.getPointOnCircleCircumference(turningCircle.getRadius(),
-                beta + alpha, turningCircle.getCenter());
+        double theta = TrigUtils.getAngleRad(turningCircle.getRadius(), moveDistance);
+        //Log.d("SHIT", "R=" + turningCircle.getRadius() + " D=" + moveDistance + " Theta=" + Math.toDegrees(theta) + " RAD=" + theta);
 
-        Log.d("SHIT", "A=" + alpha + " B=" + beta +
-                " CF=" + boundaries.getCenterFront() + "->" + newCenterFront.toString() +
-                " CB=" + boundaries.getCenterBack() + "->" + newCenterBack.toString());
+        XY newCenterFront = TrigUtils.rotateAroundCenterRadians(
+                turningCircle.getCenter(), boundaries.getCenterFront(), theta);
+        XY newCenterBack = TrigUtils.rotateAroundCenterRadians(
+                turningCircle.getCenter(), boundaries.getCenterBack(), theta);
 
-        Log.d("SHIT", "WA=" + wheelsAngle + " D=" + moveDistance);
+//        Log.d("SHIT", "X=" + newX + " Y=" + newY +
+//                " CF=" + boundaries.getCenterFront() + "->" + newCenterFront.toString() +
+//                " CB=" + boundaries.getCenterBack() + "->" + newCenterBack.toString());
+//
+//        Log.d("SHIT", "WA=" + wheelsAngle + " D=" + moveDistance);
 
         return BoundariesManager.genBoundaries(newCenterFront, newCenterBack,
                 boundaries.getWidth(), boundaries.getLength(), wheelsAngle, boundaries.getMaxWheelsAngleAbs());
@@ -145,6 +144,9 @@ public class CarPosition {
                 last.setParentCarPath(this.parentCarPath);
             }
             this.last = last;
+            if (previous != null) {
+                previous.setLast(last);
+            }
         }
     }
 

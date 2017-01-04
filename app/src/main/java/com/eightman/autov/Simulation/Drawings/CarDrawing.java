@@ -26,13 +26,14 @@ public class CarDrawing extends AbstractDrawing {
     static Paint frontWheelsPaint;
     static Paint backWheelsPaint;
     Paint carPaint;
+    Paint lastPosPaint;
     Paint headingPaint;
     Paint maxCirclePaint;
     Paint turningCirclePaint;
     Paint collisionPaint;
     Paint activeDistancePaint;
     Paint passiveDistancePaint;
-    Boundaries lastBoundaries;
+    Boundaries prevBoundaries;
     CollisionManager collisionManager;
 
     public CarDrawing(SimulationView simulationView, MyCar car) {
@@ -46,7 +47,8 @@ public class CarDrawing extends AbstractDrawing {
             backWheelsPaint = DrawingUtils.getLinePaint(Color.rgb(0xFF, 0xFF, 0xFF));
         }
 
-        carPaint = DrawingUtils.getLinePaint(car.getCarCharacteristics().getColor());
+        lastPosPaint = DrawingUtils.getLinePaint(car.getCarCharacteristics().getColor());
+        carPaint = DrawingUtils.getFillPaint(car.getCarCharacteristics().getColor());
         headingPaint = DrawingUtils.getLinePaint(Color.argb(0x77, 0xA1, 0x00, 0x1E));
         maxCirclePaint = DrawingUtils.getLinePaint(Color.argb(0x44, 0xE3, 0xFC, 0x7E));
         turningCirclePaint = DrawingUtils.getLinePaint(Color.argb(0x99, 0xE3, 0xFC, 0x7E));
@@ -90,15 +92,16 @@ public class CarDrawing extends AbstractDrawing {
         //car.setInAccident(isInCollisions);
 
         if (SimConfig.DRAW_WHEEL_PATH) {
-            if (lastBoundaries != null && !lastBoundaries.equals(boundaries)) {
-                DrawingUtils.drawLine(canvas, lastBoundaries.getRightBack(), boundaries.getRightBack(), backWheelsPaint);
-                DrawingUtils.drawLine(canvas, lastBoundaries.getLeftBack(), boundaries.getLeftBack(), backWheelsPaint);
-                DrawingUtils.drawLine(canvas, lastBoundaries.getRightFront(), boundaries.getRightFront(), frontWheelsPaint);
-                DrawingUtils.drawLine(canvas, lastBoundaries.getLeftFront(), boundaries.getLeftFront(), frontWheelsPaint);
+            if (prevBoundaries != null && !prevBoundaries.equals(boundaries)) {
+                DrawingUtils.drawLine(canvas, prevBoundaries.getRightBack(), boundaries.getRightBack(), backWheelsPaint);
+                DrawingUtils.drawLine(canvas, prevBoundaries.getLeftBack(), boundaries.getLeftBack(), backWheelsPaint);
+                DrawingUtils.drawLine(canvas, prevBoundaries.getRightFront(), boundaries.getRightFront(), frontWheelsPaint);
+                DrawingUtils.drawLine(canvas, prevBoundaries.getLeftFront(), boundaries.getLeftFront(), frontWheelsPaint);
             }
-            lastBoundaries = boundaries;
+            prevBoundaries = boundaries;
         }
 
         DrawingUtils.drawBoundaries(canvas, boundaries, carPaint);
+        DrawingUtils.drawBoundaries(canvas, carPosition.getLast().getBoundaries(), lastPosPaint);
     }
 }
