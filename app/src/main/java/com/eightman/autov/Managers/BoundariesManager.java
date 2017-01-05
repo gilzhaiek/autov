@@ -86,6 +86,11 @@ public class BoundariesManager {
                 boundaries.getWheelsAngle(), boundaries.getMaxWheelsAngleAbs());
     }
 
+    public static Boundaries genBoundaries(XY frontCenter, XY backCenter, double wheelsAngle, Boundaries oldBoundaries) {
+        return genBoundaries(frontCenter, backCenter, oldBoundaries.getWidth(), oldBoundaries.getLength(),
+                wheelsAngle, oldBoundaries.getMaxWheelsAngleAbs());
+    }
+
     public static Boundaries genBoundaries(XY frontCenter, XY backCenter, double width, double length,
                                            double wheelsAngle, double maxWheelsAngle) {
         // https://goo.gl/photos/kT3nq51TM7fqiLjQ6
@@ -126,6 +131,10 @@ public class BoundariesManager {
                 wheelsAngle, maxWheelsAngle);
     }
 
+    public static Boundaries getHeadingBoundaries(XY frontCenter, XY lookingAtXY, double wheelsAngle, Boundaries oldBoundaries) {
+        return getHeadingBoundaries(frontCenter, lookingAtXY, oldBoundaries.getWidth(), oldBoundaries.getLength(),
+                wheelsAngle, oldBoundaries.getMaxWheelsAngleAbs());
+    }
 
     public static Boundaries getHeadingBoundaries(XY frontCenter, XY lookingAtXY, double width, double length,
                                                   double wheelsAngle, double maxWheelsAngle) {

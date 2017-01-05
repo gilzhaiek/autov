@@ -29,24 +29,24 @@ import static com.eightman.autov.Objects.Physical.Wheels.STRAIGHT_WHEELS;
 public class RandomCirclePathMaker implements IRandomPathMaker {
     @Override
     public boolean generatePath(CarPath carPath, CarCharacteristics carCharacteristics) throws Exception {
-        XY center = getRandomPoint();
-        double randomAngle = MathUtils.getRandomDouble(0, 360);
+        XY center = new XY(1.0,1.0);//getRandomPoint();
+        double randomAngle = 180;//MathUtils.getRandomDouble(0, 360);
 
         CarPosition carPosition = carPath.getCurrentPosition();
 
         Boundaries toBoundaries = BoundariesManager.getBoundariesRotated(center,
-                carCharacteristics.getWidth(), carCharacteristics.getWidth(), randomAngle,
+                carCharacteristics.getWidth(), carCharacteristics.getLength(), randomAngle,
                 STRAIGHT_WHEELS, carPosition.getBoundaries().getMaxWheelsAngleAbs());
-        toBoundaries = toBoundaries.addOffset(new XY(
-                MathUtils.getRandomDouble(SimConfig.MIN_EDGE_METERS, SimConfig.MAX_EDGE_METERS),
-                MathUtils.getRandomDouble(SimConfig.MIN_EDGE_METERS, SimConfig.MAX_EDGE_METERS)));
+//        toBoundaries = toBoundaries.addOffset(new XY(
+//                MathUtils.getRandomDouble(SimConfig.MIN_EDGE_METERS, SimConfig.MAX_EDGE_METERS),
+//                MathUtils.getRandomDouble(SimConfig.MIN_EDGE_METERS, SimConfig.MAX_EDGE_METERS)));
 
         Log.d("SHIT", "TARGET=" + toBoundaries.getCenterFront().toString());
 
         int i = 0;
         while (!carPosition.getBoundaries().equals(toBoundaries)) {
             carPosition = moveCloser(carCharacteristics.getAccDec(), carCharacteristics.getSpeed(), carPosition, toBoundaries);
-            if (i++ > 100) {
+            if (i++ > 50) {
                 break;
             }
         }
@@ -65,7 +65,7 @@ public class RandomCirclePathMaker implements IRandomPathMaker {
 
         return new XY(x, y);
     }
-    
+
     private CarPosition moveCloser(AccDec accDec, Speed speed, CarPosition oldCarPosition, Boundaries toBoundaries) throws Exception {
         double newAcc;
         double maxWheelsAngleSpeed = speed.getComfortableSpeed(toBoundaries.getMaxWheelsAngleAbs());
@@ -115,13 +115,13 @@ public class RandomCirclePathMaker implements IRandomPathMaker {
 
         Circle[] myMaxCircles = newBoundaries.getMaxTurningCircles();
         LineSegment segments[] = new LineSegment[4];
-        if (myMaxCircles[0].getDirection() == toCircles[0].getDirection()) {
+        //if (myMaxCircles[0].getDirection() == toCircles[0].getDirection()) {
             segments[0] = TrigUtils.findOuterTangents(myMaxCircles[0], toCircles[0]);
             segments[1] = TrigUtils.findOuterTangents(myMaxCircles[1], toCircles[1]);
-        } else {
-            segments[0] = TrigUtils.findOuterTangents(myMaxCircles[0], toCircles[1]);
-            segments[1] = TrigUtils.findOuterTangents(myMaxCircles[1], toCircles[0]);
-        }
+//        } else {
+//            segments[0] = TrigUtils.findOuterTangents(myMaxCircles[0], toCircles[1]);
+//            segments[1] = TrigUtils.findOuterTangents(myMaxCircles[1], toCircles[0]);
+//        }
 
         // TODO: Add Inner Segments to be [2] and [3]
 
@@ -132,10 +132,12 @@ public class RandomCirclePathMaker implements IRandomPathMaker {
             // Check if i'm on the line
             if (segments[0].isBetween(newBoundaries.getCenterFront())) {
                 segment = segments[0];
+                Log.d("SHIT3","segment 0.1");
             } else {
                 ratio = myMaxCircles[0].getRatio(oldBoundaries.getCenterFront(), newBoundaries.getCenterFront(), segments[0].getPointA());
                 if (ratio <= 1.0) {
                     segment = segments[0];
+                    Log.d("SHIT3","segment 0.2");
                 }
             }
         }
@@ -143,10 +145,12 @@ public class RandomCirclePathMaker implements IRandomPathMaker {
             // Check if i'm on the line
             if (segments[1].isBetween(newBoundaries.getCenterFront())) {
                 segment = segments[1];
+                Log.d("SHIT3","segment 1.1");
             } else {
                 ratio = myMaxCircles[1].getRatio(oldBoundaries.getCenterFront(), newBoundaries.getCenterFront(), segments[1].getPointA());
                 if (ratio <= 1.0) {
                     segment = segments[1];
+                    Log.d("SHIT3","segment 1.2");
                 }
             }
         }
@@ -160,16 +164,11 @@ public class RandomCirclePathMaker implements IRandomPathMaker {
                 oldCarPosition = updatedOldPosition;
                 newSpeed = oldCarPosition.generateNextSpeed();
                 newBoundaries = BoundariesManager.getHeadingBoundaries(
-                        segment.getPointA(), segment.getPointB(),
-                        oldBoundaries.getWidth(), oldBoundaries.getLength(),
-                        Wheels.STRAIGHT_WHEELS, oldBoundaries.getMaxWheelsAngleAbs());
+                        segment.getPointA(), segment.getPointB(), Wheels.STRAIGHT_WHEELS, oldBoundaries);
             } else {
                 newBoundaries = BoundariesManager.getHeadingBoundaries(
-                        newBoundaries.getCenterFront(), segment.getPointB(),
-                        oldBoundaries.getWidth(), oldBoundaries.getLength(),
-                        Wheels.STRAIGHT_WHEELS, oldBoundaries.getMaxWheelsAngleAbs());
+                        newBoundaries.getCenterFront(), segment.getPointB(), Wheels.STRAIGHT_WHEELS, oldBoundaries);
             }
-
 
             // Make sure I slow down to be max wheels turn when I hit the circle
             double distanceToTargetCircle = segment.getLength();
@@ -180,7 +179,14 @@ public class RandomCirclePathMaker implements IRandomPathMaker {
                 newAcc = accDec.getAcceleration(newSpeed);
             }
 
-            oldCarPosition.setNext(CarPosition.getMovingPosition(newBoundaries, newSpeed, newAcc, SimConfig.PATH_RESOLUTION_MS), true);
+            for (int i = 0; i <= 7; i++) {
+                oldCarPosition.setNext(CarPosition.getMovingPosition(newBoundaries, newSpeed, newAcc, SimConfig.PATH_RESOLUTION_MS), true);
+                oldCarPosition = oldCarPosition.getNext();
+                newBoundaries = oldCarPosition.generateNextBoundaries(Wheels.STRAIGHT_WHEELS);
+                if (i == 7) {
+                    return oldCarPosition;
+                }
+            }
             return oldCarPosition.getNext();
         }
 

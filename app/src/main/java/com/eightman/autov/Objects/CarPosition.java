@@ -97,8 +97,7 @@ public class CarPosition {
 //
 //        Log.d("SHIT", "WA=" + wheelsAngle + " D=" + moveDistance);
 
-        return BoundariesManager.genBoundaries(newCenterFront, newCenterBack,
-                boundaries.getWidth(), boundaries.getLength(), wheelsAngle, boundaries.getMaxWheelsAngleAbs());
+        return BoundariesManager.genBoundaries(newCenterFront, newCenterBack, wheelsAngle, boundaries);
     }
 
     public static CarPosition getRestedPosition(Boundaries boundaries) {

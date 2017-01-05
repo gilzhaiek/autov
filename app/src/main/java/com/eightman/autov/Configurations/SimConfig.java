@@ -12,6 +12,7 @@ public class SimConfig {
 
     final public static int PATH_RESOLUTION_MS = 100;
 
+    //final public static int DELAY_MS = 16; // 60fps
     final public static int DELAY_MS = 16; // 60fps
     //final public static int DELAY_MS = 1000; // Every frame is a second
     final public static boolean LIMIT_CARS_TO_SCREEN = true;
@@ -43,6 +44,8 @@ public class SimConfig {
     final public static double MAX_MAX_WHEELS_ANGLE = 45.0;  // DEGREES
     final public static double COMFORTABLE_SPEED_FOR_MAX_ANGLE = 2.5; // m/s
     final public static double WHEELS_ANGLE_INCREASE = 5.0; // DEGREES
+    final public static double MIN_WHEEL_BASE = 10.0;
+    final public static double MAX_WHEEL_BASE = 10.0;
 
     // Random Square Path Maker
     final public static double EDGE_METERS = 3.0;
@@ -52,8 +55,8 @@ public class SimConfig {
     final public static double MAX_SPEED = 4;
 
     // Circle Path Maker
-    final public static double MIN_EDGE_METERS = 3.0;
-    final public static double MAX_EDGE_METERS = 3.0;
+    final public static double MIN_EDGE_METERS = 2.0;
+    final public static double MAX_EDGE_METERS = 2.0;
 
     final public static double MAX_COLLISION_VALIDATION = MAX_CAR_LENGTH * 2;
 

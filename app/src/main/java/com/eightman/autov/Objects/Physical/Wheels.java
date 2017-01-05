@@ -4,6 +4,9 @@ import com.eightman.autov.Configurations.SimConfig;
 import com.eightman.autov.Utils.MathUtils;
 import com.eightman.autov.Utils.TrigUtils;
 
+import static com.eightman.autov.Configurations.SimConfig.MAX_WHEEL_BASE;
+import static com.eightman.autov.Configurations.SimConfig.MIN_WHEEL_BASE;
+
 /**
  * Created by gilzhaiek on 2016-10-29.
  */
@@ -22,7 +25,7 @@ public class Wheels {
 
     public static Wheels generateRandom(double carWidth, double carLength) {
         return new Wheels(
-                carLength * MathUtils.getRandomDouble(10, 20),
+                carLength * MathUtils.getRandomDouble(MIN_WHEEL_BASE, MAX_WHEEL_BASE),
                 carWidth,
                 MathUtils.getRandomDouble(SimConfig.MIN_MAX_WHEELS_ANGEL, SimConfig.MAX_MAX_WHEELS_ANGLE));
     }

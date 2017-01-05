@@ -1,5 +1,7 @@
 package com.eightman.autov.Objects.Geom;
 
+import android.util.Log;
+
 import com.eightman.autov.Utils.MathUtils;
 import com.eightman.autov.Utils.TrigUtils;
 
@@ -161,7 +163,7 @@ public class Boundaries {
     }
 
     public double getMaxWheelsAngle(Circle.Direction direction) {
-        if(direction == Circle.Direction.CLOCK_WISE) {
+        if (direction == Circle.Direction.CLOCK_WISE) {
             return maxWheelsAngle;
         } else {
             return -maxWheelsAngle;
@@ -192,6 +194,8 @@ public class Boundaries {
             maxTurningCircles = new Circle[2];
 
             double radius = TrigUtils.getRadius(maxWheelsAngle, getLength());
+            Log.d("SHIT2", "maxWheels=" + maxWheelsAngle + " R=" + radius + " L=" + getLength());
+
 
             maxTurningCircles[0] = Circle.getCircle(getCenterFront(), getLeftFront(), radius, Circle.Direction.CLOCK_WISE);
             maxTurningCircles[1] = Circle.getCircle(getCenterFront(), getRightFront(), radius, Circle.Direction.COUNTER_CLOCK_WISE);

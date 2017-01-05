@@ -102,6 +102,8 @@ public class CarDrawing extends AbstractDrawing {
         }
 
         DrawingUtils.drawBoundaries(canvas, boundaries, carPaint);
+        circles = carPosition.getLast().getBoundaries().getMaxTurningCircles();
+        DrawingUtils.drawCircles(canvas, circles, maxCirclePaint);
         DrawingUtils.drawBoundaries(canvas, carPosition.getLast().getBoundaries(), lastPosPaint);
     }
 }

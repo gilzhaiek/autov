@@ -39,7 +39,7 @@ public class TrigUtils {
         double rSqr = r0 * r0;
         double denominator = Math.pow(xp - a, 2) + Math.pow(yp - b, 2);
         double part = Math.sqrt(Math.pow(xp - a, 2) + Math.pow(yp - b, 2) - rSqr);
-        if ((bigCircle.getDirection() == Circle.Direction.CLOCK_WISE) == !oppositeSegment) {
+        if ((bigCircle.getDirection() == Circle.Direction.COUNTER_CLOCK_WISE) == !oppositeSegment) {
             double xt1 = ((rSqr * (xp - a) + r0 * (yp - b) * part) / (denominator)) + a;
             double yt1 = ((rSqr * (yp - b) - r0 * (xp - a) * part) / (denominator)) + b;
             xy1 = new XY(xt1, yt1);
@@ -83,11 +83,15 @@ public class TrigUtils {
             return null;
         }
 
-        if (fromCircle.getRadius() > toCircle.getRadius()) {
+        double deltaRadius = Math.abs(fromCircle.getRadius() - toCircle.getRadius());
+        if (fromCircle.getRadius() > toCircle.getRadius() && deltaRadius > 0.01) {
+            Log.d("SHIT4", "From " + fromCircle.getRadius() + " > To " + toCircle.getRadius());
             return _findOuterTangents(fromCircle, toCircle, false);
-        } else if (fromCircle.getRadius() < toCircle.getRadius()) {
+        } else if (fromCircle.getRadius() < toCircle.getRadius() && deltaRadius > 0.01) {
+            Log.d("SHIT4", "From " + fromCircle.getRadius() + " < To " + toCircle.getRadius());
             return _findOuterTangents(toCircle, fromCircle, true).getSwapped();
         } else {
+            Log.d("SHIT4", "To == From = " + fromCircle.getRadius());
             double halfToRadius = toCircle.getRadius() / 2.0;
             Circle smallerToCircle = new Circle(toCircle.getCenter(), halfToRadius, toCircle.getDirection());
             LineSegment toSmallerSegment = _findOuterTangents(fromCircle, smallerToCircle, false);
