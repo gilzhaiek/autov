@@ -1,5 +1,6 @@
 package com.eightman.autov.Utils;
 
+import android.util.Log;
 import android.util.Pair;
 
 import com.eightman.autov.Objects.Geom.Circle;
@@ -62,8 +63,16 @@ public class TrigUtils {
         }
     }
 
-    // http://www.ambrsoft.com/TrigoCalc/Circles2/Circles2Tangent_.htm
+    public static double isBetween(XY edgeA, XY edgeB, XY point) {
+        Log.d("SHIT", "isBetween " + MathUtils.getDistance(edgeA, point) +
+                " + " + MathUtils.getDistance(point, edgeB) +
+                " = " + (MathUtils.getDistance(edgeA, point) + MathUtils.getDistance(point, edgeB)) +
+                " == " + MathUtils.getDistance(edgeA, edgeB));
+        return Math.abs(MathUtils.getDistance(edgeA, point) + MathUtils.getDistance(point, edgeB) -
+                MathUtils.getDistance(edgeA, edgeB));
+    }
 
+    // http://www.ambrsoft.com/TrigoCalc/Circles2/Circles2Tangent_.htm
     public static LineSegment findOuterTangents(Circle fromCircle, Circle toCircle) {
         if (fromCircle == null || toCircle == null) {
             return null;

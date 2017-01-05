@@ -1,6 +1,7 @@
 package com.eightman.autov.Objects;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.eightman.autov.Configurations.Global;
 import com.eightman.autov.Configurations.SimConfig;
@@ -118,6 +119,20 @@ public class CarPosition {
                 carPosition.getSpeed(),
                 carPosition.getAcceleration(),
                 carPosition.getTimeToNextPosition());
+    }
+
+    public synchronized boolean replace(CarPosition carPosition) {
+        if (getPrevious() != null) {
+            try {
+                getPrevious().setNext(carPosition, false);
+                makeIsland(false, false);
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to replace", e);
+                return false;
+            }
+            return true;
+        }
+        return false;
     }
 
     public synchronized int getLinkSize() {

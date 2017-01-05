@@ -1,6 +1,8 @@
 package com.eightman.autov.Objects.Geom;
 
+import com.eightman.autov.Configurations.SimConfig;
 import com.eightman.autov.Utils.MathUtils;
+import com.eightman.autov.Utils.TrigUtils;
 
 /**
  * Created by gilzhaiek on 2016-11-11.
@@ -76,6 +78,10 @@ public class LineSegment {
 
     public double getLength() {
         return length;
+    }
+
+    public boolean isBetween(XY point) {
+        return TrigUtils.isBetween(pointA, pointB, point) < SimConfig.MIN_MOVING_DISTANCE;
     }
 
     @Override

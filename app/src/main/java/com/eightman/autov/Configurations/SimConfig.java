@@ -10,7 +10,7 @@ public class SimConfig {
     final public static int SIM_NUM_OF_5_CAR_SETS = 10;
     final public static int SIM_DELAY_ADDITION = 100000;
 
-    final public static int PATH_RESOLUTION_MS = 50;
+    final public static int PATH_RESOLUTION_MS = 100;
 
     final public static int DELAY_MS = 16; // 60fps
     //final public static int DELAY_MS = 1000; // Every frame is a second
