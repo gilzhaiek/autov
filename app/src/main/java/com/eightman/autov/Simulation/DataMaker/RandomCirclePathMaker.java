@@ -40,11 +40,15 @@ public class RandomCirclePathMaker implements IRandomPathMaker {
                 MathUtils.getRandomDouble(SimConfig.MIN_EDGE_METERS, SimConfig.MAX_EDGE_METERS),
                 MathUtils.getRandomDouble(SimConfig.MIN_EDGE_METERS, SimConfig.MAX_EDGE_METERS)));
 
-        //while (!carPosition.getBoundaries().equals(toBoundaries)) {
-        for (int i = 0; i < 100; i++) {
-            CarPosition newCarPosition = moveCloser(carCharacteristics.getAccDec(), carCharacteristics.getSpeed(), carPosition, toBoundaries);
+        int i = 0;
+        while (!carPosition.getBoundaries().equals(toBoundaries)) {
+            CarPosition newCarPosition = moveCloser(carCharacteristics.getAccDec(),
+                    carCharacteristics.getSpeed(), carPosition, toBoundaries);
             carPosition.setNext(newCarPosition, true);
             carPosition = newCarPosition;
+            if (i++ > 1000) {
+                break;
+            }
         }
 
         return true;
@@ -64,6 +68,7 @@ public class RandomCirclePathMaker implements IRandomPathMaker {
         double newAcc;
         double maxWheelsAngleSpeed = speed.getComfortableSpeed(toBoundaries.getMaxWheelsAngleAbs());
 
+        Boundaries oldBoundaries = oldCarPosition.getBoundaries();
         Boundaries newBoundaries = oldCarPosition.generateNextBoundaries(oldCarPosition.getWheelsAngle());
         double newSpeed = oldCarPosition.generateNextSpeed();
 
@@ -110,13 +115,26 @@ public class RandomCirclePathMaker implements IRandomPathMaker {
             segments[1] = TrigUtils.findOuterTangents(myMaxCircles[1], toCircles[0]);
         }
 
+//        if (segments[0] != null) {
+//            Log.d("SHIT", "myC[0]=" + myMaxCircles[0].toString());
+//            Log.d("SHIT", "toC[0]=" + toCircles[0].toString());
+//            Log.d("SHIT", "S[0]=" + segments[0].toString());
+//        }
+//        if (segments[1] != null) {
+//            Log.d("SHIT", "myC[1]=" + myMaxCircles[1].toString());
+//            Log.d("SHIT", "toC[1]=" + toCircles[1].toString());
+//            Log.d("SHIT", "S[1]=" + segments[1].toString());
+//        }
+
         // TODO: Add Inner Segments to be [2] and [3]
 
         // Check if my direction is intersecting with any of the two circles and reaching the same direction
         LineSegment segment = null;
-        if (segments[0] != null && segments[0].getPointA().equals(newBoundaries.getCenterFront())) {
+        if (segments[0] != null && myMaxCircles[0].isInBetween(
+                oldBoundaries.getCenterFront(), newBoundaries.getCenterFront(), segments[0].getPointA())) {
             segment = segments[0];
-        } else if (segments[1] != null && segments[1].getPointA().equals(newBoundaries.getCenterFront())) {
+        } else if (segments[1] != null && myMaxCircles[1].isInBetween(
+                oldBoundaries.getCenterFront(), newBoundaries.getCenterFront(), segments[1].getPointA())) {
             segment = segments[1];
         }
 

@@ -64,6 +64,19 @@ public class Circle {
                 other.getDirection() == direction;
     }
 
+    public boolean isInBetween(XY fromPoint, XY toPoint, XY pointToTest) {
+        double fromAngle = TrigUtils.getAngleRad(center,
+                direction == Direction.CLOCK_WISE ? toPoint : fromPoint);
+        double toAngle = TrigUtils.getAngleRad(center,
+                direction == Direction.CLOCK_WISE ? fromPoint : toPoint);
+        double pointToTestAngle = TrigUtils.getAngleRad(center, pointToTest);
+        if (fromAngle > toAngle) {
+            fromAngle -= Math.PI * 2.0;
+        }
+        //Log.d("SHIT", fromAngle + " < " + pointToTestAngle + " < " + toAngle);
+        return fromAngle < pointToTestAngle && pointToTestAngle < toAngle;
+    }
+
     @Override
     public String toString() {
         return "(cx=" + center.getX() + ",cy=" + center.getY() + ",r=" + radius + ",dir=" + direction + ")";

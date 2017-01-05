@@ -77,4 +77,9 @@ public class LineSegment {
     public double getLength() {
         return length;
     }
+
+    @Override
+    public String toString() {
+        return "(" + pointA.toString() + "," + pointB + "," + length + ")";
+    }
 }
