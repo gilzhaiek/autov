@@ -61,7 +61,7 @@ public class SimConfig {
     final public static double MAX_COLLISION_VALIDATION = MAX_CAR_LENGTH * 2;
 
     // Stroke Width
-    final public static float STROKE_WIDTH = 5.0f;
+    final public static float STROKE_WIDTH = 1.0f;
     final public static boolean DRAW_WHEEL_PATH = true;
 
 }

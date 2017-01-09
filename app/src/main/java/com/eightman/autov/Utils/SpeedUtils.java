@@ -42,12 +42,12 @@ public class SpeedUtils {
 
         double fastestSpeed = targetSpeed > currentSpeed ? targetSpeed : currentSpeed;
         double targetAccDec = 0; // in m/s^2
-        // If we are need to go fast, we should reduce speed for that wheels angle
+        // If we are too fast, we should reduce speed for that wheels angle
         double comfortableSpeed = speed.getComfortableSpeed(wheelsAngle);
         if (fastestSpeed > comfortableSpeed) {  // We are too fast
             // 10 - 20 = -10 < -3
-            if (comfortableSpeed - fastestSpeed < accDec.getComfortableDec()) {
-                targetAccDec = accDec.getComfortableDec();
+            if (comfortableSpeed - fastestSpeed < accDec.getComfortableDec(currentSpeed)) {
+                targetAccDec = accDec.getComfortableDec(comfortableSpeed);
             } else {
                 targetAccDec = comfortableSpeed - fastestSpeed;
             }
@@ -73,8 +73,8 @@ public class SpeedUtils {
         }
 
         targetAccDec = targetSpeed - currentSpeed;
-        if (targetAccDec < accDec.getComfortableDec()) {
-            targetAccDec = accDec.getComfortableDec();
+        if (targetAccDec < accDec.getComfortableDec(targetSpeed)) {
+            targetAccDec = accDec.getComfortableDec(targetSpeed);
         } else if (targetAccDec > accDec.getAcceleration(currentSpeed)) { // Can't accelerate too quickly
             targetAccDec = accDec.getAcceleration(currentSpeed);
         }

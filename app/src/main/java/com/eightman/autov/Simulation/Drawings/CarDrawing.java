@@ -8,9 +8,11 @@ import com.eightman.autov.Configurations.SimConfig;
 import com.eightman.autov.Objects.CarPosition;
 import com.eightman.autov.Objects.Geom.Boundaries;
 import com.eightman.autov.Objects.Geom.Circle;
+import com.eightman.autov.Objects.Geom.LineSegment;
 import com.eightman.autov.Objects.MyCar;
 import com.eightman.autov.Objects.ObjectDistanceInfo;
 import com.eightman.autov.Simulation.SimulationView;
+import com.eightman.autov.Utils.TrigUtils;
 import com.eightman.autov.ai.CollisionManager;
 
 import java.util.List;
@@ -33,6 +35,7 @@ public class CarDrawing extends AbstractDrawing {
     Paint collisionPaint;
     Paint activeDistancePaint;
     Paint passiveDistancePaint;
+    Paint whitePaint;
     Boundaries prevBoundaries;
     CollisionManager collisionManager;
 
@@ -55,6 +58,7 @@ public class CarDrawing extends AbstractDrawing {
         collisionPaint = DrawingUtils.getLinePaint(Color.YELLOW);
         activeDistancePaint = DrawingUtils.getLinePaint(Color.rgb(0xa5, 0x32, 0xdb));
         passiveDistancePaint = DrawingUtils.getLinePaint(Color.CYAN);
+        whitePaint = DrawingUtils.getLinePaint(Color.rgb(0xFF, 0xFF, 0xFF));
     }
 
     @Override
@@ -72,8 +76,8 @@ public class CarDrawing extends AbstractDrawing {
                         " time=" + SimTime.getInstance().getTime() +
                         " timeToNP=" + carPosition.getTimeToNextPosition());*/
 
-        Circle[] circles = carPosition.getBoundaries().getMaxTurningCircles();
-        DrawingUtils.drawCircles(canvas, circles, maxCirclePaint);
+        Circle[] fromCircles = carPosition.getBoundaries().getMaxTurningCircles();
+        DrawingUtils.drawCircles(canvas, fromCircles, maxCirclePaint);
         DrawingUtils.drawCircle(canvas, carPosition.getBoundaries().getTurningCircle(), turningCirclePaint);
 
         List<ObjectDistanceInfo> distanceInfoList = carPosition.getCarDistancesInfo();
@@ -102,8 +106,14 @@ public class CarDrawing extends AbstractDrawing {
         }
 
         DrawingUtils.drawBoundaries(canvas, boundaries, carPaint);
-        circles = carPosition.getLast().getBoundaries().getMaxTurningCircles();
-        DrawingUtils.drawCircles(canvas, circles, maxCirclePaint);
+        Circle[] toCircles = carPosition.getLast().getBoundaries().getMaxTurningCircles();
+        DrawingUtils.drawCircles(canvas, toCircles, maxCirclePaint);
         DrawingUtils.drawBoundaries(canvas, carPosition.getLast().getBoundaries(), lastPosPaint);
+        LineSegment segments[] = new LineSegment[2];
+        //if (myMaxCircles[0].getDirection() == toCircles[0].getDirection()) {
+        segments[0] = TrigUtils.findOuterTangents(fromCircles[0], toCircles[0]);
+        segments[1] = TrigUtils.findOuterTangents(fromCircles[1], toCircles[1]);
+        DrawingUtils.drawLine(canvas, segments[0], whitePaint);
+        DrawingUtils.drawLine(canvas, segments[1], whitePaint);
     }
 }

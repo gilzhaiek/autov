@@ -61,6 +61,9 @@ public class CarPosition {
         this.timeToNextPosition = timeToNextPosition;
         this.last = this;
         this.carDistancesInfo = new ArrayList<>();
+        if (generateNextSpeed() < 0) {
+            Log.d("SHIT", "SHIT speed=" + speed + " acc=" + acceleration);
+        }
     }
 
     public double generateNextSpeed() {
@@ -149,6 +152,9 @@ public class CarPosition {
     }
 
     public synchronized CarPosition getLast() {
+        if (last == null) {
+            return null;
+        }
         return last;
     }
 

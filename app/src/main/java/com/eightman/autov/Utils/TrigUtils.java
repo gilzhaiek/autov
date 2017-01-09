@@ -64,6 +64,7 @@ public class TrigUtils {
     }
 
     public static double isBetween(XY edgeA, XY edgeB, XY point) {
+        Log.d("SHIT", "A=" + edgeA.toString() + " B=" + edgeB.toString() + " P=" + point.toString());
         Log.d("SHIT", "isBetween " + MathUtils.getDistance(edgeA, point) +
                 " + " + MathUtils.getDistance(point, edgeB) +
                 " = " + (MathUtils.getDistance(edgeA, point) + MathUtils.getDistance(point, edgeB)) +
@@ -83,20 +84,19 @@ public class TrigUtils {
             return null;
         }
 
-        double deltaRadius = Math.abs(fromCircle.getRadius() - toCircle.getRadius());
-        if (fromCircle.getRadius() > toCircle.getRadius() && deltaRadius > 0.01) {
+        if (fromCircle.getRadius() > toCircle.getRadius()) {
             Log.d("SHIT4", "From " + fromCircle.getRadius() + " > To " + toCircle.getRadius());
             return _findOuterTangents(fromCircle, toCircle, false);
-        } else if (fromCircle.getRadius() < toCircle.getRadius() && deltaRadius > 0.01) {
+        } else if (fromCircle.getRadius() < toCircle.getRadius()) {
             Log.d("SHIT4", "From " + fromCircle.getRadius() + " < To " + toCircle.getRadius());
             return _findOuterTangents(toCircle, fromCircle, true).getSwapped();
         } else {
             Log.d("SHIT4", "To == From = " + fromCircle.getRadius());
-            double halfToRadius = toCircle.getRadius() / 2.0;
-            Circle smallerToCircle = new Circle(toCircle.getCenter(), halfToRadius, toCircle.getDirection());
+            double smallerRadius = toCircle.getRadius() - 0.0001;
+            Circle smallerToCircle = new Circle(toCircle.getCenter(), smallerRadius, toCircle.getDirection());
             LineSegment toSmallerSegment = _findOuterTangents(fromCircle, smallerToCircle, false);
             LineSegment centerToSmaller = new LineSegment(smallerToCircle.getCenter(), toSmallerSegment.getPointB());
-            return new LineSegment(toSmallerSegment.getPointA(), centerToSmaller.addToB(halfToRadius).getPointB());
+            return new LineSegment(toSmallerSegment.getPointA(), centerToSmaller.addToB(0.0001).getPointB());
         }
     }
 

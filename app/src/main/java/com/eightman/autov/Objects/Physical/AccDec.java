@@ -84,7 +84,11 @@ public class AccDec {
         return maxSpeed;
     }
 
-    public double getComfortableDec() {
-        return comfortableDec;
+    public double getComfortableDec(double speed) {
+        if (speed + comfortableDec < 0) {
+            return -speed;
+        } else {
+            return comfortableDec;
+        }
     }
 }
