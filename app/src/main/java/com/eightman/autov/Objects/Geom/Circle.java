@@ -10,7 +10,8 @@ import com.eightman.autov.Utils.TrigUtils;
 public class Circle {
     public enum Direction {
         CLOCK_WISE,
-        COUNTER_CLOCK_WISE
+        COUNTER_CLOCK_WISE,
+        STRAIGHT
     }
 
     final XY center;

@@ -78,6 +78,8 @@ public class RandomCirclePathMaker implements IRandomPathMaker {
     }
 
     private CarPosition moveCloser(AccDec accDec, Speed speed, CarPosition oldCarPosition, Boundaries toBoundaries) throws Exception {
+        long timeToNextPos = SimConfig.PATH_RESOLUTION_MS;
+        Circle.Direction targetDirection = Circle.Direction.STRAIGHT;
         double newAcc;
         double maxWheelsAngleSpeed = speed.getComfortableSpeed(toBoundaries.getMaxWheelsAngleAbs());
 
@@ -88,13 +90,12 @@ public class RandomCirclePathMaker implements IRandomPathMaker {
 
         // Make sure we slow down in time
         double distanceToStop = accDec.getStopDistance(newSpeed);
-        double shortestDistance = BoundariesManager.getShortestDistance(newBoundaries, toBoundaries).first;
-        //Log.d("SHIT", "shortestDistance=" + shortestDistance);
-        if (shortestDistance < distanceToStop) {
+        double targetDistance = MathUtils.getDistance(newBoundaries.getCenterFront(), toBoundaries.getCenterFront());
+        if (targetDistance < distanceToStop) {
             Log.d("SHIT", "slowing down...");
-            newAcc = accDec.getComfortableDec(newSpeed);
+            newAcc = accDec.getAcceleration(newSpeed, 0.0);
         } else {
-            newAcc = accDec.getAcceleration(newSpeed);
+            newAcc = accDec.getAcceleration(newSpeed, newSpeed);
         }
 
         // Did we hit the place?
@@ -103,7 +104,7 @@ public class RandomCirclePathMaker implements IRandomPathMaker {
             if (newSpeed == 0.0 && newAcc == 0.0) {
                 oldCarPosition.setNext(CarPosition.getRestedPosition(newBoundaries), true);
             } else {
-                oldCarPosition.setNext(CarPosition.getMovingPosition(newBoundaries, newSpeed, newAcc, SimConfig.PATH_RESOLUTION_MS), true);
+                oldCarPosition.setNext(CarPosition.getMovingPosition(newBoundaries, newSpeed, newAcc, timeToNextPos), true);
             }
             return oldCarPosition.getNext();
         }
@@ -114,13 +115,13 @@ public class RandomCirclePathMaker implements IRandomPathMaker {
         // Check if I am on the circle and on the same direction
         Circle turningCircle = newBoundaries.getTurningCircle();
         if (turningCircle != null && (turningCircle.equals(toCircles[0]) || turningCircle.equals(toCircles[1]))) {
-            Log.d("SHIT", "We are on the same circle");
+            Log.d("SHIT5", "We are on the same circle");
 
             if (newSpeed > maxWheelsAngleSpeed) {
                 // We need to slow down
-                newAcc = accDec.getComfortableDec(newSpeed);
+                newAcc = accDec.getAcceleration(newSpeed, maxWheelsAngleSpeed);
             }
-            oldCarPosition.setNext(CarPosition.getMovingPosition(newBoundaries, newSpeed, newAcc, SimConfig.PATH_RESOLUTION_MS), true);
+            oldCarPosition.setNext(CarPosition.getMovingPosition(newBoundaries, newSpeed, newAcc, timeToNextPos), true);
             return oldCarPosition.getNext();
         }
 
@@ -140,6 +141,7 @@ public class RandomCirclePathMaker implements IRandomPathMaker {
         double ratio = 1.0;
         LineSegment segment = null;
         if (segments[0] != null) {
+            targetDirection = toCircles[0].getDirection();
             // Check if i'm on the line
             if (segments[0].isBetween(newBoundaries.getCenterFront())) {
                 segment = segments[0];
@@ -156,11 +158,13 @@ public class RandomCirclePathMaker implements IRandomPathMaker {
             // Check if i'm on the line
             if (segments[1].isBetween(newBoundaries.getCenterFront())) {
                 segment = segments[1];
+                targetDirection = toCircles[1].getDirection();
                 Log.d("SHIT3", "segment 1.1");
             } else {
                 ratio = myMaxCircles[1].getRatio(oldBoundaries.getCenterFront(), newBoundaries.getCenterFront(), segments[1].getPointA());
                 if (ratio <= 1.0) {
                     segment = segments[1];
+                    targetDirection = toCircles[1].getDirection();
                     Log.d("SHIT3", "segment 1.2");
                 }
             }
@@ -168,37 +172,50 @@ public class RandomCirclePathMaker implements IRandomPathMaker {
 
         if (segment != null) {
             Log.d("SHIT", "Found Seg=" + segment.toString() + " ratio=" + ratio);
-            if (ratio < 1.0) {
+            if (ratio == 1.0) {
+                newBoundaries = BoundariesManager.getHeadingBoundaries(
+                        segment.getPointA(), segment.getPointB(), Wheels.STRAIGHT_WHEELS, oldBoundaries);
+                if (segment.getLength() < 0.01) {
+                    newBoundaries = newBoundaries.moveForward(segment.getLength());
+                    if (targetDirection != Circle.Direction.STRAIGHT) {
+                        newBoundaries.setWheelsAngle(toBoundaries.getMaxWheelsAngle(targetDirection));
+                    }
+                    // TODO: fix this if needed
+
+                } else if (segment.getLength() < MathUtils.getFactorSec(newSpeed, timeToNextPos)) {
+                    Log.d("SHIT7", "Reached PointB");
+                    timeToNextPos = (long) ((segment.getLength() / MathUtils.getFactorSec(newSpeed, timeToNextPos)) * (double) timeToNextPos);
+                }
+            } else {
                 CarPosition updatedOldPosition = CarPosition.getMovingPosition(oldBoundaries,
-                        oldCarPosition.getSpeed(), oldCarPosition.getAcceleration(), (long) ((double) SimConfig.PATH_RESOLUTION_MS * ratio));
+                        oldCarPosition.getSpeed(), oldCarPosition.getAcceleration(), (long) ((double) timeToNextPos * ratio));
                 oldCarPosition.replace(updatedOldPosition);
                 oldCarPosition = updatedOldPosition;
                 newSpeed = oldCarPosition.generateNextSpeed();
+                newAcc = accDec.getAcceleration(newSpeed, accDec.getMaxSpeed());
                 newBoundaries = BoundariesManager.getHeadingBoundaries(
                         segment.getPointA(), segment.getPointB(), Wheels.STRAIGHT_WHEELS, oldBoundaries);
-            } else {
-                newBoundaries = BoundariesManager.getHeadingBoundaries(
-                        segment.getPointA(), segment.getPointB(), Wheels.STRAIGHT_WHEELS, oldBoundaries);
-                Log.d("SHIT", "NC=" + newBoundaries.getCenterFront().toString() + " PA=" + segment.getPointA());
+            }
+            Log.d("SHIT", "NC=" + newBoundaries.getCenterFront().toString() + " PA=" + segment.getPointA());
 //                segments[0].isBetween(newBoundaries.getCenterFront());
 //                myMaxCircles = newBoundaries.getMaxTurningCircles();
 //                segments[0] = TrigUtils.findOuterTangents(myMaxCircles[0], toCircles[0]);
 //                segments[1] = TrigUtils.findOuterTangents(myMaxCircles[1], toCircles[1]);
 //                segments[0].isBetween(newBoundaries.getCenterFront());
 //                segments[1].isBetween(newBoundaries.getCenterFront());
-            }
+
 
             // Make sure I slow down to be max wheels turn when I hit the circle
             double distanceToTargetCircle = segment.getLength();
             double distanceToTargetSpeed = accDec.getDistanceToTargetSpeed(newSpeed, maxWheelsAngleSpeed);
-            if (distanceToTargetCircle <= distanceToTargetSpeed) {
-                newAcc = accDec.getComfortableDec(newSpeed);
-            } else {
-                newAcc = accDec.getAcceleration(newSpeed);
+            if (distanceToTargetSpeed > distanceToTargetCircle) {
+                if (newSpeed > maxWheelsAngleSpeed) {
+                    newAcc = accDec.getAcceleration(newSpeed, maxWheelsAngleSpeed);
+                }
             }
 
             //for (int i = 0; i <= 7; i++) {
-            oldCarPosition.setNext(CarPosition.getMovingPosition(newBoundaries, newSpeed, newAcc, SimConfig.PATH_RESOLUTION_MS), true);
+            oldCarPosition.setNext(CarPosition.getMovingPosition(newBoundaries, newSpeed, newAcc, timeToNextPos), true);
 //                oldCarPosition = oldCarPosition.getNext();
 //                newBoundaries = oldCarPosition.generateNextBoundaries(Wheels.STRAIGHT_WHEELS);
 //                if (i == 7) {
@@ -215,13 +232,9 @@ public class RandomCirclePathMaker implements IRandomPathMaker {
         }
 
         double comfortableSpeed = speed.getComfortableSpeed(newBoundaries.getWheelsAngle());
-        if (newSpeed > comfortableSpeed) {
-            newAcc = accDec.getComfortableDec(newSpeed);
-        } else {
-            newAcc = Math.min(accDec.getAcceleration(newSpeed), comfortableSpeed - newSpeed);
-        }
+        newAcc = accDec.getAcceleration(newSpeed, comfortableSpeed);
 
-        oldCarPosition.setNext(CarPosition.getMovingPosition(newBoundaries, newSpeed, newAcc, SimConfig.PATH_RESOLUTION_MS), true);
+        oldCarPosition.setNext(CarPosition.getMovingPosition(newBoundaries, newSpeed, newAcc, timeToNextPos), true);
         return oldCarPosition.getNext();
 
         // Get the distance between the two max circles (3 options)

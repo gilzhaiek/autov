@@ -46,11 +46,7 @@ public class SpeedUtils {
         double comfortableSpeed = speed.getComfortableSpeed(wheelsAngle);
         if (fastestSpeed > comfortableSpeed) {  // We are too fast
             // 10 - 20 = -10 < -3
-            if (comfortableSpeed - fastestSpeed < accDec.getComfortableDec(currentSpeed)) {
-                targetAccDec = accDec.getComfortableDec(comfortableSpeed);
-            } else {
-                targetAccDec = comfortableSpeed - fastestSpeed;
-            }
+            targetAccDec = accDec.getAcceleration(currentSpeed, comfortableSpeed);
             return new Pair<>(targetAccDec, wheelsAngle);
         }
 
@@ -72,12 +68,7 @@ public class SpeedUtils {
             targetSpeed = comfortableSpeed;
         }
 
-        targetAccDec = targetSpeed - currentSpeed;
-        if (targetAccDec < accDec.getComfortableDec(targetSpeed)) {
-            targetAccDec = accDec.getComfortableDec(targetSpeed);
-        } else if (targetAccDec > accDec.getAcceleration(currentSpeed)) { // Can't accelerate too quickly
-            targetAccDec = accDec.getAcceleration(currentSpeed);
-        }
+        accDec.getAcceleration(currentSpeed, targetSpeed);
         return new Pair<>(targetAccDec, wheelsAngle);
     }
 }

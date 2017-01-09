@@ -37,12 +37,26 @@ public class AccDec {
         return new AccDec(maxSpeed, startAcc, emergencyDec);
     }
 
-    public double getAcceleration(double speed) {
-        if (speed > maxSpeed) {
-            speed = maxSpeed;
+    public double getAcceleration(double newSpeed, double targetSpeed) {
+        double targetAcc = targetSpeed > maxSpeed ? maxSpeed - newSpeed : targetSpeed - newSpeed;
+
+        if (targetAcc > 0) {
+            double acc = acceleration[(int) newSpeed];
+            if (targetAcc < acc) {
+                acc = targetAcc;
+            }
+            return acc;
         }
 
-        return acceleration[(int) speed];
+        if (targetAcc < 0) {
+            if (targetAcc < comfortableDec) {
+                return comfortableDec;
+            } else {
+                return targetAcc;
+            }
+        }
+
+        return 0.0;
     }
 
     public double getDistanceToTargetSpeed(double currentSpeed, double targetSpeed) {
@@ -82,13 +96,5 @@ public class AccDec {
 
     public double getMaxSpeed() {
         return maxSpeed;
-    }
-
-    public double getComfortableDec(double speed) {
-        if (speed + comfortableDec < 0) {
-            return -speed;
-        } else {
-            return comfortableDec;
-        }
     }
 }
