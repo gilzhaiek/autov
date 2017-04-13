@@ -1,6 +1,5 @@
 package com.eightman.autov.Utils;
 
-import android.util.Log;
 import android.util.Pair;
 
 import com.eightman.autov.Objects.Geom.Circle;
@@ -22,8 +21,7 @@ public class TrigUtils {
     }
 
     // http://www.ambrsoft.com/TrigoCalc/Circles2/Circles2Tangent_.htm
-    private static LineSegment _findOuterTangents(Circle bigCircle,
-                                                  Circle smallCircle,
+    private static LineSegment _findOuterTangents(Circle bigCircle, Circle smallCircle,
                                                   boolean oppositeSegment) {
         double a = bigCircle.getCenter().getX();
         double b = bigCircle.getCenter().getY();
@@ -64,11 +62,6 @@ public class TrigUtils {
     }
 
     public static double isBetween(XY edgeA, XY edgeB, XY point) {
-        Log.d("SHIT", "A=" + edgeA.toString() + " B=" + edgeB.toString() + " P=" + point.toString());
-        Log.d("SHIT", "isBetween " + MathUtils.getDistance(edgeA, point) +
-                " + " + MathUtils.getDistance(point, edgeB) +
-                " = " + (MathUtils.getDistance(edgeA, point) + MathUtils.getDistance(point, edgeB)) +
-                " == " + MathUtils.getDistance(edgeA, edgeB));
         return Math.abs(MathUtils.getDistance(edgeA, point) + MathUtils.getDistance(point, edgeB) -
                 MathUtils.getDistance(edgeA, edgeB));
     }
@@ -85,13 +78,10 @@ public class TrigUtils {
         }
 
         if (fromCircle.getRadius() > toCircle.getRadius()) {
-            Log.d("SHIT4", "From " + fromCircle.getRadius() + " > To " + toCircle.getRadius());
             return _findOuterTangents(fromCircle, toCircle, false);
         } else if (fromCircle.getRadius() < toCircle.getRadius()) {
-            Log.d("SHIT4", "From " + fromCircle.getRadius() + " < To " + toCircle.getRadius());
             return _findOuterTangents(toCircle, fromCircle, true).getSwapped();
         } else {
-            Log.d("SHIT4", "To == From = " + fromCircle.getRadius());
             double smallerRadius = toCircle.getRadius() - 0.0001;
             Circle smallerToCircle = new Circle(toCircle.getCenter(), smallerRadius, toCircle.getDirection());
             LineSegment toSmallerSegment = _findOuterTangents(fromCircle, smallerToCircle, false);

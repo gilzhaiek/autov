@@ -81,21 +81,12 @@ public class CarPosition {
             return boundaries.moveForward(moveDistance);
         }
 
-//        Log.d("SHIT", "TC=" + turningCircle.toString());
-
         double theta = TrigUtils.getAngleRad(turningCircle.getRadius(), moveDistance);
-        //Log.d("SHIT", "R=" + turningCircle.getRadius() + " D=" + moveDistance + " Theta=" + Math.toDegrees(theta) + " RAD=" + theta);
 
         XY newCenterFront = TrigUtils.rotateAroundCenterRadians(
                 turningCircle.getCenter(), boundaries.getCenterFront(), theta);
         XY newCenterBack = TrigUtils.rotateAroundCenterRadians(
                 turningCircle.getCenter(), boundaries.getCenterBack(), theta);
-
-//        Log.d("SHIT", "X=" + newX + " Y=" + newY +
-//                " CF=" + boundaries.getCenterFront() + "->" + newCenterFront.toString() +
-//                " CB=" + boundaries.getCenterBack() + "->" + newCenterBack.toString());
-//
-//        Log.d("SHIT", "WA=" + wheelsAngle + " D=" + moveDistance);
 
         return BoundariesManager.genBoundaries(newCenterFront, newCenterBack, wheelsAngle, boundaries);
     }

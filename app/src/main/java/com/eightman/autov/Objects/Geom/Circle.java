@@ -92,7 +92,6 @@ public class Circle {
         if (fromAngle > toAngle) {
             fromAngle -= Math.PI * 2.0;
         }
-        //Log.d("SHIT", fromAngle + " < " + pointToTestAngle + " < " + toAngle);
         return fromAngle < pointToTestAngle && pointToTestAngle < toAngle;
     }
 
